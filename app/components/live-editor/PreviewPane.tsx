@@ -1,100 +1,264 @@
-import { useRef, useEffect, useCallback } from "react";
-import type { PropertyControl } from "./types";
+import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import type { PreviewPaneHandle, SelectedElementInfo, StyleChangesMap } from "./types";
+import { PROPERTIES_TO_READ } from "./InspectorPanel";
 
 interface PreviewPaneProps {
   html: string;
-  mode: "code" | "controller";
-  controlValues: Record<string, string | number>;
-  controls: PropertyControl[];
   height: number;
+  inspectorActive: boolean;
+  onElementSelect: (info: SelectedElementInfo) => void;
+  onReload?: () => void;
+  styleChanges: StyleChangesMap;
 }
 
-export function PreviewPane({
-  html,
-  mode,
-  controlValues,
-  controls,
-  height,
-}: PreviewPaneProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+type BoundHandlers = {
+  doc: Document;
+  over: EventListener;
+  out: EventListener;
+  click: EventListener;
+};
 
-  const applyControlStyles = useCallback(() => {
-    const iframe = iframeRef.current;
-    if (!iframe || mode !== "controller") return;
+export const PreviewPane = forwardRef<PreviewPaneHandle, PreviewPaneProps>(
+  function PreviewPane(
+    { html, height, inspectorActive, onElementSelect, onReload, styleChanges },
+    ref
+  ) {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+    const selectedElRef = useRef<HTMLElement | null>(null);
+    const hoveredElRef = useRef<HTMLElement | null>(null);
+    const boundRef = useRef<BoundHandlers | null>(null);
 
-    const doc = iframe.contentDocument;
-    if (!doc) return;
+    // Live refs — always up-to-date without causing effect re-runs
+    const inspectorActiveRef = useRef(inspectorActive);
+    const onElementSelectRef = useRef(onElementSelect);
+    const styleChangesRef = useRef(styleChanges);
+    const onReloadRef = useRef(onReload);
+    inspectorActiveRef.current = inspectorActive;
+    onElementSelectRef.current = onElementSelect;
+    styleChangesRef.current = styleChanges;
+    onReloadRef.current = onReload;
 
-    for (const control of controls) {
-      const value = controlValues[control.id];
-      if (value === undefined) continue;
-
-      const formattedValue =
-        typeof value === "number" && control.unit
-          ? `${value}${control.unit}`
-          : String(value);
-
-      const els = doc.querySelectorAll<HTMLElement>(control.target);
-      for (const el of els) {
-        el.style.setProperty(
-          camelToKebab(control.property),
-          formattedValue,
-          "important"
-        );
+    // ── Stable: detach from whatever doc is currently bound ──────────
+    const detach = useCallback(() => {
+      const b = boundRef.current;
+      if (!b) return;
+      try {
+        b.doc.removeEventListener("mouseover", b.over, true);
+        b.doc.removeEventListener("mouseout", b.out, true);
+        b.doc.removeEventListener("click", b.click, true);
+        b.doc.body.style.cursor = "";
+      } catch {
+        // Old doc may be inaccessible after iframe reload — ignore
       }
-    }
-  }, [controls, controlValues, mode]);
+      boundRef.current = null;
+    }, []);
 
-  useEffect(() => {
-    if (mode !== "controller") return;
+    // ── Stable: attach inspector listeners to a given doc ────────────
+    const attach = useCallback(
+      (doc: Document) => {
+        detach(); // Remove any existing binding first
 
-    const iframe = iframeRef.current;
-    if (!iframe) return;
+        const over: EventListener = (e) => {
+          const tgt = e.target as HTMLElement;
+          if (!tgt || tgt === doc.body || tgt === doc.documentElement) return;
+          if (hoveredElRef.current && hoveredElRef.current !== selectedElRef.current) {
+            clearHighlight(hoveredElRef.current);
+          }
+          hoveredElRef.current = tgt;
+          if (tgt !== selectedElRef.current) {
+            tgt.style.setProperty("outline", "2px dashed rgba(14,165,160,0.45)", "important");
+            tgt.style.setProperty("outline-offset", "-1px", "important");
+          }
+        };
 
-    const handleLoad = () => applyControlStyles();
-    iframe.addEventListener("load", handleLoad);
+        const out: EventListener = () => {
+          if (hoveredElRef.current && hoveredElRef.current !== selectedElRef.current) {
+            clearHighlight(hoveredElRef.current);
+          }
+        };
 
-    // Also apply immediately if doc is already loaded
-    if (iframe.contentDocument?.readyState === "complete") {
-      applyControlStyles();
-    }
+        const click: EventListener = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const tgt = e.target as HTMLElement;
+          if (!tgt || tgt === doc.body || tgt === doc.documentElement) return;
+          if (selectedElRef.current) clearHighlight(selectedElRef.current);
+          selectedElRef.current = tgt;
+          tgt.style.setProperty("outline", "2px solid #0ea5a0", "important");
+          tgt.style.setProperty("outline-offset", "-1px", "important");
 
-    return () => iframe.removeEventListener("load", handleLoad);
-  }, [mode, applyControlStyles]);
+          const computed = getComputedStyle(tgt);
+          const styles: Record<string, string> = {};
+          for (const prop of PROPERTIES_TO_READ) {
+            styles[prop] = computed.getPropertyValue(prop);
+          }
+          onElementSelectRef.current({
+            selector: getUniqueSelector(tgt),
+            displayPath: getDisplayPath(tgt),
+            displaySelector: getDisplaySelector(tgt),
+            tag: tgt.tagName.toLowerCase(),
+            classes: [...tgt.classList],
+            styles,
+          });
+        };
 
-  // Re-apply styles whenever controlValues change in controller mode
-  useEffect(() => {
-    if (mode === "controller") {
-      applyControlStyles();
-    }
-  }, [controlValues, mode, applyControlStyles]);
+        doc.addEventListener("mouseover", over, true);
+        doc.addEventListener("mouseout", out, true);
+        doc.addEventListener("click", click, true);
+        doc.body.style.cursor = "crosshair";
+        boundRef.current = { doc, over, out, click };
+      },
+      [detach]
+    );
 
-  const srcDoc = mode === "code" ? html : undefined;
+    // ── Stable: runs after every iframe load ─────────────────────────
+    const handleLoad = useCallback(() => {
+      const doc = iframeRef.current?.contentDocument;
+      if (!doc?.body) return;
 
-  return (
-    <div className="le-preview-pane" style={{ height }}>
-      {mode === "controller" ? (
+      // DOM is fresh — clear stale element refs
+      selectedElRef.current = null;
+      hoveredElRef.current = null;
+
+      // Notify parent to clear its selectedElement state
+      onReloadRef.current?.();
+
+      // Re-apply all inspector style overrides
+      for (const [sel, overrides] of Object.entries(styleChangesRef.current)) {
+        const el = doc.querySelector<HTMLElement>(sel);
+        if (!el) continue;
+        for (const [prop, val] of Object.entries(overrides)) {
+          el.style.setProperty(prop, val, "important");
+        }
+      }
+
+      // Re-bind inspector if active
+      if (inspectorActiveRef.current) {
+        attach(doc);
+      }
+    }, [attach]);
+
+    // ── On mount: register load listener ─────────────────────────────
+    useEffect(() => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+      iframe.addEventListener("load", handleLoad);
+      // Handle the case where iframe is already loaded (e.g. dev HMR)
+      if (iframe.contentDocument?.readyState === "complete") handleLoad();
+      return () => {
+        iframe.removeEventListener("load", handleLoad);
+        detach();
+      };
+    }, [handleLoad, detach]);
+
+    // ── When inspectorActive flips while iframe stays loaded ──────────
+    useEffect(() => {
+      const doc = iframeRef.current?.contentDocument;
+      if (!doc?.body) return; // Not loaded yet — handleLoad will bind when ready
+      if (inspectorActive) {
+        attach(doc);
+      } else {
+        detach();
+        clearHighlight(hoveredElRef.current);
+        hoveredElRef.current = null;
+      }
+    }, [inspectorActive, attach, detach]);
+
+    // ── Imperative handle ─────────────────────────────────────────────
+    useImperativeHandle(ref, () => ({
+      applyStyle(property: string, value: string) {
+        const el = selectedElRef.current;
+        if (!el) return;
+        el.style.setProperty(property, value, "important");
+      },
+      reapplyAllStyles(changes: Record<string, Record<string, string>>) {
+        const doc = iframeRef.current?.contentDocument;
+        if (!doc) return;
+        for (const [selector, overrides] of Object.entries(changes)) {
+          const el = doc.querySelector<HTMLElement>(selector);
+          if (!el) continue;
+          for (const [prop, val] of Object.entries(overrides)) {
+            el.style.setProperty(prop, val, "important");
+          }
+        }
+      },
+      clearSelection() {
+        clearHighlight(selectedElRef.current);
+        selectedElRef.current = null;
+      },
+    }));
+
+    return (
+      <div className="le-preview-pane" style={{ height }}>
         <iframe
-          key="controller"
           ref={iframeRef}
           className="le-preview-iframe"
           srcDoc={html}
           sandbox="allow-same-origin allow-scripts"
           title="Preview"
         />
-      ) : (
-        <iframe
-          key="code"
-          className="le-preview-iframe"
-          srcDoc={srcDoc}
-          sandbox="allow-same-origin allow-scripts"
-          title="Preview"
-        />
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+);
+
+/* ── Helpers ────────────────────────────────────── */
+
+function clearHighlight(el: HTMLElement | null) {
+  if (!el) return;
+  el.style.removeProperty("outline");
+  el.style.removeProperty("outline-offset");
 }
 
-function camelToKebab(str: string): string {
-  return str.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+function getUniqueSelector(el: HTMLElement): string {
+  const parts: string[] = [];
+  let current: HTMLElement | null = el;
+  while (current && current.tagName !== "BODY" && current.tagName !== "HTML") {
+    let selector = current.tagName.toLowerCase();
+    if (current.id) {
+      parts.unshift(`#${current.id}`);
+      break;
+    }
+    if (current.className && typeof current.className === "string") {
+      const classes = current.className.trim().split(/\s+/).filter(Boolean);
+      if (classes.length) selector += "." + classes.join(".");
+    }
+    const parent = current.parentElement;
+    if (parent) {
+      const siblings = Array.from(parent.children);
+      const sameTag = siblings.filter((s) => s.tagName === current!.tagName);
+      if (sameTag.length > 1) {
+        const index = siblings.indexOf(current) + 1;
+        selector += `:nth-child(${index})`;
+      }
+    }
+    parts.unshift(selector);
+    current = current.parentElement;
+  }
+  return parts.join(" > ");
+}
+
+function getDisplayPath(el: HTMLElement): string {
+  const parts: string[] = [];
+  let current: HTMLElement | null = el;
+  while (current && current.tagName !== "HTML" && current.tagName !== "BODY") {
+    let part = current.tagName.toLowerCase();
+    if (current.className && typeof current.className === "string") {
+      const classes = current.className.trim().split(/\s+/).filter(Boolean);
+      if (classes.length) part += "." + classes.slice(0, 2).join(".");
+    }
+    parts.unshift(part);
+    current = current.parentElement;
+  }
+  if (parts.length > 3) parts.splice(0, parts.length - 3);
+  return parts.join(" › ");
+}
+
+function getDisplaySelector(el: HTMLElement): string {
+  if (el.id) return `#${el.id}`;
+  if (el.className && typeof el.className === "string") {
+    const classes = el.className.trim().split(/\s+/).filter(Boolean);
+    if (classes.length) return "." + classes.join(".");
+  }
+  return el.tagName.toLowerCase();
 }

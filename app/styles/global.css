@@ -15,46 +15,55 @@
 ══════════════════════════════════════════ */
 :root {
   /* Backgrounds */
-  --bg-base:     #f4f4f8;
-  --bg-surface:  #ffffff;
-  --bg-elevated: #eeeef4;
-  --bg-hover:    #e6e6f0;
+  --bg-base: hsl(178, 10%, 95%);
+  --bg-surface: hsl(178, 10%, 97%);
+  --bg-elevated: hsl(178, 10%, 90%);
+  --bg-hover: hsl(178, 10%, 90%);
 
   /* Text */
-  --text-primary:   #12121e;
-  --text-secondary: #52526e;
-  --text-tertiary:  #9090aa;
-  --text-ghost:     #b8b8cc;
+  --text-primary: hsl(178, 10%, 10%);
+  --text-secondary: hsl(178, 10%, 20%);
+  --text-tertiary: hsl(178, 10%, 30%);
+  --text-ghost: hsl(178, 10%, 40%);
+
+
+
+  /* Text */
+  /* --text-primary: hsl(240, 25%, 9%);
+  --text-secondary: hsl(240, 15%, 30%);
+  --text-tertiary: hsl(240, 13%, 50%);
+  --text-ghost: hsl(240, 16%, 60%); */
+
 
   /* Accent — Teal */
-  --accent:        #0ea5a0;
-  --accent-dim:    rgba(14, 165, 160, 0.08);
-  --accent-border: rgba(14, 165, 160, 0.22);
-  --accent-text:   #0ea5a0;
+  --accent: hsl(178, 84%, 35%);
+  --accent-dim: hsla(178, 84%, 35%, 0.08);
+  --accent-border: hsla(178, 84%, 35%, .5);
+  --accent-text: hsl(178, 84%, 35%);
 
   /* Status */
-  --success-color:  var(--accent);
-  --success-bg:     var(--accent-dim);
+  --success-color: var(--accent);
+  --success-bg: var(--accent-dim);
   --success-border: var(--accent-border);
 
-  --bad-color:  #d94f4f;
-  --bad-bg:     rgba(217, 79, 79, 0.07);
-  --bad-border: rgba(217, 79, 79, 0.22);
+  --bad-color: hsl(0, 64%, 58%);
+  --bad-bg: hsla(0, 64%, 58%, 0.07);
+  --bad-border: hsla(0, 64%, 58%, 0.22);
 
-  --warning-color:  #d97706;
-  --warning-bg:     rgba(217, 119, 6, 0.07);
-  --warning-border: rgba(217, 119, 6, 0.18);
+  --warning-color: hsl(32, 95%, 44%);
+  --warning-bg: hsla(32, 95%, 44%, 0.07);
+  --warning-border: hsla(32, 95%, 44%, 0.18);
 
   /* Typography */
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Spacing */
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  32px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
   --space-2xl: 48px;
   --space-3xl: 64px;
 
@@ -65,63 +74,70 @@
   --radius-xl: 20px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.07), 0 1px 2px hsla(0, 0%, 0%, 0.04);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.08), 0 2px 4px hsla(0, 0%, 0%, 0.04);
 
   /* Layout */
-  --sidebar-width:  260px;
-  --header-height:  56px;
+  --sidebar-width: 260px;
+  --header-height: 56px;
 }
 
 /* ══════════════════════════════════════════
    DESIGN TOKENS — DARK THEME
 ══════════════════════════════════════════ */
 [data-theme="dark"] {
-  --bg-base:     #0c0c12;
-  --bg-surface:  #131320;
-  --bg-elevated: #1a1a2f;
-  --bg-hover:    #20203a;
+  --bg-base: hsl(240, 20%, 6%);
+  --bg-surface: hsl(240, 25%, 10%);
+  --bg-elevated: hsl(240, 29%, 14%);
+  --bg-hover: hsl(240, 29%, 18%);
 
-  --text-primary:   #eeeef4;
-  --text-secondary: #8d8da8;
-  --text-tertiary:  #525270;
-  --text-ghost:     #3a3a52;
+  --text-primary: hsl(240, 21%, 95%);
+  --text-secondary: hsl(240, 13%, 81%);
+  --text-tertiary: hsl(240, 15%, 68%);
+  --text-ghost: hsl(240, 17%, 60%);
 
-  --accent:        #2dd4bf;
-  --accent-dim:    rgba(45, 212, 191, 0.10);
-  --accent-border: rgba(45, 212, 191, 0.20);
-  --accent-text:   #2dd4bf;
+  --accent: hsl(172, 66%, 50%);
+  --accent-dim: hsla(172, 66%, 50%, 0.10);
+  --accent-border: hsla(172, 66%, 50%, 0.20);
+  --accent-text: hsl(172, 66%, 50%);
 
-  --bad-color:  #f06060;
-  --bad-bg:     rgba(240, 96, 96, 0.06);
-  --bad-border: rgba(240, 96, 96, 0.18);
+  --bad-color: hsl(0, 83%, 66%);
+  --bad-bg: hsla(0, 83%, 66%, 0.06);
+  --bad-border: hsla(0, 83%, 66%, 0.18);
 
-  --warning-color:  #fbbf24;
-  --warning-bg:     rgba(251, 191, 36, 0.07);
-  --warning-border: rgba(251, 191, 36, 0.18);
+  --warning-color: hsl(43, 96%, 56%);
+  --warning-bg: hsla(43, 96%, 56%, 0.07);
+  --warning-border: hsla(43, 96%, 56%, 0.18);
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
 }
 
 [data-theme="dark"] body {
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 0%, hsla(172, 66%, 50%, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, hsla(239, 84%, 67%, 0.02) 0%, transparent 60%);
 }
 
 /* ══════════════════════════════════════════
    BASE RESET
 ══════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-html, body {
-  margin: 0; padding: 0;
+html,
+body {
+  margin: 0;
+  padding: 0;
   font-family: var(--font-body);
   background-color: var(--bg-base);
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
-  font-size: 14px; line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -131,10 +147,23 @@ html, body {
   outline-offset: 2px;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--text-ghost); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-ghost);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
 
 /* ══════════════════════════════════════════
    HEROUI OVERRIDES

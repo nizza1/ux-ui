@@ -281,7 +281,7 @@ export default function VisualHierarchyModule() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
-      <div className="max-w-[900px] mx-auto w-full px-8 py-12 flex-1">
+      <div className="max-w-[1000px] mx-auto w-full px-8 py-12 flex-1">
 
         {/* ── PAGE 1: TITLE ── */}
         <div className="mb-2">

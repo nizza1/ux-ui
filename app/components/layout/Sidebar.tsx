@@ -3,6 +3,17 @@ import { modules } from "~/data/modules";
 
 // Slugs that have full content routes
 const CONTENT_SLUGS = new Set([
+  // UX/UI Foundations (modules 00–08)
+  "ux-ui-basics",
+  "usability",
+  "user-needs",
+  "research-methods",
+  "personas",
+  "information-architecture",
+  "sketching-prototypes",
+  "wireframing",
+  "why-design",
+  // Visual/Technical Design (modules 09–)
   "visual-hierarchy",
   "typography-selection",
   "spacing-layout",

@@ -35,7 +35,7 @@ export default function SpacingLayoutModule() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
-      <div className="max-w-[900px] mx-auto w-full px-8 py-12 flex-1">
+      <div className="max-w-[1000px] mx-auto w-full px-8 py-12 flex-1">
 
         {/* ── Title section ── */}
         <div className="inline-flex items-center gap-2 bg-(--accent-dim) border border-(--accent-border) rounded-full py-1 px-3.5 font-mono text-[11px] font-semibold text-(--accent) tracking-[1.5px] uppercase mb-6 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-(--accent) before:shadow-[0_0_6px_var(--accent)] before:shrink-0">Modul 05</div>

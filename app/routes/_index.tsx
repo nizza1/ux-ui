@@ -2,7 +2,14 @@ import type { MetaFunction } from "@remix-run/node";
 import { Sparkles, BookOpen, Code2, Palette } from "lucide-react";
 import { ModuleCard } from "~/components/layout/ModuleCard";
 import { modules } from "~/data/modules";
-const CONTENT_SLUGS = new Set(["visual-hierarchy", "typography-selection", "spacing-layout", "color-systems"]);
+const CONTENT_SLUGS = new Set([
+  // UX/UI Foundations (modules 00–08)
+  "ux-ui-basics", "usability", "user-needs", "research-methods",
+  "personas", "information-architecture", "sketching-prototypes",
+  "wireframing", "why-design",
+  // Visual/Technical Design (modules 09–)
+  "visual-hierarchy", "typography-selection", "spacing-layout", "color-systems",
+]);
 
 export const meta: MetaFunction = () => {
   return [

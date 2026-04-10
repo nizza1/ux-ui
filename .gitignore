@@ -3,7 +3,7 @@ node_modules
 /build
 /public/build
 .env
-CLAUDE.md
-.claude
-.claude_history
+/CLAUDE.md
+/.claude
+/.claude_history
 

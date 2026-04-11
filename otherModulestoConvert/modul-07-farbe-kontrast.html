@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* ── Web-Modus Schriftgrößen-Overrides ── */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 520px;
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.body-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md) 0;
+}
+.body-text strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.small-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-ghost);
+}
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.learning-goals-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 24px;
+  position: relative;
+}
+
+.learning-goals-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-border);
+}
+
+.learning-goals-list li::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--bg-elevated);
+  margin: var(--space-lg) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list {
+  counter-reset: concept;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.concept-item {
+  display: flex;
+  gap: var(--space-md);
+  counter-increment: concept;
+}
+
+.concept-num {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+
+.concept-body h4 {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.insight-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color);     background: var(--bad-bg);     border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p {
+  font-size: 13px; line-height: 1.6;
+  color: #0a6e6a; margin: 0; font-weight: 500;
+}
+[data-theme="dark"] .rule-box p {
+  color: var(--accent-text);
+}
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   MODULE-SPECIFIC: CONTRAST CHECKER
+══════════════════════════════════════════ */
+.contrast-lab {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.contrast-lab-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: var(--space-md);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+
+.contrast-lab-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.contrast-preview {
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 120px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.contrast-preview-large {
+  font-size: 22px;
+  font-weight: 700;
+  transition: color 0.15s;
+}
+
+.contrast-preview-small {
+  font-size: 13px;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+
+.contrast-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.contrast-color-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.contrast-color-input label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-tertiary);
+  min-width: 90px;
+}
+
+.contrast-color-input input[type="color"] {
+  width: 32px; height: 32px;
+  border: 2px solid var(--bg-elevated);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+.contrast-color-input input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.contrast-color-input input[type="color"]::-webkit-color-swatch { border-radius: 3px; border: none; }
+
+.contrast-color-input .hex-display {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.contrast-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.contrast-ratio-display {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: var(--space-xs);
+  transition: color 0.15s;
+}
+
+.wcag-badge-row {
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.wcag-badge {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+  border: 1px solid;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.wcag-badge.pass {
+  background: var(--success-bg); color: var(--success-color); border-color: var(--success-border);
+}
+.wcag-badge.fail {
+  background: var(--bad-bg); color: var(--bad-color); border-color: var(--bad-border);
+}
+
+/* ── Colorblind Simulation ── */
+.cb-sim-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.cb-sim-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  text-align: center;
+}
+
+.cb-sim-card .cb-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 6px;
+}
+
+.cb-sim-card .cb-dots {
+  display: flex; gap: 4px; justify-content: center; margin-bottom: 4px;
+}
+
+.cb-sim-card .cb-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+}
+
+.cb-sim-card .cb-note {
+  font-size: 9px; color: var(--text-tertiary); line-height: 1.3;
+}
+
+@media print {
+  .contrast-lab { break-inside: avoid; }
+  input[type="color"] { -webkit-appearance: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Toggle Buttons -->
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+    <i data-lucide="monitor"></i>
+  </button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+    <i data-lucide="sun"></i>
+  </button>
+</div>
+
+<div class="web-container">
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 1 — TITELSEITE
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="module-tag">Modul 07</div>
+    <h1 class="page-title">Farbe II: Kontrast,<br>Accessibility & WCAG</h1>
+    <p class="page-subtitle">Schöne Farben allein reichen nicht — wenn sie niemand lesen kann, sind sie wertlos. Lerne, wie du Farben zugänglich einsetzt und die WCAG-Richtlinien gezielt anwendest.</p>
+
+    <div class="module-meta">
+      <div class="meta-item">
+        <i data-lucide="clock"></i>
+        <span>45 Minuten</span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="code"></i>
+        <span>Praxisaufgabe: ~15 Min.</span>
+      </div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title">
+        <i data-lucide="target"></i>
+        Lernziele
+      </div>
+      <ul class="learning-goals-list">
+        <li>Das Contrast Ratio verstehen und selbst berechnen können</li>
+        <li>WCAG-Stufen kennen: AA vs. AAA, Normal Text vs. Large Text</li>
+        <li>Das Problem von weißem Text auf farbigem Hintergrund erkennen und lösen</li>
+        <li>Farbblindheit berücksichtigen — warum Farbe nie der einzige Informationsträger sein darf</li>
+        <li>Accessible Design umsetzen, ohne Kompromisse bei der Ästhetik zu machen</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Accessibility ist kein Zusatzfeature, sondern Grundvoraussetzung. Wenn ~8% aller Männer eine Farbsehschwäche haben, betrifft es statistisch mindestens einen Teilnehmer in diesem Raum.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 2 — THEORIE: CONTRAST RATIO + WCAG
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Theorie</div>
+    <h2 class="section-title">Contrast Ratio und WCAG-Anforderungen</h2>
+    <p class="body-text">Das Contrast Ratio beschreibt das Helligkeitsverhältnis zwischen Vordergrund- und Hintergrundfarbe. Es reicht von <strong>1:1</strong> (kein Kontrast — identische Farben) bis <strong>21:1</strong> (maximaler Kontrast — Schwarz auf Weiß). Die WCAG (Web Content Accessibility Guidelines) definieren Mindestanforderungen für Lesbarkeit.</p>
+
+    <div class="theory-card">
+      <div class="section-label">WCAG 2.1 — Kontraststufen</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>AA Normal Text — mindestens 4.5:1</h4>
+            <p>Gilt für Text unter ~18px (oder unter 14px bold). Das ist die Mindestanforderung, die du für jeden Fließtext in deiner UI einhalten solltest — ohne Ausnahme.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>AA Large Text — mindestens 3:1</h4>
+            <p>Gilt für Text ab ~18px (oder ab 14px bold). Große Headlines dürfen etwas weniger Kontrast haben, weil sie durch ihre Größe bereits gut lesbar sind.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>AAA — mindestens 7:1 (Normal) / 4.5:1 (Large)</h4>
+            <p>Die strengste Stufe. Ideal für lange Lesetexte und medizinische/rechtliche Inhalte. Für UI-Elemente wie Buttons ist AA in der Regel ausreichend.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>UI-Komponenten & Grafiken — mindestens 3:1</h4>
+            <p>Icons, Borders, Formularfelder und andere nicht-textliche Elemente brauchen mindestens 3:1 Kontrast zum Hintergrund (WCAG 1.4.11). Oft vergessen, aber genauso wichtig.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Praxis-Empfehlung</div>
+      <p>Ziele auf AA als Minimum — das deckt ~95% aller Anwendungsfälle ab. AAA ist ein Bonus, kein Pflicht-Ziel. Und vergiss nicht: auch Icons und Borders brauchen ausreichend Kontrast.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 3 — INTERAKTIVER CONTRAST CHECKER
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Contrast Checker — Live testen</h2>
+    <p class="body-text">Wähle Vordergrund- und Hintergrundfarbe und sieh sofort, ob die Kombination die WCAG-Anforderungen erfüllt. Experimentiere: Wie dunkel muss ein Teal-Hintergrund sein, damit weißer Text darauf AA besteht?</p>
+
+    <div class="contrast-lab">
+      <div class="contrast-lab-title">
+        <i data-lucide="scan-eye"></i>
+        Contrast Checker
+      </div>
+      <div class="contrast-lab-layout">
+        <div>
+          <div class="contrast-preview" id="contrastPreview" style="background:#0ea5a0;">
+            <div class="contrast-preview-large" id="previewLarge" style="color:#ffffff;">Aa — Large Text</div>
+            <div class="contrast-preview-small" id="previewSmall" style="color:#ffffff;">The quick brown fox jumps over the lazy dog. 13px regulär.</div>
+          </div>
+          <div class="contrast-result" style="margin-top:var(--space-md);">
+            <div class="contrast-ratio-display" id="ratioDisplay">3.4:1</div>
+            <div class="wcag-badge-row" id="wcagBadges">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+        <div class="contrast-controls">
+          <div class="contrast-color-input">
+            <label>Textfarbe</label>
+            <input type="color" id="fgColor" value="#ffffff">
+            <span class="hex-display" id="fgHex">#ffffff</span>
+          </div>
+          <div class="contrast-color-input">
+            <label>Hintergrund</label>
+            <input type="color" id="bgColor" value="#0ea5a0">
+            <span class="hex-display" id="bgHex">#0ea5a0</span>
+          </div>
+
+          <hr class="section-divider">
+
+          <div style="display:flex; flex-direction:column; gap:var(--space-xs);">
+            <div style="font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-ghost);">Schnellauswahl testen</div>
+            <div style="display:flex; gap:var(--space-xs); flex-wrap:wrap;">
+              <button class="quick-test" data-fg="#ffffff" data-bg="#0ea5a0" title="Weiß auf Teal">Weiß/Teal</button>
+              <button class="quick-test" data-fg="#0a6e6a" data-bg="#ccfbf1" title="Dunkel auf Hell-Teal">Dunkel/Hell</button>
+              <button class="quick-test" data-fg="#ffffff" data-bg="#d94f4f" title="Weiß auf Rot">Weiß/Rot</button>
+              <button class="quick-test" data-fg="#7a2020" data-bg="#fecaca" title="Dunkelrot auf Hellrot">Flip Rot</button>
+              <button class="quick-test" data-fg="#92400e" data-bg="#fef3c7" title="Dunkelorange auf Hellgelb">Warm</button>
+              <button class="quick-test" data-fg="#ffffff" data-bg="#1e40af" title="Weiß auf Dunkelblau">Weiß/Blau</button>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <div style="font-size:11px; line-height:1.5; color:var(--text-tertiary);">
+            <strong style="color:var(--text-secondary);">Tipp:</strong> Wenn weißer Text auf einem farbigen Hintergrund nicht genug Kontrast hat — dreh den Kontrast um! Verwende dunklen Text auf hellem Hintergrund.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 4 — BEISPIEL: KONTRAST UMDREHEN
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 01</div>
+    <h2 class="section-title">Kontrast umdrehen statt verdunkeln</h2>
+    <p class="body-text">Weißer Text auf farbigem Hintergrund braucht oft einen <strong>überraschend dunklen</strong> Hintergrund, um 4.5:1 zu erreichen. Das kann zum Problem werden, wenn diese Elemente nicht das Hauptelement der Seite sein sollen — dunkle Flächen ziehen starke Aufmerksamkeit auf sich.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Weißer Text auf farbigem Background</div>
+            <div style="display:flex; gap:6px;">
+              <div style="background:#0ea5a0; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Info<br><span style="font-size:9px;opacity:0.7;">Ratio: 3.0:1 ✗</span></div>
+              <div style="background:#d94f4f; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Fehler<br><span style="font-size:9px;opacity:0.7;">Ratio: 3.9:1 ✗</span></div>
+              <div style="background:#d97706; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Warnung<br><span style="font-size:9px;opacity:0.7;">Ratio: 2.5:1 ✗</span></div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Keines erfüllt AA für normalen Text</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Dunkler Text auf hellem Background</div>
+            <div style="display:flex; gap:6px;">
+              <div style="background:#ccfbf1; color:#0a6e6a; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center; border:1px solid rgba(14,165,160,0.2);">Info<br><span style="font-size:9px;opacity:0.7;">Ratio: 5.2:1 ✓</span></div>
+              <div style="background:#fecaca; color:#7a2020; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center; border:1px solid rgba(217,79,79,0.2);">Fehler<br><span style="font-size:9px;opacity:0.7;">Ratio: 7.8:1 ✓</span></div>
+              <div style="background:#fef3c7; color:#92400e; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center; border:1px solid rgba(217,119,6,0.2);">Warnung<br><span style="font-size:9px;opacity:0.7;">Ratio: 6.3:1 ✓</span></div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Alle bestehen AA — und wirken dezenter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Der „Flip"-Trick: Statt den Hintergrund dunkler zu machen (was das Element visuell dominant macht), <strong>drehst du den Kontrast um</strong>. Dunkler Text auf hellem Hintergrund erreicht oft mühelos 5:1+ und wirkt gleichzeitig subtiler im Gesamtlayout. Die Farbe unterstützt den Text, ohne das Layout zu dominieren.</p>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Background</div>
+        <div class="annotation-value">Shade 50–100</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Text</div>
+        <div class="annotation-value">Shade 700–900</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Border</div>
+        <div class="annotation-value">Shade 200 (optional)</div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Wenn weißer Text auf farbigem Hintergrund nicht genug Kontrast hat, drehe den Kontrast um: dunkler Text (Shade 700–900) auf hellem Hintergrund (Shade 50–100).</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 5 — BEISPIEL: GRAUER TEXT AUF FARBIGEM BG
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 02</div>
+    <h2 class="section-title">Kein Grau auf farbigen Hintergründen</h2>
+    <p class="body-text">De-Emphasis durch hellgrauen Text funktioniert hervorragend auf weißem Hintergrund. Auf farbigen Hintergründen sieht es aber <strong>ausgewaschen und unscharf</strong> aus. Der Grund: Du reduzierst nicht den Kontrast, sondern fügst eine fremde Farbe hinzu.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="background:#1e3a5f; border-radius:8px; padding:14px;">
+              <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Dashboard</div>
+              <div style="font-size:11px; color:#a0a0a0; line-height:1.5;">Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-tertiary); margin-top:6px;">Grauer Text (#a0a0a0) auf Blau — matt, disconnected</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="background:#1e3a5f; border-radius:8px; padding:14px;">
+              <div style="font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Dashboard</div>
+              <div style="font-size:11px; color:#8bb8d9; line-height:1.5;">Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-tertiary); margin-top:6px;">Heller Blauton (#8bb8d9) — gleicher Hue, harmonisch</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links wird grauer Text (#a0a0a0) auf blauem Hintergrund verwendet. Das Grau hat <strong>keinen Bezug zum Hintergrund</strong> — es wirkt wie ein Fremdkörper. Rechts wird ein heller Blauton gewählt, der <strong>den gleichen Hue wie der Hintergrund</strong> hat, nur mit höherer Lightness. Das Ergebnis: harmonisch, lesbar und visuell zusammengehörig.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verwende auf farbigen Hintergründen nie Grautöne für sekundären Text. Wähle stattdessen eine hellere Variante der Hintergrundfarbe — gleicher Hue, höhere Lightness.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 6 — BEISPIEL: FARBE NICHT ALLEIN
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 03</div>
+    <h2 class="section-title">Farbe ist nie der einzige Informationsträger</h2>
+    <p class="body-text">Etwa 8% der Männer und 0.5% der Frauen haben eine Form von Farbsehschwäche. Wenn deine UI Informationen <strong>ausschließlich über Farbe</strong> vermittelt, sind diese Informationen für einen Teil deiner Nutzer unsichtbar.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Nur Farbe als Indikator</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;"></div> Umsatz: +12.5%
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;"></div> Kosten: +8.3%
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;"></div> Gewinn: +4.2%
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Rot-Grün-Schwäche → alle Punkte sehen gleich aus</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Farbe + Icon + Text</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <span style="color:#22c55e; font-weight:700; font-size:14px;">↑</span> Umsatz: <strong style="color:var(--text-primary);">+12.5%</strong>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <span style="color:#ef4444; font-weight:700; font-size:14px;">↑</span> Kosten: <strong style="color:var(--text-primary);">+8.3%</strong>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary);">
+                <span style="color:#22c55e; font-weight:700; font-size:14px;">↑</span> Gewinn: <strong style="color:var(--text-primary);">+4.2%</strong>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Icons und Text machen die Bedeutung auch ohne Farbe klar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im Vorher-Beispiel ist <strong>die Farbe der einzige Unterschied</strong> zwischen „gut" und „schlecht". Mit einer Rot-Grün-Schwäche sind alle Punkte identisch. Im Nachher-Beispiel gibt es zusätzlich <strong>Richtungspfeile und fette Zahlen</strong> — die Information bleibt auch ohne Farbwahrnehmung vollständig erhalten.</p>
+      <p>Das Prinzip gilt überall: Graphen (nutze verschiedene Linienstile zusätzlich zu Farben), Formulare (nutze Icons und Text neben roten Fehlermeldungen), Status-Badges (nutze Labels, nicht nur Farbe).</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verwende Farbe immer als Verstärkung, nie als einzigen Informationsträger. Ergänze Farbe durch Icons, Text, Muster oder Kontrast-Unterschiede (hell vs. dunkel statt Rot vs. Grün).</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 7 — BEISPIEL: FARBBLINDHEIT SIMULATION
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 04</div>
+    <h2 class="section-title">Farbblindheit verstehen — die drei häufigsten Typen</h2>
+    <p class="body-text">Um barrierefreier zu gestalten, hilft es zu verstehen, wie Menschen mit Farbsehschwäche deine UI wahrnehmen. Die drei häufigsten Typen betreffen jeweils <strong>unterschiedliche Bereiche des Farbspektrums</strong>.</p>
+
+    <div class="cb-sim-grid">
+      <div class="cb-sim-card">
+        <div class="cb-label">Normales Sehen</div>
+        <div class="cb-dots">
+          <div class="cb-dot" style="background:#ef4444;"></div>
+          <div class="cb-dot" style="background:#f59e0b;"></div>
+          <div class="cb-dot" style="background:#22c55e;"></div>
+          <div class="cb-dot" style="background:#3b82f6;"></div>
+          <div class="cb-dot" style="background:#8b5cf6;"></div>
+        </div>
+        <div class="cb-note">Alle Farben sind klar unterscheidbar</div>
+      </div>
+      <div class="cb-sim-card">
+        <div class="cb-label">Deuteranopie (~5%)</div>
+        <div class="cb-dots">
+          <div class="cb-dot" style="background:#a89040;"></div>
+          <div class="cb-dot" style="background:#c2a830;"></div>
+          <div class="cb-dot" style="background:#a8a040;"></div>
+          <div class="cb-dot" style="background:#5080c0;"></div>
+          <div class="cb-dot" style="background:#6868b0;"></div>
+        </div>
+        <div class="cb-note">Rot und Grün werden bräunlich-ähnlich</div>
+      </div>
+      <div class="cb-sim-card">
+        <div class="cb-label">Protanopie (~2.5%)</div>
+        <div class="cb-dots">
+          <div class="cb-dot" style="background:#908850;"></div>
+          <div class="cb-dot" style="background:#c0a830;"></div>
+          <div class="cb-dot" style="background:#989850;"></div>
+          <div class="cb-dot" style="background:#4878c0;"></div>
+          <div class="cb-dot" style="background:#5858a8;"></div>
+        </div>
+        <div class="cb-note">Ähnlich wie Deuteranopie, Rot wird dunkler</div>
+      </div>
+    </div>
+
+    <div class="cb-sim-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="cb-sim-card">
+        <div class="cb-label">Tritanopie (~0.01%)</div>
+        <div class="cb-dots">
+          <div class="cb-dot" style="background:#e84860;"></div>
+          <div class="cb-dot" style="background:#e88890;"></div>
+          <div class="cb-dot" style="background:#30a8a0;"></div>
+          <div class="cb-dot" style="background:#308088;"></div>
+          <div class="cb-dot" style="background:#d04848;"></div>
+        </div>
+        <div class="cb-note">Blau und Gelb werden verwechselt — selten</div>
+      </div>
+      <div class="cb-sim-card">
+        <div class="cb-label">Design-Strategie</div>
+        <div class="cb-dots">
+          <div class="cb-dot" style="background:#1a1a2e;"></div>
+          <div class="cb-dot" style="background:#555;"></div>
+          <div class="cb-dot" style="background:#999;"></div>
+          <div class="cb-dot" style="background:#ccc;"></div>
+          <div class="cb-dot" style="background:#eee;"></div>
+        </div>
+        <div class="cb-note">Kontrast (hell vs. dunkel) funktioniert immer</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Die <strong>häufigste Farbsehschwäche ist Rot-Grün</strong> (Deuteranopie + Protanopie zusammen ~7.5% der Männer). Das bedeutet: Rot und Grün als Gegensatz-Paar (z.B. für Erfolg/Fehler) <strong>funktioniert nicht zuverlässig</strong>. Ergänze immer durch Helligkeitskontrast, Icons oder Text.</p>
+      <p><strong>Praxis-Tipp:</strong> Teste deine UI in Chrome DevTools unter „Rendering" → „Emulate vision deficiencies". So siehst du sofort, ob deine Farbkodierung auch ohne volles Farbsehen funktioniert.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verlass dich nie auf Rot vs. Grün als einzigen Unterschied. Nutze zusätzlich hell vs. dunkel — Helligkeitskontrast funktioniert für alle Formen der Farbsehschwäche.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 8 — PRAXISAUFGABE
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Praxisaufgabe</div>
+    <h2 class="section-title">Accessibility-Audit einer Karte</h2>
+    <p class="body-text">Die folgende Profilkarte hat mehrere Accessibility-Probleme: mangelnder Kontrast, Farbe als einziger Informationsträger und grauen Text auf farbigem Hintergrund. Deine Aufgabe: <strong>Finde und behebe alle Probleme</strong>, ohne das grundlegende Design zu verändern.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Analysiere die Profilkarte unten und verbessere die Accessibility. Die Karte soll danach alle WCAG AA-Anforderungen erfüllen.</p>
+      <ul class="task-list">
+        <li>Prüfe alle Text-Hintergrund-Kombinationen auf mindestens 4.5:1 Kontrast (nutze den Contrast Checker oben oder Chrome DevTools)</li>
+        <li>Ersetze den grauen Sekundärtext auf dem blauen Header durch eine passende helle Blau-Variante</li>
+        <li>Ergänze die farbigen Status-Dots mit Icons oder Text, damit die Information ohne Farbe verständlich ist</li>
+        <li>Stelle sicher, dass die Badge-Texte auf ihren farbigen Hintergründen ausreichend Kontrast haben</li>
+        <li>Bonus: Teste dein Ergebnis in Chrome DevTools → „Emulate vision deficiencies" → Deuteranopia</li>
+      </ul>
+    </div>
+
+    <!-- Live Demo -->
+    <div style="background:var(--bg-surface); border:1px solid var(--bg-elevated); border-radius:var(--radius-md); padding:var(--space-md);">
+      <div style="font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:var(--space-sm);">Vorschau — Ausgangszustand</div>
+      <div style="max-width:340px; border-radius:12px; overflow:hidden; font-family:'Plus Jakarta Sans',sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Blue Header -->
+        <div style="background:#4a90d9; padding:20px; text-align:center;">
+          <div style="width:48px;height:48px;border-radius:50%;background:#fff;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#4a90d9;">ML</div>
+          <div style="font-size:16px; font-weight:700; color:#fff;">Maria Lehmann</div>
+          <div style="font-size:12px; color:#a0a0a0;">Senior Frontend Developer</div>
+        </div>
+        <!-- Body -->
+        <div style="background:#f8f8f8; padding:16px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#666;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></div> Online
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#666;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></div> 3 Tasks überfällig
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <span style="background:#e0e7ff;color:#6366f1;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;">React</span>
+            <span style="background:#fce7f3;color:#ec4899;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;">TypeScript</span>
+            <span style="background:#d1fae5;color:#10b981;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;">CSS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SEITE 9 — CODE-BLOCK
+════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Startcode</div>
+    <h2 class="section-title">Code zum Kopieren und Verbessern</h2>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 07</span>
+        <button class="copy-btn" id="copyBtn">
+          <i data-lucide="copy"></i>
+          <span class="copy-label">Code kopieren</span>
+        </button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- Modul 07 — Praxisaufgabe: Accessibility-Audit --&gt;</span>
+<span class="tok-comment">&lt;!-- Verbessere Kontrast, Farbkodierung und Lesbarkeit --&gt;</span>
+
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">.profile-card</span> {
+    <span class="tok-prop">max-width</span>: <span class="tok-num">360</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">overflow</span>: <span class="tok-val">hidden</span>;
+    <span class="tok-prop">font-family</span>: <span class="tok-val">system-ui, sans-serif</span>;
+    <span class="tok-prop">box-shadow</span>: <span class="tok-val">0 2px 8px rgba(0,0,0,0.1)</span>;
+  }
+
+  <span class="tok-sel">.profile-header</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#4a90d9</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">24</span><span class="tok-val">px</span>;
+    <span class="tok-prop">text-align</span>: <span class="tok-val">center</span>;
+  }
+
+  <span class="tok-sel">.profile-name</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">18</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">700</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#ffffff</span>;
+  }
+
+  <span class="tok-sel">.profile-role</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">13</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#a0a0a0</span>;   <span class="tok-comment">/* TODO: Grau auf Blau — schlecht! */</span>
+  }
+
+  <span class="tok-sel">.profile-body</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#f8f8f8</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.status-row</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">justify-content</span>: <span class="tok-val">space-between</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.status-item</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">align-items</span>: <span class="tok-val">center</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">6</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#666</span>;
+  }
+
+  <span class="tok-sel">.dot-online</span>  { <span class="tok-prop">background</span>: <span class="tok-val">#22c55e</span>; } <span class="tok-comment">/* TODO: Nur Farbe — nicht genug */</span>
+  <span class="tok-sel">.dot-overdue</span> { <span class="tok-prop">background</span>: <span class="tok-val">#ef4444</span>; } <span class="tok-comment">/* TODO: Nur Farbe — nicht genug */</span>
+
+  <span class="tok-sel">.dot</span> {
+    <span class="tok-prop">width</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">height</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">50</span><span class="tok-val">%</span>;
+  }
+
+  <span class="tok-sel">.tag-row</span> { <span class="tok-prop">display</span>: <span class="tok-val">flex</span>; <span class="tok-prop">gap</span>: <span class="tok-num">6</span><span class="tok-val">px</span>; }
+
+  <span class="tok-sel">.tag</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">3</span><span class="tok-val">px</span> <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">4</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">11</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+  }
+
+  <span class="tok-sel">.tag-react</span>      { <span class="tok-prop">background</span>: <span class="tok-val">#e0e7ff</span>; <span class="tok-prop">color</span>: <span class="tok-val">#6366f1</span>; }
+  <span class="tok-sel">.tag-typescript</span> { <span class="tok-prop">background</span>: <span class="tok-val">#fce7f3</span>; <span class="tok-prop">color</span>: <span class="tok-val">#ec4899</span>; }
+  <span class="tok-sel">.tag-css</span>        { <span class="tok-prop">background</span>: <span class="tok-val">#d1fae5</span>; <span class="tok-prop">color</span>: <span class="tok-val">#10b981</span>; }
+  <span class="tok-comment">/* TODO: Prüfe den Kontrast jeder Tag-Farbe */</span>
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-card"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-header"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-name"</span><span class="tok-tag">&gt;</span>Maria Lehmann<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-role"</span><span class="tok-tag">&gt;</span>Senior Frontend Developer<span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-body"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"status-row"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"status-item"</span><span class="tok-tag">&gt;</span>
+        <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"dot dot-online"</span><span class="tok-tag">&gt;&lt;/span&gt;</span> Online
+      <span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"status-item"</span><span class="tok-tag">&gt;</span>
+        <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"dot dot-overdue"</span><span class="tok-tag">&gt;&lt;/span&gt;</span> 3 Tasks überfällig
+      <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"tag-row"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"tag tag-react"</span><span class="tok-tag">&gt;</span>React<span class="tok-tag">&lt;/span&gt;</span>
+      <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"tag tag-typescript"</span><span class="tok-tag">&gt;</span>TypeScript<span class="tok-tag">&lt;/span&gt;</span>
+      <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"tag tag-css"</span><span class="tok-tag">&gt;</span>CSS<span class="tok-tag">&lt;/span&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 07 — Farbe II: Kontrast, Accessibility & WCAG</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<script>
+// ══════════════════════════════════════════
+// LUCIDE ICONS
+// ══════════════════════════════════════════
+lucide.createIcons();
+
+// ══════════════════════════════════════════
+// THEME TOGGLE
+// ══════════════════════════════════════════
+const themeBtn = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+      ? 'light' : 'dark'
+  );
+});
+
+// ══════════════════════════════════════════
+// VIEW MODE TOGGLE
+// ══════════════════════════════════════════
+const viewBtn = document.getElementById('viewToggle');
+
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf');
+    body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web');
+    body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+// ══════════════════════════════════════════
+// PAGE NUMBERS
+// ══════════════════════════════════════════
+document.querySelectorAll('.pnum').forEach((el, i) => {
+  el.textContent = i + 1;
+});
+
+// ══════════════════════════════════════════
+// INTERACTIVE CONTRAST CHECKER
+// ══════════════════════════════════════════
+const fgInput = document.getElementById('fgColor');
+const bgInput = document.getElementById('bgColor');
+const fgHexLabel = document.getElementById('fgHex');
+const bgHexLabel = document.getElementById('bgHex');
+const contrastPreview = document.getElementById('contrastPreview');
+const previewLarge = document.getElementById('previewLarge');
+const previewSmall = document.getElementById('previewSmall');
+const ratioDisplay = document.getElementById('ratioDisplay');
+const wcagBadges = document.getElementById('wcagBadges');
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  return {
+    r: parseInt(hex.substr(0, 2), 16),
+    g: parseInt(hex.substr(2, 2), 16),
+    b: parseInt(hex.substr(4, 2), 16)
+  };
+}
+
+function relativeLuminance(r, g, b) {
+  const [rs, gs, bs] = [r, g, b].map(c => {
+    c /= 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+function contrastRatio(fg, bg) {
+  const l1 = relativeLuminance(fg.r, fg.g, fg.b);
+  const l2 = relativeLuminance(bg.r, bg.g, bg.b);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function updateContrast() {
+  const fgHex = fgInput.value;
+  const bgHex = bgInput.value;
+  const fg = hexToRgb(fgHex);
+  const bg = hexToRgb(bgHex);
+
+  fgHexLabel.textContent = fgHex;
+  bgHexLabel.textContent = bgHex;
+
+  contrastPreview.style.background = bgHex;
+  previewLarge.style.color = fgHex;
+  previewSmall.style.color = fgHex;
+
+  const ratio = contrastRatio(fg, bg);
+  const ratioStr = ratio.toFixed(1);
+  ratioDisplay.textContent = ratioStr + ':1';
+
+  // Color the ratio
+  if (ratio >= 7) {
+    ratioDisplay.style.color = 'var(--success-color)';
+  } else if (ratio >= 4.5) {
+    ratioDisplay.style.color = 'var(--accent)';
+  } else if (ratio >= 3) {
+    ratioDisplay.style.color = 'var(--warning-color)';
+  } else {
+    ratioDisplay.style.color = 'var(--bad-color)';
+  }
+
+  // WCAG badges
+  const checks = [
+    { label: 'AA Normal', pass: ratio >= 4.5 },
+    { label: 'AA Large', pass: ratio >= 3 },
+    { label: 'AAA Normal', pass: ratio >= 7 },
+    { label: 'AAA Large', pass: ratio >= 4.5 },
+    { label: 'UI/Grafik', pass: ratio >= 3 },
+  ];
+
+  wcagBadges.innerHTML = checks.map(c =>
+    `<span class="wcag-badge ${c.pass ? 'pass' : 'fail'}">${c.pass ? '✓' : '✗'} ${c.label}</span>`
+  ).join('');
+}
+
+fgInput.addEventListener('input', updateContrast);
+bgInput.addEventListener('input', updateContrast);
+
+// Quick test buttons
+document.querySelectorAll('.quick-test').forEach(btn => {
+  btn.style.cssText = `
+    font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.5px; padding: 4px 8px; border-radius: 4px;
+    background: var(--bg-base); border: 1px solid var(--bg-elevated);
+    color: var(--text-secondary); cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  `;
+  btn.addEventListener('mouseenter', () => {
+    btn.style.background = 'var(--accent-dim)';
+    btn.style.color = 'var(--accent)';
+    btn.style.borderColor = 'var(--accent-border)';
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.background = 'var(--bg-base)';
+    btn.style.color = 'var(--text-secondary)';
+    btn.style.borderColor = 'var(--bg-elevated)';
+  });
+  btn.addEventListener('click', () => {
+    fgInput.value = btn.dataset.fg;
+    bgInput.value = btn.dataset.bg;
+    updateContrast();
+  });
+});
+
+updateContrast();
+
+// ══════════════════════════════════════════
+// COPY BUTTON
+// ══════════════════════════════════════════
+const rawCode = `<!-- Modul 07 — Praxisaufgabe: Accessibility-Audit -->
+<!-- Verbessere Kontrast, Farbkodierung und Lesbarkeit -->
+
+<style>
+  .profile-card {
+    max-width: 360px;
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .profile-header {
+    background: #4a90d9;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .profile-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .profile-role {
+    font-size: 13px;
+    color: #a0a0a0;   /* TODO: Grau auf Blau — schlecht! */
+  }
+
+  .profile-body {
+    background: #f8f8f8;
+    padding: 16px;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .dot-online  { background: #22c55e; } /* TODO: Nur Farbe — nicht genug */
+  .dot-overdue { background: #ef4444; } /* TODO: Nur Farbe — nicht genug */
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .tag-row { display: flex; gap: 6px; }
+
+  .tag {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-react      { background: #e0e7ff; color: #6366f1; }
+  .tag-typescript { background: #fce7f3; color: #ec4899; }
+  .tag-css        { background: #d1fae5; color: #10b981; }
+  /* TODO: Prüfe den Kontrast jeder Tag-Farbe */
+</style>
+
+<div class="profile-card">
+  <div class="profile-header">
+    <div class="profile-name">Maria Lehmann</div>
+    <div class="profile-role">Senior Frontend Developer</div>
+  </div>
+  <div class="profile-body">
+    <div class="status-row">
+      <div class="status-item">
+        <span class="dot dot-online"></span> Online
+      </div>
+      <div class="status-item">
+        <span class="dot dot-overdue"></span> 3 Tasks überfällig
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag tag-react">React</span>
+      <span class="tag tag-typescript">TypeScript</span>
+      <span class="tag tag-css">CSS</span>
+    </div>
+  </div>
+</div>`;
+
+const copyBtn   = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyLabel.textContent = 'Code kopieren';
+  }, 2500);
+});
+</script>
+</body>
+</html>

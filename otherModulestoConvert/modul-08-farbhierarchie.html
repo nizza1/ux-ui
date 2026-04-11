@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT
+══════════════════════════════════════════ */
+@page { size: A4 portrait; margin: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS
+══════════════════════════════════════════ */
+body.view-pdf { padding: 20px 0; min-height: 100vh; }
+
+body.view-pdf .page {
+  width: 210mm; height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative; display: flex; flex-direction: column;
+  overflow: hidden; break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10); border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+body.view-pdf .page-content { flex: 1; overflow: hidden; min-height: 0; }
+body.view-pdf .page-footer { margin-top: auto; flex-shrink: 0; }
+
+body.view-pdf .code-block-wrapper { display: flex; flex-direction: column; min-height: 420px; }
+body.view-pdf .code-block { flex: 1; min-height: 380px; max-height: 380px; overflow-y: auto; }
+
+/* ══════════════════════════════════════════
+   WEB-MODUS
+══════════════════════════════════════════ */
+body.view-web { padding: 0; min-height: 100vh; }
+body.view-web .web-container { max-width: 900px; margin: 0 auto; padding: 60px 40px; }
+
+body.view-web .page {
+  width: auto; height: auto; min-height: unset; overflow: visible;
+  padding: 0; margin: 0; background: transparent;
+  break-before: auto; display: block; box-shadow: none; border-radius: 0;
+}
+body.view-web .page + .page {
+  margin-top: var(--space-3xl); padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+body.view-web .page-footer { display: none !important; }
+body.view-web .code-block { max-height: 700px; overflow-y: auto; }
+
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.5px; color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.page-subtitle {
+  font-size: 15px; font-weight: 500; line-height: 1.5;
+  color: var(--text-secondary); margin: 0 0 var(--space-xl) 0; max-width: 520px;
+}
+.section-title {
+  font-size: 19px; font-weight: 700; line-height: 1.3;
+  letter-spacing: -0.2px; color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+.section-label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-sm) 0;
+}
+.body-text {
+  font-size: 13px; font-weight: 400; line-height: 1.7;
+  color: var(--text-secondary); margin: 0 0 var(--space-md) 0;
+}
+.body-text strong { font-weight: 600; color: var(--text-primary); }
+.small-text {
+  font-size: 11px; font-weight: 400; line-height: 1.6; color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta { display: flex; gap: var(--space-lg); margin-bottom: var(--space-xl); }
+.meta-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+}
+.meta-item svg { width: 14px; height: 14px; stroke-width: 2; color: var(--text-ghost); }
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.learning-goals-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-md) 0; display: flex; align-items: center; gap: var(--space-sm);
+}
+.learning-goals-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--space-sm);
+}
+.learning-goals-list li {
+  font-size: 13px; line-height: 1.5; color: var(--text-secondary);
+  padding-left: 24px; position: relative;
+}
+.learning-goals-list li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 14px; height: 14px; border-radius: 4px;
+  background: var(--accent-dim); border: 1.5px solid var(--accent-border);
+}
+.learning-goals-list li::after {
+  content: ''; position: absolute; left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent); border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider { height: 1px; background: var(--bg-elevated); margin: var(--space-lg) 0; border: none; }
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list { counter-reset: concept; display: flex; flex-direction: column; gap: var(--space-md); }
+.concept-item { display: flex; gap: var(--space-md); counter-increment: concept; }
+.concept-num {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  color: var(--accent); flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+.concept-body h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0; }
+.concept-body p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row { display: flex; gap: var(--space-md); margin-bottom: var(--space-md); }
+.insight-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.panel {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); overflow: hidden; position: relative;
+}
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color); background: var(--bad-bg); border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+.demo-area {
+  background: var(--bg-base); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: var(--space-md);
+  min-height: 80px; display: flex; flex-direction: column; justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p { font-size: 13px; line-height: 1.7; color: var(--text-secondary); margin: 0; }
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p { font-size: 13px; line-height: 1.6; color: #0a6e6a; margin: 0; font-weight: 500; }
+[data-theme="dark"] .rule-box p { color: var(--accent-text); }
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-ghost);
+  margin-bottom: 2px;
+}
+.annotation-value { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 var(--space-sm) 0; }
+.exercise-intro p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+.task-list {
+  list-style: none; padding: 0; margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 600; }
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e; padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0; display: flex;
+  align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module, .page-footer-num {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  color: var(--text-ghost); letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   MODULE-SPECIFIC: INTERACTIVE ATTENTION MAP
+══════════════════════════════════════════ */
+.attention-lab {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-lg);
+}
+.attention-lab-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin-bottom: var(--space-md); display: flex; align-items: center; gap: var(--space-sm);
+}
+
+.attention-demo-card {
+  background: var(--bg-base); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); padding: var(--space-lg);
+  transition: all 0.3s;
+}
+
+.attention-controls {
+  display: flex; gap: var(--space-sm); flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+.att-btn {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.5px; padding: 5px 10px; border-radius: 6px;
+  background: var(--bg-base); border: 1px solid var(--bg-elevated);
+  color: var(--text-secondary); cursor: pointer;
+  transition: all 0.15s;
+}
+.att-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+.att-btn.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+</style>
+</head>
+<body>
+
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln"><i data-lucide="monitor"></i></button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln"><i data-lucide="sun"></i></button>
+</div>
+
+<div class="web-container">
+
+<!-- ════════════════════════════════════════
+     SEITE 1 — TITEL
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="module-tag">Modul 08</div>
+    <h1 class="page-title">Farbhierarchie &<br>Aufmerksamkeitssteuerung</h1>
+    <p class="page-subtitle">Farbe ist nicht Dekoration — sie ist dein stärkstes Werkzeug, um den Blick des Nutzers zu lenken. Lerne, wie du mit Farbe eine klare visuelle Hierarchie schaffst.</p>
+
+    <div class="module-meta">
+      <div class="meta-item"><i data-lucide="clock"></i><span>45 Minuten</span></div>
+      <div class="meta-item"><i data-lucide="code"></i><span>Praxisaufgabe: ~15 Min.</span></div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title"><i data-lucide="target"></i>Lernziele</div>
+      <ul class="learning-goals-list">
+        <li>Verstehen, wie Farbe die Aufmerksamkeit des Nutzers lenkt — und wie du das gezielt einsetzt</li>
+        <li>Die Hierarchie-Pyramide für Aktionen anwenden: Primary → Secondary → Tertiary</li>
+        <li>Destruktive Aktionen richtig einordnen — nicht immer rot und fett</li>
+        <li>Die „Grauton-zuerst"-Strategie kennen: Farbe sparsam und gezielt einsetzen</li>
+        <li>Semantische Farbzuweisungen von dekorativen unterscheiden</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Wenn alles bunt ist, ist nichts wichtig. Farbe funktioniert als Aufmerksamkeitslenker nur, wenn sie sparsam und gezielt eingesetzt wird — auf einer neutralen Grundfläche.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 2 — THEORIE
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Theorie</div>
+    <h2 class="section-title">Farbe als Hierarchie-Werkzeug</h2>
+    <p class="body-text">In Modul 02 hast du gelernt, dass visuelle Hierarchie über Größe, Gewicht und Kontrast funktioniert. Farbe ist dabei das <strong>mächtigste — und gefährlichste</strong> Werkzeug. Ein einziger farbiger Akzent auf einer neutralen Fläche zieht sofort den Blick an. Aber wenn alles farbig ist, verliert Farbe diese Kraft.</p>
+
+    <div class="theory-card">
+      <div class="section-label">Drei Strategien für Farbhierarchie</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Grauton-zuerst denken</h4>
+            <p>Designe dein Interface zuerst komplett in Grautönen. Füge dann gezielt Farbe nur dort hinzu, wo du Aufmerksamkeit lenken willst — Primary Actions, aktive Zustände, kritische Meldungen. Was grau bleiben kann, bleibt grau.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Sättigung = Lautstärke</h4>
+            <p>Stelle dir Sättigung wie Lautstärke vor: Ein voll gesättigter Button „schreit", ein entsättigter Border „flüstert". Nur die wichtigsten Elemente sollten „schreien" — alles andere darf leiser sein. Hintergründe, Borders und Labels bleiben entsättigt.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Fläche × Sättigung = Aufmerksamkeit</h4>
+            <p>Ein kleiner, hochgesättigter Akzent (z.B. ein Badge) kann genauso viel Aufmerksamkeit erzeugen wie eine große, leicht getönte Fläche. Große Flächen + hohe Sättigung = visuelles Chaos. Halte große Flächen neutral und reserviere Sättigung für kleine, wichtige Elemente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Faustregel</div>
+      <p>Je größer die Fläche, desto geringer die Sättigung. Hintergründe: 0–10% Sättigung. Borders und Labels: 20–40%. Aktive Elemente und Badges: 60–100%.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 3 — INTERAKTIV: AUFMERKSAMKEITSDEMO
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Aufmerksamkeit live steuern</h2>
+    <p class="body-text">Klicke auf die Buttons, um zu sehen, wie verschiedene Farbstrategien die Aufmerksamkeit auf der gleichen Karte unterschiedlich lenken. Achte darauf, <strong>wohin dein Blick zuerst wandert</strong>.</p>
+
+    <div class="attention-lab">
+      <div class="attention-lab-title"><i data-lucide="eye"></i>Aufmerksamkeits-Demo</div>
+      <div class="attention-controls">
+        <button class="att-btn active" data-mode="none">Alles neutral</button>
+        <button class="att-btn" data-mode="cta">CTA hervorheben</button>
+        <button class="att-btn" data-mode="badge">Badge betonen</button>
+        <button class="att-btn" data-mode="overload">Alles bunt</button>
+      </div>
+
+      <div class="attention-demo-card" id="attCard">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <div id="attTitle" style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:2px;">Server-Monitoring</div>
+            <div id="attSub" style="font-size:11px; color:var(--text-tertiary);">Letztes Update: vor 3 Minuten</div>
+          </div>
+          <div id="attBadge" style="font-size:10px; font-weight:600; padding:4px 10px; border-radius:100px; background:var(--bg-elevated); color:var(--text-tertiary); border:1px solid var(--bg-elevated); transition:all 0.3s;">3 Alerts</div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <div id="attMetric1" style="flex:1; background:var(--bg-elevated); border-radius:8px; padding:10px; text-align:center; transition:all 0.3s;">
+            <div style="font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-ghost); margin-bottom:4px;">CPU</div>
+            <div style="font-size:18px; font-weight:800; color:var(--text-primary);">42%</div>
+          </div>
+          <div id="attMetric2" style="flex:1; background:var(--bg-elevated); border-radius:8px; padding:10px; text-align:center; transition:all 0.3s;">
+            <div style="font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-ghost); margin-bottom:4px;">RAM</div>
+            <div style="font-size:18px; font-weight:800; color:var(--text-primary);">78%</div>
+          </div>
+          <div id="attMetric3" style="flex:1; background:var(--bg-elevated); border-radius:8px; padding:10px; text-align:center; transition:all 0.3s;">
+            <div style="font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-ghost); margin-bottom:4px;">Disk</div>
+            <div style="font-size:18px; font-weight:800; color:var(--text-primary);">91%</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button id="attCTA" style="flex:1; padding:10px; border-radius:8px; font-size:12px; font-weight:700; border:none; cursor:default; background:var(--bg-elevated); color:var(--text-secondary); transition:all 0.3s;">Details anzeigen</button>
+          <button id="attSecondary" style="padding:10px 16px; border-radius:8px; font-size:12px; font-weight:600; background:transparent; border:1px solid var(--bg-elevated); color:var(--text-tertiary); cursor:default; transition:all 0.3s;">Exportieren</button>
+        </div>
+      </div>
+      <div id="attExplanation" style="margin-top:var(--space-md); font-size:11px; line-height:1.6; color:var(--text-tertiary); font-style:italic;">
+        Alle Elemente neutral — kein Aufmerksamkeitsfokus. Dein Blick wandert ungerichtet über die Karte.
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 4 — BEISPIEL: BUTTON-HIERARCHIE
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 01</div>
+    <h2 class="section-title">Die Aktions-Pyramide: Primary, Secondary, Tertiary</h2>
+    <p class="body-text">Jede Aktion auf einer Seite hat einen Rang in der Wichtigkeitspyramide. Die meisten Seiten haben <strong>eine</strong> primäre Aktion, ein paar sekundäre und mehrere tertiäre. Dein Farbeinsatz muss diese Hierarchie widerspiegeln.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Alle Buttons gleich gewichtet</div>
+            <div style="display:flex; gap:6px;">
+              <div style="background:#0ea5a0; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Speichern</div>
+              <div style="background:#0ea5a0; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Vorschau</div>
+              <div style="background:#0ea5a0; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center;">Abbrechen</div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Alles gleich → nichts ist wichtig</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Klare Hierarchie durch Farbabstufung</div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <div style="background:#0ea5a0; color:#fff; padding:8px 14px; border-radius:8px; font-size:11px; font-weight:700; flex:1; text-align:center; box-shadow:0 2px 6px rgba(14,165,160,0.3);">Speichern</div>
+              <div style="background:transparent; color:var(--text-secondary); padding:8px 14px; border-radius:8px; font-size:11px; font-weight:600; flex:1; text-align:center; border:1px solid var(--bg-elevated);">Vorschau</div>
+              <div style="background:transparent; color:var(--text-tertiary); padding:8px 14px; border-radius:8px; font-size:11px; font-weight:500; flex:1; text-align:center;">Abbrechen</div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Primary → Secondary → Tertiary</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p><strong>Primary:</strong> Gefüllter, farbiger Hintergrund mit hohem Kontrast — zieht sofort den Blick an. <strong>Secondary:</strong> Outline-Style oder reduzierter Hintergrund — sichtbar, aber nicht dominant. <strong>Tertiary:</strong> Reiner Text-Link-Style ohne Hintergrund oder Border — auffindbar, aber dezent.</p>
+      <p>Dieses Prinzip gilt nicht nur für Buttons, sondern für <strong>alle Aktions-Elemente</strong>: Navigations-Items, Links, Icons, Tab-Selektionen.</p>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Primary</div>
+        <div class="annotation-value">Solid + Farbe</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Secondary</div>
+        <div class="annotation-value">Outline / Ghost</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Tertiary</div>
+        <div class="annotation-value">Text only</div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Pro Ansicht maximal eine Primary Action. Alles andere ist Secondary oder Tertiary. Wenn alles „Primary" ist, wird der Nutzer von konkurrierenden Handlungsaufforderungen überfordert.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 5 — BEISPIEL: DESTRUKTIVE AKTIONEN
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 02</div>
+    <h2 class="section-title">Destruktive Aktionen richtig einordnen</h2>
+    <p class="body-text">„Löschen" = großer roter Button? Nicht unbedingt. Eine destruktive Aktion ist <strong>nicht automatisch die primäre Aktion</strong>. Die Hierarchie bestimmt den Style — nicht die Semantik allein.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Löschen-Button dominant auf Detailseite</div>
+            <div style="background:#fff; border-radius:8px; padding:12px; border:1px solid #e5e5e5;">
+              <div style="font-size:13px; font-weight:700; color:#333; margin-bottom:8px;">Projekteinstellungen</div>
+              <div style="display:flex; gap:6px;">
+                <div style="background:#0ea5a0; color:#fff; padding:7px 14px; border-radius:6px; font-size:11px; font-weight:600;">Speichern</div>
+                <div style="background:#dc2626; color:#fff; padding:7px 14px; border-radius:6px; font-size:11px; font-weight:600;">Projekt löschen</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Zwei primäre Buttons konkurrieren</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:4px;">Löschen als Tertiary + Confirmation</div>
+            <div style="background:#fff; border-radius:8px; padding:12px; border:1px solid #e5e5e5;">
+              <div style="font-size:13px; font-weight:700; color:#333; margin-bottom:8px;">Projekteinstellungen</div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="background:#0ea5a0; color:#fff; padding:7px 14px; border-radius:6px; font-size:11px; font-weight:600;">Speichern</div>
+                <div style="color:#dc2626; font-size:11px; font-weight:500; text-decoration:underline; cursor:default;">Projekt löschen</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">Destruktive Aktion = Tertiary-Style</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links konkurrieren zwei visuell starke Buttons um Aufmerksamkeit — der Nutzer muss erst lesen, bevor er weiß, welchen er klicken soll. Rechts ist <strong>„Speichern" klar die primäre Aktion</strong>, und „Projekt löschen" erscheint als dezenter Text-Link. Die destruktive Semantik (rote Farbe) bleibt erhalten, aber die <strong>Hierarchie bestimmt den Stil</strong>.</p>
+      <p><strong>Tipp:</strong> Reserviere den großen roten Button für die Confirmation-Stufe — den Dialog, der erscheint, nachdem der Nutzer „Löschen" geklickt hat. Dort <em>ist</em> die destruktive Aktion die primäre Aktion.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Destruktive Aktionen auf einer Detailseite: Tertiary-Style. Den großen, roten, dominanten Style reservierst du für den Bestätigungsdialog, wo die destruktive Aktion tatsächlich die primäre Aktion ist.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 6 — BEISPIEL: SEMANTISCHE FARBZUWEISUNGEN
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 03</div>
+    <h2 class="section-title">Semantische Farbzuweisungen — weniger ist mehr</h2>
+    <p class="body-text">Semantische Farben (Rot für Fehler, Gelb für Warnung, Grün für Erfolg) sind extrem nützlich — aber nur, wenn sie <strong>konsistent und sparsam</strong> eingesetzt werden. Wenn jede zweite Komponente eine semantische Farbe trägt, verliert sie ihre Signalwirkung.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:6px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:2px;">Farbe überall = kein Signal</div>
+            <div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">✓ Profil gespeichert</div>
+            <div style="background:#dbeafe; color:#1e40af; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">ℹ 3 neue Nachrichten</div>
+            <div style="background:#fef3c7; color:#92400e; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">⚡ Speicher bei 75%</div>
+            <div style="background:#fce7f3; color:#9d174d; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">♥ 2 neue Follower</div>
+            <div style="background:#fee2e2; color:#991b1b; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">⚠ Session läuft ab</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap:6px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-bottom:2px;">Semantische Farbe nur wo nötig</div>
+            <div style="background:var(--bg-elevated); color:var(--text-secondary); padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">✓ Profil gespeichert</div>
+            <div style="background:var(--bg-elevated); color:var(--text-secondary); padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">ℹ 3 neue Nachrichten</div>
+            <div style="background:#fef3c7; color:#92400e; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500; border:1px solid rgba(217,119,6,0.2);">⚡ Speicher bei 75%</div>
+            <div style="background:var(--bg-elevated); color:var(--text-secondary); padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500;">♥ 2 neue Follower</div>
+            <div style="background:#fee2e2; color:#991b1b; padding:6px 10px; border-radius:6px; font-size:10px; font-weight:500; border:1px solid rgba(217,79,79,0.2);">⚠ Session läuft ab</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links trägt jede Notification eine eigene Farbe — der Nutzer muss alle fünf lesen, um die wichtigen zu finden. Rechts sind nur die <strong>tatsächlich handlungsrelevanten</strong> Meldungen (Warnung und Fehler) farblich hervorgehoben. Alltägliche Infos (Profil gespeichert, neue Nachrichten) bleiben neutral. So fällt sofort auf, was Aufmerksamkeit braucht.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Reserviere semantische Farben für Zustände, die eine Reaktion des Nutzers erfordern. Informations- und Erfolgsmeldungen können oft neutral bleiben — der Text allein reicht aus.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 7 — BEISPIEL: SIDEBAR DE-EMPHASIS
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 04</div>
+    <h2 class="section-title">Hervorheben durch Zurücknehmen</h2>
+    <p class="body-text">Manchmal kannst du ein Element nicht auffälliger machen — es hat bereits die maximale Betonung. In solchen Fällen funktioniert der umgekehrte Ansatz: <strong>Nimm die umgebenden Elemente zurück</strong>, damit das Wichtige automatisch hervorsticht.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding:0; overflow:hidden; min-height:140px;">
+            <div style="display:flex; height:140px;">
+              <div style="width:35%; background:#1e293b; padding:10px;">
+                <div style="font-size:9px; font-weight:600; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Navigation</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:#cbd5e1; margin-bottom:2px;">Dashboard</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:#0ea5a0; background:rgba(14,165,160,0.15); margin-bottom:2px;">Projekte</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:#cbd5e1; margin-bottom:2px;">Team</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:#cbd5e1;">Settings</div>
+              </div>
+              <div style="flex:1; background:#f8fafc; padding:10px;">
+                <div style="font-size:13px; font-weight:700; color:#1e293b; margin-bottom:6px;">Projekte</div>
+                <div style="font-size:10px; color:#64748b; line-height:1.5;">Inhalt konkurriert mit der dunklen Sidebar um Aufmerksamkeit.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding:0; overflow:hidden; min-height:140px;">
+            <div style="display:flex; height:140px;">
+              <div style="width:35%; background:transparent; padding:10px; border-right:1px solid var(--bg-elevated);">
+                <div style="font-size:9px; font-weight:600; color:var(--text-ghost); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Navigation</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:var(--text-tertiary); margin-bottom:2px;">Dashboard</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:#0ea5a0; font-weight:600; margin-bottom:2px;">Projekte</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:var(--text-tertiary); margin-bottom:2px;">Team</div>
+                <div style="padding:5px 8px; border-radius:4px; font-size:10px; color:var(--text-tertiary);">Settings</div>
+              </div>
+              <div style="flex:1; padding:10px;">
+                <div style="font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:6px;">Projekte</div>
+                <div style="font-size:10px; color:var(--text-secondary); line-height:1.5;">Der Hauptinhalt bekommt jetzt die volle Aufmerksamkeit.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Eine dunkle Sidebar zieht <strong>unverhältnismäßig viel Aufmerksamkeit</strong> auf sich — obwohl die Navigation sekundär zum Hauptinhalt ist. Lösung: Entferne die Hintergrundfarbe der Sidebar und lass sie direkt auf dem Seitenhintergrund sitzen. Die Navigation bleibt nutzbar, konkurriert aber nicht mehr mit dem Inhalt.</p>
+      <p>Gleiches Prinzip gilt für <strong>aktive Navigation-Items</strong>: Statt das aktive Item lauter zu machen, mach die inaktiven Items leiser (hellere Farbe, geringeres Font Weight).</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Wenn ein Element bereits maximal betont ist, nimm die Umgebung zurück. De-emphasis der Nachbarelemente wirkt oft stärker als weitere Betonung des Ziels.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 8 — PRAXISAUFGABE
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Praxisaufgabe</div>
+    <h2 class="section-title">Farbhierarchie in einer Settings-Seite</h2>
+    <p class="body-text">Die folgende Settings-Seite behandelt alle Elemente gleich — alles ist bunt, nichts hat Vorrang. Deine Aufgabe: <strong>Schaffe eine klare Farbhierarchie</strong>, bei der der Nutzer sofort weiß, was die primäre Aktion ist.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Überarbeite die Farbgebung der Settings-Seite. Der Code verwendet bewusst zu viel Farbe — bringe ihn in eine klare Hierarchie.</p>
+      <ul class="task-list">
+        <li>Identifiziere die eine primäre Aktion und gib ihr den Primary-Style (gefüllt, Akzentfarbe)</li>
+        <li>Reduziere alle anderen Buttons auf Secondary (Outline) oder Tertiary (Text-Only)</li>
+        <li>Ordne den „Konto löschen"-Button als Tertiary ein — nicht als großen roten Button</li>
+        <li>Nimm überflüssige Farbe aus Badges und Status-Elementen, die keine Reaktion erfordern</li>
+        <li>Bonus: Setze die Sidebar-Navigation farblich zurück, damit der Hauptinhalt dominiert</li>
+      </ul>
+    </div>
+
+    <div style="background:var(--bg-surface); border:1px solid var(--bg-elevated); border-radius:var(--radius-md); padding:var(--space-md);">
+      <div style="font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:var(--space-sm);">Vorschau — Ausgangszustand</div>
+      <div style="display:flex; gap:0; border-radius:10px; overflow:hidden; font-family:'Plus Jakarta Sans',sans-serif; border:1px solid #e5e7eb; max-width:480px;">
+        <div style="width:130px; background:#1e293b; padding:12px; flex-shrink:0;">
+          <div style="font-size:8px; font-weight:600; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Menu</div>
+          <div style="padding:4px 8px; border-radius:4px; font-size:10px; color:#0ea5a0; background:rgba(14,165,160,0.15); margin-bottom:2px; font-weight:600;">Profil</div>
+          <div style="padding:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:2px;">Sicherheit</div>
+          <div style="padding:4px 8px; font-size:10px; color:#94a3b8; margin-bottom:2px;">Benachrichtigungen</div>
+          <div style="padding:4px 8px; font-size:10px; color:#94a3b8;">Abrechnung</div>
+        </div>
+        <div style="flex:1; background:#f8fafc; padding:14px;">
+          <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:4px;">Profil-Einstellungen</div>
+          <div style="display:flex; gap:4px; margin-bottom:10px;">
+            <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:3px; font-size:9px; font-weight:600;">Verifiziert</span>
+            <span style="background:#dbeafe; color:#1e40af; padding:2px 6px; border-radius:3px; font-size:9px; font-weight:600;">Pro Plan</span>
+          </div>
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
+            <div style="background:#0ea5a0; color:#fff; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:600;">Speichern</div>
+            <div style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:600;">Bild ändern</div>
+            <div style="background:#8b5cf6; color:#fff; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:600;">Passwort</div>
+          </div>
+          <div style="background:#dc2626; color:#fff; padding:6px 12px; border-radius:6px; font-size:10px; font-weight:600; display:inline-block;">Konto löschen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SEITE 9 — CODE-BLOCK
+════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Startcode</div>
+    <h2 class="section-title">Code zum Kopieren und Verbessern</h2>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 08</span>
+        <button class="copy-btn" id="copyBtn"><i data-lucide="copy"></i><span class="copy-label">Code kopieren</span></button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- Modul 08 — Praxisaufgabe: Farbhierarchie --&gt;</span>
+<span class="tok-comment">&lt;!-- Schaffe eine klare Hierarchie: Primary / Secondary / Tertiary --&gt;</span>
+
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">.settings-page</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">max-width</span>: <span class="tok-num">600</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">overflow</span>: <span class="tok-val">hidden</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1</span><span class="tok-val">px</span> <span class="tok-val">solid</span> <span class="tok-val">#e5e7eb</span>;
+    <span class="tok-prop">font-family</span>: <span class="tok-val">system-ui, sans-serif</span>;
+  }
+
+  <span class="tok-sel">.settings-sidebar</span> {
+    <span class="tok-prop">width</span>: <span class="tok-num">160</span><span class="tok-val">px</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#1e293b</span>;     <span class="tok-comment">/* TODO: Zu dominant */</span>
+    <span class="tok-prop">padding</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.nav-item</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">6</span><span class="tok-val">px</span> <span class="tok-num">10</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">13</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#94a3b8</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">6</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">4</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.nav-item.active</span> {
+    <span class="tok-prop">color</span>: <span class="tok-val">#0ea5a0</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">rgba(14,165,160,0.15)</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+  }
+
+  <span class="tok-sel">.settings-main</span> {
+    <span class="tok-prop">flex</span>: <span class="tok-num">1</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#f8fafc</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">20</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.badge-verified</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#dcfce7</span>;   <span class="tok-comment">/* TODO: Braucht das Farbe? */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#166534</span>;
+  }
+  <span class="tok-sel">.badge-plan</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#dbeafe</span>;   <span class="tok-comment">/* TODO: Braucht das Farbe? */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#1e40af</span>;
+  }
+
+  <span class="tok-sel">.btn-save</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#0ea5a0</span>;   <span class="tok-comment">/* Primary — bleibt */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#fff</span>;
+  }
+  <span class="tok-sel">.btn-photo</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#3b82f6</span>;   <span class="tok-comment">/* TODO: Secondary machen */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#fff</span>;
+  }
+  <span class="tok-sel">.btn-password</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#8b5cf6</span>;   <span class="tok-comment">/* TODO: Secondary/Tertiary */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#fff</span>;
+  }
+  <span class="tok-sel">.btn-delete</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#dc2626</span>;   <span class="tok-comment">/* TODO: Tertiary-Style */</span>
+    <span class="tok-prop">color</span>: <span class="tok-val">#fff</span>;
+  }
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings-page"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings-sidebar"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item active"</span><span class="tok-tag">&gt;</span>Profil<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Sicherheit<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Benachrichtigungen<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Abrechnung<span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings-main"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;h2&gt;</span>Profil-Einstellungen<span class="tok-tag">&lt;/h2&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"badges"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"badge-verified"</span><span class="tok-tag">&gt;</span>Verifiziert<span class="tok-tag">&lt;/span&gt;</span>
+      <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"badge-plan"</span><span class="tok-tag">&gt;</span>Pro Plan<span class="tok-tag">&lt;/span&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"actions"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-save"</span><span class="tok-tag">&gt;</span>Speichern<span class="tok-tag">&lt;/button&gt;</span>
+      <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-photo"</span><span class="tok-tag">&gt;</span>Bild ändern<span class="tok-tag">&lt;/button&gt;</span>
+      <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-password"</span><span class="tok-tag">&gt;</span>Passwort<span class="tok-tag">&lt;/button&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-delete"</span><span class="tok-tag">&gt;</span>Konto löschen<span class="tok-tag">&lt;/button&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 08 — Farbhierarchie & Aufmerksamkeitssteuerung</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<script>
+lucide.createIcons();
+
+// ── Theme Toggle ──
+const themeBtn = document.getElementById('themeToggle');
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+// ── View Mode Toggle ──
+const viewBtn = document.getElementById('viewToggle');
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf'); body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web'); body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+// ── Page Numbers ──
+document.querySelectorAll('.pnum').forEach((el, i) => { el.textContent = i + 1; });
+
+// ══════════════════════════════════════════
+// INTERACTIVE ATTENTION DEMO
+// ══════════════════════════════════════════
+const attBtns = document.querySelectorAll('.att-btn');
+const attBadge = document.getElementById('attBadge');
+const attCTA = document.getElementById('attCTA');
+const attSecondary = document.getElementById('attSecondary');
+const attMetric1 = document.getElementById('attMetric1');
+const attMetric2 = document.getElementById('attMetric2');
+const attMetric3 = document.getElementById('attMetric3');
+const attExplanation = document.getElementById('attExplanation');
+
+const modes = {
+  none: {
+    badge: { bg: 'var(--bg-elevated)', color: 'var(--text-tertiary)', border: 'var(--bg-elevated)' },
+    cta: { bg: 'var(--bg-elevated)', color: 'var(--text-secondary)', shadow: 'none' },
+    secondary: { bg: 'transparent', border: '1px solid var(--bg-elevated)', color: 'var(--text-tertiary)' },
+    m1: { bg: 'var(--bg-elevated)' }, m2: { bg: 'var(--bg-elevated)' }, m3: { bg: 'var(--bg-elevated)' },
+    text: 'Alle Elemente neutral — kein Aufmerksamkeitsfokus. Dein Blick wandert ungerichtet über die Karte.'
+  },
+  cta: {
+    badge: { bg: 'var(--bg-elevated)', color: 'var(--text-tertiary)', border: 'var(--bg-elevated)' },
+    cta: { bg: '#0ea5a0', color: '#fff', shadow: '0 2px 8px rgba(14,165,160,0.35)' },
+    secondary: { bg: 'transparent', border: '1px solid var(--bg-elevated)', color: 'var(--text-tertiary)' },
+    m1: { bg: 'var(--bg-elevated)' }, m2: { bg: 'var(--bg-elevated)' }, m3: { bg: 'var(--bg-elevated)' },
+    text: 'Nur der CTA-Button hat Farbe → dein Blick wird sofort dorthin gezogen. Das ist gezielte Aufmerksamkeitssteuerung.'
+  },
+  badge: {
+    badge: { bg: 'rgba(217,79,79,0.08)', color: '#d94f4f', border: 'rgba(217,79,79,0.22)' },
+    cta: { bg: 'var(--bg-elevated)', color: 'var(--text-secondary)', shadow: 'none' },
+    secondary: { bg: 'transparent', border: '1px solid var(--bg-elevated)', color: 'var(--text-tertiary)' },
+    m1: { bg: 'var(--bg-elevated)' }, m2: { bg: 'var(--bg-elevated)' }, m3: { bg: 'rgba(217,79,79,0.06)' },
+    text: 'Das Alert-Badge und die kritische Metrik ziehen den Blick an. Farbe signalisiert: hier muss reagiert werden.'
+  },
+  overload: {
+    badge: { bg: 'rgba(217,79,79,0.08)', color: '#d94f4f', border: 'rgba(217,79,79,0.22)' },
+    cta: { bg: '#0ea5a0', color: '#fff', shadow: '0 2px 8px rgba(14,165,160,0.35)' },
+    secondary: { bg: '#3b82f6', border: '1px solid #3b82f6', color: '#fff' },
+    m1: { bg: 'rgba(14,165,160,0.08)' }, m2: { bg: 'rgba(251,191,36,0.08)' }, m3: { bg: 'rgba(217,79,79,0.06)' },
+    text: 'Alles bunt → nichts sticht hervor. Der Nutzer ist überfordert und weiß nicht, wo er zuerst hinsehen soll.'
+  }
+};
+
+function applyAttMode(mode) {
+  const m = modes[mode];
+  attBadge.style.background = m.badge.bg;
+  attBadge.style.color = m.badge.color;
+  attBadge.style.borderColor = m.badge.border;
+  attCTA.style.background = m.cta.bg;
+  attCTA.style.color = m.cta.color;
+  attCTA.style.boxShadow = m.cta.shadow || 'none';
+  attSecondary.style.background = m.secondary.bg;
+  attSecondary.style.border = m.secondary.border;
+  attSecondary.style.color = m.secondary.color;
+  attMetric1.style.background = m.m1.bg;
+  attMetric2.style.background = m.m2.bg;
+  attMetric3.style.background = m.m3.bg;
+  attExplanation.textContent = m.text;
+}
+
+attBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    attBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyAttMode(btn.dataset.mode);
+  });
+});
+
+// ══════════════════════════════════════════
+// COPY BUTTON
+// ══════════════════════════════════════════
+const rawCode = `<!-- Modul 08 — Praxisaufgabe: Farbhierarchie -->
+<!-- Schaffe eine klare Hierarchie: Primary / Secondary / Tertiary -->
+
+<style>
+  .settings-page {
+    display: flex;
+    max-width: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    font-family: system-ui, sans-serif;
+  }
+
+  .settings-sidebar {
+    width: 160px;
+    background: #1e293b;     /* TODO: Zu dominant */
+    padding: 16px;
+  }
+
+  .nav-item {
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #94a3b8;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+
+  .nav-item.active {
+    color: #0ea5a0;
+    background: rgba(14,165,160,0.15);
+    font-weight: 600;
+  }
+
+  .settings-main {
+    flex: 1;
+    background: #f8fafc;
+    padding: 20px;
+  }
+
+  .badge-verified {
+    background: #dcfce7;   /* TODO: Braucht das Farbe? */
+    color: #166534;
+  }
+  .badge-plan {
+    background: #dbeafe;   /* TODO: Braucht das Farbe? */
+    color: #1e40af;
+  }
+
+  .btn-save {
+    background: #0ea5a0;   /* Primary — bleibt */
+    color: #fff;
+  }
+  .btn-photo {
+    background: #3b82f6;   /* TODO: Secondary machen */
+    color: #fff;
+  }
+  .btn-password {
+    background: #8b5cf6;   /* TODO: Secondary/Tertiary */
+    color: #fff;
+  }
+  .btn-delete {
+    background: #dc2626;   /* TODO: Tertiary-Style */
+    color: #fff;
+  }
+</style>
+
+<div class="settings-page">
+  <div class="settings-sidebar">
+    <div class="nav-item active">Profil</div>
+    <div class="nav-item">Sicherheit</div>
+    <div class="nav-item">Benachrichtigungen</div>
+    <div class="nav-item">Abrechnung</div>
+  </div>
+  <div class="settings-main">
+    <h2>Profil-Einstellungen</h2>
+    <div class="badges">
+      <span class="badge-verified">Verifiziert</span>
+      <span class="badge-plan">Pro Plan</span>
+    </div>
+    <div class="actions">
+      <button class="btn-save">Speichern</button>
+      <button class="btn-photo">Bild ändern</button>
+      <button class="btn-password">Passwort</button>
+    </div>
+    <button class="btn-delete">Konto löschen</button>
+  </div>
+</div>`;
+
+const copyBtn = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => { copyBtn.classList.remove('copied'); copyLabel.textContent = 'Code kopieren'; }, 2500);
+});
+</script>
+</body>
+</html>

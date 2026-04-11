@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul 14 — Gestaltprinzipien in der Praxis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — LIGHT THEME (Default/PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT SETTINGS
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* Web-Modus Schriftgrößen-Overrides */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 520px;
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.body-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md) 0;
+}
+.body-text strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.small-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-ghost);
+}
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.learning-goals-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 24px;
+  position: relative;
+}
+
+.learning-goals-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-border);
+}
+
+.learning-goals-list li::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--bg-elevated);
+  margin: var(--space-lg) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list {
+  counter-reset: concept;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.concept-item {
+  display: flex;
+  gap: var(--space-md);
+  counter-increment: concept;
+}
+
+.concept-num {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+
+.concept-body h4 {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.insight-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS (Vorher / Nachher)
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color);     background: var(--bad-bg);     border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p {
+  font-size: 13px; line-height: 1.6;
+  margin: 0; font-weight: 500;
+  color: #0a6e6a;
+}
+[data-theme="dark"] .rule-box p {
+  color: var(--accent-text);
+}
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+/* Syntax-Highlighting */
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   DEMO-SPECIFIC STYLES
+══════════════════════════════════════════ */
+
+/* --- Proximity Demo --- */
+.demo-form-stack { display: flex; flex-direction: column; }
+.demo-form-stack .field-group { display: flex; flex-direction: column; }
+.demo-form-stack label {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  color: var(--text-primary);
+}
+.demo-form-stack input {
+  font-family: var(--font-body); font-size: 11px;
+  padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--bg-elevated);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  outline: none;
+}
+.demo-form-stack input:focus { border-color: var(--accent); }
+
+/* --- Similarity Demo --- */
+.demo-tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.demo-tag {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.demo-tag.status { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.demo-tag.category { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated); }
+.demo-tag.priority { background: var(--warning-bg); color: var(--warning-color); border: 1px solid var(--warning-border); }
+
+/* --- Closure Demo --- */
+.demo-progress-wrap { display: flex; flex-direction: column; gap: 6px; }
+.demo-progress-label { font-size: 11px; font-weight: 600; color: var(--text-primary); }
+.demo-progress-sublabel { font-size: 10px; color: var(--text-tertiary); }
+.demo-progress-bar {
+  width: 100%; height: 8px; border-radius: 100px;
+  background: var(--bg-elevated); overflow: hidden;
+}
+.demo-progress-fill {
+  height: 100%; border-radius: 100px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+/* --- Continuity Demo (Stepper) --- */
+.demo-stepper { display: flex; align-items: center; gap: 0; }
+.demo-step {
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.demo-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  flex-shrink: 0;
+}
+.demo-step-num.active { background: var(--accent); color: #fff; }
+.demo-step-num.inactive { background: var(--bg-elevated); color: var(--text-tertiary); }
+.demo-step-label { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
+.demo-step-line {
+  flex: 1; height: 2px; min-width: 20px;
+  margin: 0 8px;
+}
+.demo-step-line.active { background: var(--accent); }
+.demo-step-line.inactive { background: var(--bg-elevated); }
+
+/* --- Figure-Ground Demo (Modal) --- */
+.demo-modal-scene { position: relative; min-height: 120px; border-radius: 6px; overflow: hidden; }
+.demo-modal-bg {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px;
+}
+.demo-modal-bg-line {
+  height: 8px; border-radius: 4px; background: var(--bg-elevated); opacity: 0.5;
+}
+.demo-modal-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center;
+}
+.demo-modal-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  min-width: 140px;
+}
+.demo-modal-card h5 {
+  font-size: 12px; font-weight: 700; color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+.demo-modal-card p {
+  font-size: 10px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;
+}
+.demo-modal-btn {
+  font-family: var(--font-body); font-size: 10px; font-weight: 600;
+  padding: 5px 14px; border-radius: 6px; border: none; cursor: pointer;
+  color: #fff; background: var(--accent);
+}
+
+/* --- Common Region Demo --- */
+.demo-card-group { display: flex; gap: 10px; }
+.demo-stat-card {
+  flex: 1; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  text-align: center;
+}
+.demo-stat-card .stat-value {
+  font-family: var(--font-mono); font-size: 18px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 2px;
+}
+.demo-stat-card .stat-label {
+  font-size: 9px; font-weight: 500; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* --- Flat stat items (no cards, for "Vorher") --- */
+.demo-stat-flat { display: flex; gap: 20px; justify-content: center; }
+.demo-stat-flat-item { text-align: center; }
+.demo-stat-flat-item .stat-value {
+  font-family: var(--font-mono); font-size: 18px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: 2px;
+}
+.demo-stat-flat-item .stat-label {
+  font-size: 9px; font-weight: 500; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* --- Nav Demo (Continuity + Figure-Ground combined for exercise) --- */
+.demo-nav-bar {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: 4px;
+}
+.demo-nav-item {
+  font-size: 10px; font-weight: 600; padding: 5px 12px;
+  border-radius: 6px; color: var(--text-secondary);
+}
+.demo-nav-item.active {
+  background: var(--accent); color: #fff;
+}
+
+/* --- Exercise broken UI --- */
+.exercise-broken-ui {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Toggle Buttons -->
+  <div class="toggle-group">
+    <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+      <i data-lucide="monitor"></i>
+    </button>
+    <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+      <i data-lucide="sun"></i>
+    </button>
+  </div>
+
+  <!-- Web Container -->
+  <div class="web-container">
+
+    <!-- ════════════════════════════════════════
+         SEITE 1 — TITELSEITE
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="module-tag">Modul 14</div>
+        <h1 class="page-title">Gestaltprinzipien<br>in der Praxis</h1>
+        <p class="page-subtitle">Warum unser Gehirn Ordnung sucht — und wie du sechs psychologische Grundprinzipien gezielt einsetzt, um Interfaces intuitiver und verständlicher zu gestalten.</p>
+
+        <div class="module-meta">
+          <div class="meta-item">
+            <i data-lucide="clock"></i>
+            <span>45 Minuten</span>
+          </div>
+          <div class="meta-item">
+            <i data-lucide="code"></i>
+            <span>Praxisaufgabe: ~15 Min.</span>
+          </div>
+        </div>
+
+        <div class="learning-goals">
+          <div class="learning-goals-title">
+            <i data-lucide="target"></i>
+            Lernziele
+          </div>
+          <ul class="learning-goals-list">
+            <li>Die sechs zentralen Gestaltprinzipien benennen und erklären können</li>
+            <li>Proximity (Nähe) bewusst einsetzen, um Zusammengehörigkeit visuell zu kommunizieren</li>
+            <li>Similarity (Ähnlichkeit) nutzen, um Kategorien und Gruppen erkennbar zu machen</li>
+            <li>Closure, Continuity, Figure-Ground und Common Region in UI-Elementen identifizieren</li>
+            <li>Gestaltprinzipien gezielt kombinieren, um Interfaces ohne zusätzliche Erklärungen verständlich zu machen</li>
+          </ul>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Kerngedanke</div>
+          <p>Gutes UI-Design erklärt sich selbst — nicht durch Labels oder Hilfetext, sondern durch visuelle Struktur. Die Gestaltprinzipien beschreiben, wie unser Gehirn visuell Ordnung herstellt. Wer sie kennt, kann Interfaces bauen, die intuitiv funktionieren.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 2 — THEORIE
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Theorie</div>
+        <h2 class="section-title">Was sind Gestaltprinzipien?</h2>
+        <p class="body-text">Die Gestaltpsychologie wurde Anfang des 20. Jahrhunderts in Deutschland entwickelt. Ihr zentraler Gedanke: <strong>Unser Gehirn nimmt nicht einzelne Elemente wahr, sondern organisiert sie automatisch zu sinnvollen Gruppen und Mustern.</strong> Das passiert unbewusst und sofort — lange bevor wir bewusst über eine Oberfläche nachdenken.</p>
+        <p class="body-text">Für UI-Design bedeutet das: Wenn du die Regeln kennst, nach denen das Gehirn Ordnung sucht, kannst du Interfaces so gestalten, dass Nutzer sie <strong>ohne Erklärung verstehen</strong>. Wenn du die Regeln ignorierst, erzeugst du Verwirrung — selbst wenn die Informationen technisch korrekt dargestellt sind.</p>
+
+        <div class="theory-card">
+          <div class="section-label">Die sechs Prinzipien</div>
+          <div class="concept-list">
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Proximity (Nähe)</h4>
+                <p>Elemente, die räumlich nahe beieinander stehen, werden als zusammengehörig wahrgenommen. Das ist das wichtigste Prinzip für Layout und Spacing — und das am häufigsten verletzte.</p>
+              </div>
+            </div>
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Similarity (Ähnlichkeit)</h4>
+                <p>Elemente, die sich visuell ähneln (Farbe, Form, Größe, Typografie), werden als zusammengehörig wahrgenommen. So erkennt man Kategorien, Gruppen und Rollen im UI auf einen Blick.</p>
+              </div>
+            </div>
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Closure (Geschlossenheit)</h4>
+                <p>Das Gehirn vervollständigt unvollständige Formen automatisch. Deshalb funktionieren Progress Bars, abgeschnittene Karussells und teilweise sichtbare Listen — das Gehirn ergänzt den Rest.</p>
+              </div>
+            </div>
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Continuity (Fortsetzung)</h4>
+                <p>Das Auge folgt bevorzugt Linien und Kurven. Elemente auf einer gemeinsamen Achse oder Linie wirken zusammengehörig — selbst ohne sichtbare Verbindung. Grundlage für Stepper, Timelines und Layouts.</p>
+              </div>
+            </div>
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Figure-Ground (Figur-Grund)</h4>
+                <p>Wir trennen automatisch Vordergrund von Hintergrund. Modals, Overlays und Dropdowns nutzen dieses Prinzip — der abgedunkelte Hintergrund macht die Trennung sofort klar.</p>
+              </div>
+            </div>
+            <div class="concept-item">
+              <div class="concept-num"></div>
+              <div class="concept-body">
+                <h4>Common Region (Gemeinsame Region)</h4>
+                <p>Elemente innerhalb einer gemeinsamen Begrenzung (Rahmen, Hintergrund, Card) werden als Gruppe wahrgenommen. Cards, Fieldsets und gruppierte Toolbar-Buttons basieren auf diesem Prinzip.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 3 — BEISPIEL 1: PROXIMITY
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Beispiel 01 — Proximity</div>
+        <h2 class="section-title">Formulare: Spacing erzeugt Zugehörigkeit</h2>
+        <p class="body-text">Formularfelder und ihre Labels werden durch <strong>räumliche Nähe</strong> gruppiert. Wenn der Abstand zwischen Label und Input genauso groß ist wie zwischen den Feld-Gruppen, entsteht Ambiguität — der Nutzer weiß nicht sofort, welches Label zu welchem Feld gehört.</p>
+
+        <div class="comparison-grid">
+          <div class="panel bad">
+            <div class="panel-topline"></div>
+            <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-form-stack" style="gap: 12px;">
+                  <div class="field-group" style="gap: 12px;">
+                    <label>Vorname</label>
+                    <input type="text" value="Max" style="width:100%;">
+                  </div>
+                  <div class="field-group" style="gap: 12px;">
+                    <label>Nachname</label>
+                    <input type="text" value="Mustermann" style="width:100%;">
+                  </div>
+                  <div class="field-group" style="gap: 12px;">
+                    <label>E-Mail</label>
+                    <input type="text" value="max@example.com" style="width:100%;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel good">
+            <div class="panel-topline"></div>
+            <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-form-stack" style="gap: 20px;">
+                  <div class="field-group" style="gap: 4px;">
+                    <label>Vorname</label>
+                    <input type="text" value="Max" style="width:100%;">
+                  </div>
+                  <div class="field-group" style="gap: 4px;">
+                    <label>Nachname</label>
+                    <input type="text" value="Mustermann" style="width:100%;">
+                  </div>
+                  <div class="field-group" style="gap: 4px;">
+                    <label>E-Mail</label>
+                    <input type="text" value="max@example.com" style="width:100%;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotation-grid">
+          <div class="annotation-item">
+            <div class="annotation-label">Label → Input</div>
+            <div class="annotation-value">12px → 4px</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Gruppe → Gruppe</div>
+            <div class="annotation-value">12px → 20px</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Prinzip</div>
+            <div class="annotation-value">Proximity</div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <div class="explanation-title">Analyse</div>
+          <p>Im Vorher-Beispiel sind alle Abstände gleich — das Label „Nachname" schwebt genau in der Mitte zwischen dem Input von „Vorname" und seinem eigenen Input. Das Gehirn kann die Zugehörigkeit nicht sofort erkennen.</p>
+          <p>Im Nachher-Beispiel ist der <strong>Abstand innerhalb einer Gruppe (4px)</strong> viel kleiner als der <strong>Abstand zwischen Gruppen (20px)</strong>. Dadurch wird die Zugehörigkeit sofort klar — ohne Hilfslinien, Rahmen oder Icons.</p>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Regel</div>
+          <p>Der Abstand innerhalb einer zusammengehörigen Gruppe muss deutlich kleiner sein als der Abstand zwischen den Gruppen. Als Faustregel: Mindestens das 2–3-fache Verhältnis.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 4 — BEISPIEL 2: SIMILARITY
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Beispiel 02 — Similarity</div>
+        <h2 class="section-title">Tags: Visuelle Kodierung erzeugt Kategorien</h2>
+        <p class="body-text">Wenn mehrere Tags nebeneinander stehen, erkennt das Gehirn automatisch Gruppen — vorausgesetzt, sie sind <strong>visuell unterschiedlich kodiert</strong>. Gleich aussehende Tags werden als gleichartig wahrgenommen, selbst wenn sie unterschiedliche Bedeutungen haben.</p>
+
+        <div class="comparison-grid">
+          <div class="panel bad">
+            <div class="panel-topline"></div>
+            <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-tag-list">
+                  <span class="demo-tag" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Aktiv</span>
+                  <span class="demo-tag" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Design</span>
+                  <span class="demo-tag" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Dringend</span>
+                  <span class="demo-tag" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Frontend</span>
+                  <span class="demo-tag" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel good">
+            <div class="panel-topline"></div>
+            <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-tag-list">
+                  <span class="demo-tag status">Aktiv</span>
+                  <span class="demo-tag category">Design</span>
+                  <span class="demo-tag priority">Dringend</span>
+                  <span class="demo-tag category">Frontend</span>
+                  <span class="demo-tag status">Review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotation-grid">
+          <div class="annotation-item">
+            <div class="annotation-label">Status-Tags</div>
+            <div class="annotation-value">Teal / Accent</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Kategorie-Tags</div>
+            <div class="annotation-value">Neutral / Grey</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Priorität-Tags</div>
+            <div class="annotation-value">Warning / Orange</div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <div class="explanation-title">Analyse</div>
+          <p>Im Vorher-Beispiel sehen alle Tags identisch aus. Es gibt keine Möglichkeit, auf einen Blick zu erkennen, welche Tags einen Status beschreiben, welche eine Kategorie, und welche eine Priorität markieren.</p>
+          <p>Im Nachher-Beispiel signalisiert die <strong>Farbkodierung</strong> sofort drei verschiedene Typen. Das Gehirn gruppiert „Aktiv" und „Review" automatisch zusammen (gleiche Farbe = gleiche Rolle), ohne dass ein zusätzliches Label nötig ist.</p>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Regel</div>
+          <p>Nutze visuelle Ähnlichkeit (Farbe, Form, Größe) bewusst, um Kategorien zu kommunizieren. Gleichartige Elemente müssen gleich aussehen — und verschiedenartige müssen sich sichtbar unterscheiden.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 5 — BEISPIEL 3: CLOSURE + CONTINUITY
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Beispiel 03 — Closure &amp; Continuity</div>
+        <h2 class="section-title">Stepper &amp; Progress: Das Gehirn ergänzt den Rest</h2>
+        <p class="body-text">Progress Bars und Stepper funktionieren, weil unser Gehirn <strong>unvollständige Formen vervollständigt</strong> (Closure) und <strong>visuellen Linien folgt</strong> (Continuity). Eine teilweise gefüllte Leiste wird sofort als „zu X% abgeschlossen" gelesen — das Gehirn ergänzt automatisch den fehlenden Teil.</p>
+
+        <div class="comparison-grid">
+          <div class="panel bad">
+            <div class="panel-topline"></div>
+            <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <div style="font-size:11px; color:var(--text-secondary);">Schritt 2 von 4 — Adresse</div>
+                  <div style="display:flex; gap:6px;">
+                    <span style="font-size:10px; padding:4px 10px; border-radius:4px; background:var(--bg-elevated); color:var(--text-tertiary);">1. Konto</span>
+                    <span style="font-size:10px; padding:4px 10px; border-radius:4px; background:var(--bg-elevated); color:var(--text-primary); font-weight:600;">2. Adresse</span>
+                    <span style="font-size:10px; padding:4px 10px; border-radius:4px; background:var(--bg-elevated); color:var(--text-tertiary);">3. Zahlung</span>
+                    <span style="font-size:10px; padding:4px 10px; border-radius:4px; background:var(--bg-elevated); color:var(--text-tertiary);">4. Bestätigung</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel good">
+            <div class="panel-topline"></div>
+            <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <div class="demo-progress-wrap">
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                      <span class="demo-progress-label">Adresse eingeben</span>
+                      <span class="demo-progress-sublabel">Schritt 2 / 4</span>
+                    </div>
+                    <div class="demo-progress-bar"><div class="demo-progress-fill" style="width:50%;"></div></div>
+                  </div>
+                  <div class="demo-stepper">
+                    <div class="demo-step">
+                      <div class="demo-step-num active">✓</div>
+                      <span class="demo-step-label">Konto</span>
+                    </div>
+                    <div class="demo-step-line active"></div>
+                    <div class="demo-step">
+                      <div class="demo-step-num active">2</div>
+                      <span class="demo-step-label">Adresse</span>
+                    </div>
+                    <div class="demo-step-line inactive"></div>
+                    <div class="demo-step">
+                      <div class="demo-step-num inactive">3</div>
+                      <span class="demo-step-label">Zahlung</span>
+                    </div>
+                    <div class="demo-step-line inactive"></div>
+                    <div class="demo-step">
+                      <div class="demo-step-num inactive">4</div>
+                      <span class="demo-step-label">Fertig</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <div class="explanation-title">Analyse</div>
+          <p>Im Vorher-Beispiel sind die Schritte als isolierte Badges dargestellt. Es gibt keine visuelle Verbindung zwischen ihnen — der Nutzer muss den Text lesen, um den Fortschritt zu verstehen.</p>
+          <p>Im Nachher-Beispiel erzeugen die <strong>Verbindungslinien</strong> (Continuity) einen klaren Pfad von links nach rechts. Die <strong>Progress Bar</strong> nutzt Closure: das Gehirn sieht den leeren Bereich und ergänzt automatisch „noch 50% übrig". Der farbige Wechsel von Teal zu Grau zeigt sofort, was erledigt ist und was noch kommt.</p>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Regel</div>
+          <p>Verwende visuelle Linien und Verbindungen, um Reihenfolgen darzustellen. Nutze teilweise gefüllte Formen (Progress Bars, Ringe, Stepper-Linien), um Fortschritt intuitiv erfahrbar zu machen — das Gehirn ergänzt den Rest von selbst.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 6 — BEISPIEL 4: FIGURE-GROUND
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Beispiel 04 — Figure-Ground</div>
+        <h2 class="section-title">Modals: Vordergrund braucht einen klaren Hintergrund</h2>
+        <p class="body-text">Wenn ein Modal geöffnet wird, muss der Nutzer sofort verstehen: <strong>„Das hier ist wichtig, der Rest wartet."</strong> Das gelingt durch eine klare Trennung von Figur (Modal) und Grund (Hintergrund). Ohne diese Trennung konkurriert der Inhalt des Modals mit dem dahinter liegenden Inhalt.</p>
+
+        <div class="comparison-grid">
+          <div class="panel bad">
+            <div class="panel-topline"></div>
+            <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+            <div class="panel-body">
+              <div class="demo-area" style="padding:0; overflow:hidden;">
+                <div class="demo-modal-scene">
+                  <div class="demo-modal-bg">
+                    <div class="demo-modal-bg-line" style="width:80%;"></div>
+                    <div class="demo-modal-bg-line" style="width:60%;"></div>
+                    <div class="demo-modal-bg-line" style="width:90%;"></div>
+                    <div class="demo-modal-bg-line" style="width:50%;"></div>
+                    <div class="demo-modal-bg-line" style="width:70%;"></div>
+                    <div class="demo-modal-bg-line" style="width:65%;"></div>
+                    <div class="demo-modal-bg-line" style="width:85%;"></div>
+                  </div>
+                  <!-- No overlay -->
+                  <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                    <div class="demo-modal-card" style="box-shadow:var(--shadow-sm);">
+                      <h5>Änderungen speichern?</h5>
+                      <p>Möchtest du die Änderungen übernehmen?</p>
+                      <div class="demo-modal-btn">Speichern</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel good">
+            <div class="panel-topline"></div>
+            <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+            <div class="panel-body">
+              <div class="demo-area" style="padding:0; overflow:hidden;">
+                <div class="demo-modal-scene">
+                  <div class="demo-modal-bg">
+                    <div class="demo-modal-bg-line" style="width:80%;"></div>
+                    <div class="demo-modal-bg-line" style="width:60%;"></div>
+                    <div class="demo-modal-bg-line" style="width:90%;"></div>
+                    <div class="demo-modal-bg-line" style="width:50%;"></div>
+                    <div class="demo-modal-bg-line" style="width:70%;"></div>
+                    <div class="demo-modal-bg-line" style="width:65%;"></div>
+                    <div class="demo-modal-bg-line" style="width:85%;"></div>
+                  </div>
+                  <div class="demo-modal-overlay">
+                    <div class="demo-modal-card">
+                      <h5>Änderungen speichern?</h5>
+                      <p>Möchtest du die Änderungen übernehmen?</p>
+                      <div class="demo-modal-btn">Speichern</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotation-grid">
+          <div class="annotation-item">
+            <div class="annotation-label">Overlay</div>
+            <div class="annotation-value">keins → rgba(0,0,0,0.35)</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Shadow</div>
+            <div class="annotation-value">sm → md</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Prinzip</div>
+            <div class="annotation-value">Figure-Ground</div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <div class="explanation-title">Analyse</div>
+          <p>Im Vorher-Beispiel schwebt das Modal ohne Overlay über dem Hintergrund. Der Hintergrund ist weiterhin voll sichtbar und konkurriert mit dem Modal um Aufmerksamkeit. Der Nutzer muss aktiv erkennen, dass das Modal den Fokus hat.</p>
+          <p>Im Nachher-Beispiel erzeugt das <strong>halbtransparente Overlay</strong> eine klare Trennung. Der Hintergrund ist visuell „deaktiviert", das Modal springt als Figur in den Vordergrund. Der <strong>stärkere Schatten</strong> verstärkt die Tiefenwirkung zusätzlich.</p>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Regel</div>
+          <p>Wenn ein Element den Fokus beansprucht (Modal, Dropdown, Overlay), muss der restliche Inhalt visuell zurücktreten. Nutze Overlays, Blur oder gedimmte Hintergründe, um die Figur-Grund-Trennung unmissverständlich zu machen.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 7 — BEISPIEL 5: COMMON REGION
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Beispiel 05 — Common Region</div>
+        <h2 class="section-title">Dashboard-Karten: Rahmen erzeugen Gruppen</h2>
+        <p class="body-text">Auf Dashboards werden oft viele Datenpunkte gleichzeitig dargestellt. Ohne visuelle Begrenzung — eine Card, ein Hintergrund, ein Rahmen — verschwimmen die einzelnen Metriken und werden <strong>als ein großer Textblock wahrgenommen</strong> statt als separate Einheiten.</p>
+
+        <div class="comparison-grid">
+          <div class="panel bad">
+            <div class="panel-topline"></div>
+            <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-stat-flat">
+                  <div class="demo-stat-flat-item">
+                    <div class="stat-value">2.847</div>
+                    <div class="stat-label">Nutzer</div>
+                  </div>
+                  <div class="demo-stat-flat-item">
+                    <div class="stat-value">64%</div>
+                    <div class="stat-label">Conversion</div>
+                  </div>
+                  <div class="demo-stat-flat-item">
+                    <div class="stat-value">12ms</div>
+                    <div class="stat-label">Latenz</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel good">
+            <div class="panel-topline"></div>
+            <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+            <div class="panel-body">
+              <div class="demo-area">
+                <div class="demo-card-group">
+                  <div class="demo-stat-card">
+                    <div class="stat-value">2.847</div>
+                    <div class="stat-label">Nutzer</div>
+                  </div>
+                  <div class="demo-stat-card">
+                    <div class="stat-value">64%</div>
+                    <div class="stat-label">Conversion</div>
+                  </div>
+                  <div class="demo-stat-card">
+                    <div class="stat-value">12ms</div>
+                    <div class="stat-label">Latenz</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="annotation-grid">
+          <div class="annotation-item">
+            <div class="annotation-label">Container</div>
+            <div class="annotation-value">keiner → Card</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Border</div>
+            <div class="annotation-value">keiner → 1px solid</div>
+          </div>
+          <div class="annotation-item">
+            <div class="annotation-label">Prinzip</div>
+            <div class="annotation-value">Common Region</div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <div class="explanation-title">Analyse</div>
+          <p>Im Vorher-Beispiel stehen die drei Metriken als freie Texte nebeneinander. Obwohl sie durch Abstand getrennt sind, fehlt eine visuelle Begrenzung — das Gehirn liest sie eher als zusammenhängenden Textblock.</p>
+          <p>Im Nachher-Beispiel erzeugt jede <strong>Card (Background + Border + Border-Radius)</strong> eine klar abgegrenzte Region. Das Gehirn erkennt sofort: „Das sind drei separate Datenpunkte." Common Region ist einer der stärksten Gestalt-Effekte — er übertrumpft sogar Proximity in vielen Fällen.</p>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-box-title">Regel</div>
+          <p>Wenn Proximity allein nicht ausreicht, um Gruppen klar zu trennen, verwende gemeinsame Regionen: Cards, Hintergrundflächen oder dezente Rahmen. Aber Vorsicht — zu viele Regionen erzeugen visuelles Rauschen. Weniger ist mehr.</p>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 8 — PRAXISAUFGABE
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Praxisaufgabe</div>
+        <h2 class="section-title">Gestaltprinzipien anwenden</h2>
+        <p class="body-text">Das folgende Settings-Panel hat Verbesserungspotenzial. Mehrere Gestaltprinzipien werden verletzt — erkenne sie und verbessere das UI systematisch.</p>
+
+        <div class="exercise-intro">
+          <h3>Aufgabenstellung</h3>
+          <p>Analysiere das UI unten und verbessere es, indem du gezielt Gestaltprinzipien einsetzt. Der Startcode wird auf der nächsten Seite bereitgestellt.</p>
+          <ul class="task-list">
+            <li><strong>Proximity:</strong> Die Abstände zwischen Labels und ihren Werten sind nicht klar gruppiert — passe das Spacing an</li>
+            <li><strong>Similarity:</strong> Die Toggle-Beschriftungen und Sektionstiteln sehen identisch aus — differenziere sie visuell</li>
+            <li><strong>Common Region:</strong> Die drei Einstellungs-Sektionen haben keine visuelle Begrenzung — gruppiere sie in Cards</li>
+            <li><strong>Continuity:</strong> Die Navigationsleiste hat keine visuelle Verbindung zwischen den Items — verbessere den visuellen Fluss</li>
+            <li><strong>Figure-Ground:</strong> Der aktive Tab hebt sich nicht vom Hintergrund ab — schaffe eine klare Figur-Grund-Trennung</li>
+          </ul>
+        </div>
+
+        <!-- Visual preview of broken UI -->
+        <div class="exercise-broken-ui">
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <!-- Broken nav -->
+            <div style="display:flex; gap:4px; margin-bottom:6px;">
+              <span style="font-size:10px; font-weight:600; padding:5px 12px; color:var(--text-secondary);">Allgemein</span>
+              <span style="font-size:10px; font-weight:600; padding:5px 12px; color:var(--text-secondary);">Benachrichtigungen</span>
+              <span style="font-size:10px; font-weight:600; padding:5px 12px; color:var(--text-secondary);">Sicherheit</span>
+            </div>
+            <!-- Broken settings groups -->
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">Sprache</div>
+              <div style="font-size:12px; color:var(--text-secondary);">Deutsch</div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">Dark Mode</div>
+              <div style="font-size:12px; color:var(--text-secondary);">Aktiviert</div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">Zeitzone</div>
+              <div style="font-size:12px; color:var(--text-secondary);">Europe/Berlin</div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">E-Mail-Benachrichtigungen</div>
+              <div style="font-size:12px; color:var(--text-secondary);">Aktiviert</div>
+              <div style="font-size:12px; font-weight:600; color:var(--text-secondary);">Push-Benachrichtigungen</div>
+              <div style="font-size:12px; color:var(--text-secondary);">Deaktiviert</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         SEITE 9 — CODE-BLOCK
+    ════════════════════════════════════════ -->
+    <div class="page">
+      <div class="page-content">
+        <div class="section-label">Startcode</div>
+        <h2 class="section-title">Code zum Kopieren und Verbessern</h2>
+        <p class="body-text">Kopiere den folgenden Code, öffne ihn im Browser und wende die Gestaltprinzipien an. Fokussiere dich auf Spacing, Farbdifferenzierung, Card-Gruppierung und die Navigation.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <span class="code-block-lang">HTML + CSS — Aufgabe Modul 14</span>
+            <button class="copy-btn" id="copyBtn">
+              <i data-lucide="copy"></i>
+              <span class="copy-label">Code kopieren</span>
+            </button>
+          </div>
+          <pre class="code-block"><code><span class="tok-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tok-tag">&lt;html</span> <span class="tok-attr">lang</span>=<span class="tok-str">"de"</span><span class="tok-tag">&gt;</span>
+<span class="tok-tag">&lt;head&gt;</span>
+  <span class="tok-tag">&lt;meta</span> <span class="tok-attr">charset</span>=<span class="tok-str">"UTF-8"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;title&gt;</span>Settings Panel — Gestaltprinzipien<span class="tok-tag">&lt;/title&gt;</span>
+  <span class="tok-tag">&lt;style&gt;</span>
+    <span class="tok-sel">*</span> { <span class="tok-prop">box-sizing</span>: <span class="tok-val">border-box</span>; <span class="tok-prop">margin</span>: <span class="tok-num">0</span>; }
+    <span class="tok-sel">body</span> {
+      <span class="tok-prop">font-family</span>: <span class="tok-val">system-ui, sans-serif</span>;
+      <span class="tok-prop">background</span>: <span class="tok-val">#f4f4f8</span>;
+      <span class="tok-prop">padding</span>: <span class="tok-num">40px</span>;
+      <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+      <span class="tok-prop">justify-content</span>: <span class="tok-val">center</span>;
+    }
+    <span class="tok-sel">.settings</span> {
+      <span class="tok-prop">max-width</span>: <span class="tok-num">480px</span>;
+      <span class="tok-prop">width</span>: <span class="tok-num">100%</span>;
+    }
+    <span class="tok-comment">/* --- Navigation: kein aktiver Zustand, kein Container --- */</span>
+    <span class="tok-sel">.nav</span> {
+      <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+      <span class="tok-prop">gap</span>: <span class="tok-num">4px</span>;
+      <span class="tok-prop">margin-bottom</span>: <span class="tok-num">20px</span>;
+    }
+    <span class="tok-sel">.nav-item</span> {
+      <span class="tok-prop">font-size</span>: <span class="tok-num">13px</span>;
+      <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+      <span class="tok-prop">padding</span>: <span class="tok-num">8px 16px</span>;
+      <span class="tok-prop">color</span>: <span class="tok-val">#52526e</span>;
+      <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+    }
+    <span class="tok-comment">/* --- Alle Settings-Einträge gleichmäßig --- */</span>
+    <span class="tok-sel">.settings-list</span> {
+      <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+      <span class="tok-prop">flex-direction</span>: <span class="tok-val">column</span>;
+      <span class="tok-prop">gap</span>: <span class="tok-num">10px</span>;
+    }
+    <span class="tok-sel">.setting-label</span> {
+      <span class="tok-prop">font-size</span>: <span class="tok-num">13px</span>;
+      <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+      <span class="tok-prop">color</span>: <span class="tok-val">#52526e</span>;
+    }
+    <span class="tok-sel">.setting-value</span> {
+      <span class="tok-prop">font-size</span>: <span class="tok-num">13px</span>;
+      <span class="tok-prop">color</span>: <span class="tok-val">#52526e</span>;
+    }
+    <span class="tok-comment">/* TODO: Proximity — Labels und Values eng gruppieren */</span>
+    <span class="tok-comment">/* TODO: Similarity — Labels vs Values differenzieren */</span>
+    <span class="tok-comment">/* TODO: Common Region — Sektionen in Cards */</span>
+    <span class="tok-comment">/* TODO: Continuity — Nav visuell verbinden */</span>
+    <span class="tok-comment">/* TODO: Figure-Ground — Aktiven Tab hervorheben */</span>
+  <span class="tok-tag">&lt;/style&gt;</span>
+<span class="tok-tag">&lt;/head&gt;</span>
+<span class="tok-tag">&lt;body&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Allgemein<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Benachrichtigungen<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav-item"</span><span class="tok-tag">&gt;</span>Sicherheit<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings-list"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-label"</span><span class="tok-tag">&gt;</span>Sprache<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-value"</span><span class="tok-tag">&gt;</span>Deutsch<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-label"</span><span class="tok-tag">&gt;</span>Dark Mode<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-value"</span><span class="tok-tag">&gt;</span>Aktiviert<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-label"</span><span class="tok-tag">&gt;</span>Zeitzone<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-value"</span><span class="tok-tag">&gt;</span>Europe/Berlin<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-label"</span><span class="tok-tag">&gt;</span>E-Mail-Benachrichtigungen<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-value"</span><span class="tok-tag">&gt;</span>Aktiviert<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-label"</span><span class="tok-tag">&gt;</span>Push-Benachrichtigungen<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"setting-value"</span><span class="tok-tag">&gt;</span>Deaktiviert<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/body&gt;</span>
+<span class="tok-tag">&lt;/html&gt;</span></code></pre>
+        </div>
+      </div>
+      <div class="page-footer">
+        <span class="page-footer-module">Modul 14 — Gestaltprinzipien in der Praxis</span>
+        <span class="page-footer-num">Seite <span class="pnum"></span></span>
+      </div>
+    </div>
+
+  </div><!-- /web-container -->
+
+  <script>
+    lucide.createIcons();
+
+    /* ── Theme Toggle ─────────────────────────────── */
+    const themeBtn = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+      }
+      lucide.createIcons();
+      localStorage.setItem('workshop-theme', theme);
+    }
+
+    applyTheme(localStorage.getItem('workshop-theme') || 'light');
+    themeBtn.addEventListener('click', () => {
+      applyTheme(
+        document.documentElement.getAttribute('data-theme') === 'dark'
+          ? 'light' : 'dark'
+      );
+    });
+
+    /* ── View Mode Toggle ─────────────────────────── */
+    const viewBtn = document.getElementById('viewToggle');
+
+    function applyView(mode) {
+      const body = document.body;
+      if (mode === 'web') {
+        body.classList.remove('view-pdf');
+        body.classList.add('view-web');
+        viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+        viewBtn.title = 'Zur PDF-Ansicht wechseln';
+      } else {
+        body.classList.remove('view-web');
+        body.classList.add('view-pdf');
+        viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+        viewBtn.title = 'Zur Web-Ansicht wechseln';
+      }
+      lucide.createIcons();
+      localStorage.setItem('workshop-view', mode);
+    }
+
+    applyView(localStorage.getItem('workshop-view') || 'pdf');
+    viewBtn.addEventListener('click', () => {
+      applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+    });
+
+    /* ── Seitennummern ────────────────────────────── */
+    document.querySelectorAll('.pnum').forEach((el, i) => {
+      el.textContent = i + 1;
+    });
+
+    /* ── Copy Button ──────────────────────────────── */
+    const rawCode = `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings Panel — Gestaltprinzipien</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f4f4f8;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .settings {
+      max-width: 480px;
+      width: 100%;
+    }
+    /* --- Navigation: kein aktiver Zustand, kein Container --- */
+    .nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .nav-item {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      color: #52526e;
+      cursor: pointer;
+    }
+    /* --- Alle Settings-Einträge gleichmäßig --- */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .setting-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #52526e;
+    }
+    .setting-value {
+      font-size: 13px;
+      color: #52526e;
+    }
+    /* TODO: Proximity — Labels und Values eng gruppieren */
+    /* TODO: Similarity — Labels vs Values differenzieren */
+    /* TODO: Common Region — Sektionen in Cards */
+    /* TODO: Continuity — Nav visuell verbinden */
+    /* TODO: Figure-Ground — Aktiven Tab hervorheben */
+  </style>
+</head>
+<body>
+  <div class="settings">
+    <div class="nav">
+      <div class="nav-item">Allgemein</div>
+      <div class="nav-item">Benachrichtigungen</div>
+      <div class="nav-item">Sicherheit</div>
+    </div>
+    <div class="settings-list">
+      <div class="setting-label">Sprache</div>
+      <div class="setting-value">Deutsch</div>
+      <div class="setting-label">Dark Mode</div>
+      <div class="setting-value">Aktiviert</div>
+      <div class="setting-label">Zeitzone</div>
+      <div class="setting-value">Europe/Berlin</div>
+      <div class="setting-label">E-Mail-Benachrichtigungen</div>
+      <div class="setting-value">Aktiviert</div>
+      <div class="setting-label">Push-Benachrichtigungen</div>
+      <div class="setting-value">Deaktiviert</div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    const copyBtn   = document.getElementById('copyBtn');
+    const copyLabel = copyBtn.querySelector('.copy-label');
+
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(rawCode); }
+      catch {
+        const ta = document.createElement('textarea');
+        ta.value = rawCode; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+      }
+      copyBtn.classList.add('copied');
+      copyLabel.textContent = '✓ Kopiert!';
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyLabel.textContent = 'Code kopieren';
+      }, 2500);
+    });
+  </script>
+</body>
+</html>

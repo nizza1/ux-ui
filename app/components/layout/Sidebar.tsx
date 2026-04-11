@@ -12,12 +12,15 @@ const CONTENT_SLUGS = new Set([
   "information-architecture",
   "sketching-prototypes",
   "wireframing",
-  "why-design",
+  "gestalt-principles",
   // Visual/Technical Design (modules 09–)
+  "why-design",
   "visual-hierarchy",
   "typography-selection",
-  "spacing-layout",
+  "typography-systems",
   "color-systems",
+  "color-contrast",
+  "color-hierarchy",
 ]);
 
 interface SidebarProps {

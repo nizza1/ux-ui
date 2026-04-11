@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 09 — Schatten, Tiefe & Elevation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT SETTINGS
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* Web-Modus Schriftgrößen-Overrides */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 520px;
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.body-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md) 0;
+}
+.body-text strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.small-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-ghost);
+}
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.learning-goals-title {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.learning-goals-title svg { width: 14px; height: 14px; }
+.learning-goals-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--space-sm);
+}
+.learning-goals-list li {
+  font-size: 13px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 24px; position: relative;
+}
+.learning-goals-list li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 14px; height: 14px; border-radius: 4px;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-border);
+}
+.learning-goals-list li::after {
+  content: ''; position: absolute; left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--bg-elevated);
+  margin: var(--space-lg) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list {
+  counter-reset: concept;
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+.concept-item {
+  display: flex; gap: var(--space-md);
+  counter-increment: concept;
+}
+.concept-num {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent); flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+.concept-body h4 {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary); margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row {
+  display: flex; gap: var(--space-md); margin-bottom: var(--space-md);
+}
+.insight-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS (Vorher / Nachher)
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden; position: relative;
+}
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color); background: var(--bad-bg); border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  min-height: 80px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p {
+  font-size: 13px; line-height: 1.6;
+  margin: 0; font-weight: 500;
+}
+/* Theme-aware rule-box text color */
+.rule-box p { color: #0a6e6a; }
+[data-theme="dark"] .rule-box p { color: var(--accent-text); }
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   INTERACTIVE COMPONENTS — MODULE 09 SPECIFIC
+══════════════════════════════════════════ */
+
+/* Elevation Scale Demo */
+.elevation-scale {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+}
+.elevation-card {
+  width: 80px; height: 80px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.elevation-card:hover { transform: translateY(-2px); }
+.elevation-card .elev-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 6px;
+}
+.elevation-card .elev-num {
+  font-family: var(--font-mono);
+  font-size: 18px; font-weight: 700;
+  color: var(--accent);
+}
+
+/* Shadow Playground */
+.playground-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.playground-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-md) 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.playground-title svg { width: 14px; height: 14px; }
+
+.playground-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.playground-preview {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  min-height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.playground-preview::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, var(--accent-dim) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(99,102,241,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.preview-card {
+  width: 160px; height: 100px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  transition: box-shadow 0.25s ease, border-radius 0.25s ease;
+}
+.preview-card-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.preview-card-icon {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 6px;
+}
+.preview-card-icon svg { width: 14px; height: 14px; color: var(--accent); }
+
+.playground-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.control-group {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.control-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.control-value {
+  color: var(--accent); font-weight: 700;
+}
+
+/* Range slider styling */
+.control-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-elevated);
+  outline: none;
+  cursor: pointer;
+}
+.control-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.control-slider::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Color picker row */
+.color-picker-row {
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.color-picker-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px; height: 28px;
+  border: 2px solid var(--bg-elevated);
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+}
+.color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-picker-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+.color-picker-input::-moz-color-swatch { border: none; border-radius: 4px; }
+.color-hex {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* CSS Output */
+.css-output {
+  background: #1a1a2e;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-sm);
+}
+.css-output code {
+  font-family: var(--font-mono);
+  font-size: 11px; line-height: 1.6;
+  color: #c8d3f5; white-space: pre-wrap;
+}
+
+/* Dual Shadow Demo */
+.dual-shadow-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+.dual-shadow-card {
+  height: 90px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.dual-shadow-card:hover { transform: translateY(-3px); }
+.dual-shadow-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 4px;
+}
+.dual-shadow-sublabel {
+  font-family: var(--font-mono);
+  font-size: 8px; font-weight: 500;
+  color: var(--text-ghost);
+  opacity: 0.6;
+}
+
+/* Elevation Presets (interactive) */
+.elevation-presets {
+  display: flex; gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+.preset-btn {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--bg-elevated);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.preset-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+.preset-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* Flat Depth Demo Cards */
+.flat-depth-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+.flat-depth-card {
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 90px;
+  transition: transform 0.2s;
+}
+.flat-depth-card:hover { transform: translateY(-2px); }
+.flat-depth-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Reset button */
+.reset-btn {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-elevated);
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+
+/* Interactive tag */
+.interactive-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 100px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.20);
+  color: #6366f1;
+  margin-left: var(--space-sm);
+}
+[data-theme="dark"] .interactive-badge {
+  background: rgba(129, 140, 248, 0.10);
+  border: 1px solid rgba(129, 140, 248, 0.20);
+  color: #818cf8;
+}
+
+/* Demo button for interaction examples */
+.demo-button {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  color: #fff;
+  background: var(--accent);
+}
+.demo-button:active {
+  transform: translateY(1px);
+}
+
+/* Two-part shadow visual explanation */
+.shadow-parts-visual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-lg);
+}
+.shadow-part-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  width: 100%;
+}
+.shadow-part-box {
+  width: 100px; height: 60px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.shadow-part-text {
+  font-size: 11px; line-height: 1.5;
+  color: var(--text-secondary);
+}
+.shadow-part-text strong {
+  font-weight: 600; color: var(--text-primary);
+}
+.shadow-part-text code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--bg-elevated);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<!-- Toggle Buttons -->
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+    <i data-lucide="monitor"></i>
+  </button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+    <i data-lucide="sun"></i>
+  </button>
+</div>
+
+<div class="web-container">
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 1 — TITELSEITE
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="module-tag">Modul 09</div>
+
+    <h1 class="page-title">Schatten, Tiefe &amp; Elevation</h1>
+    <p class="page-subtitle">Wie du mit Schatten eine visuelle Z-Achse erzeugst, Elemente voneinander abhebst und deinem Interface räumliche Tiefe verleihst — ganz ohne 3D-Grafik.</p>
+
+    <div class="module-meta">
+      <div class="meta-item">
+        <i data-lucide="clock"></i>
+        <span>45 Minuten</span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="code"></i>
+        <span>Praxisaufgabe: ~15 Min.</span>
+      </div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title">
+        <i data-lucide="target"></i>
+        Lernziele
+      </div>
+      <ul class="learning-goals-list">
+        <li>Verstehen, warum Schatten mehr als Dekoration sind — sie kommunizieren Elevation und Hierarchie</li>
+        <li>Die Lichtquellen-Metapher als Grundprinzip für glaubwürdige Schatten verinnerlichen</li>
+        <li>Ein Elevation-System mit 5 Stufen aufbauen und gezielt einsetzen</li>
+        <li>Zwei-Schatten-Technik (Ambient + Direct Light) anwenden</li>
+        <li>Tiefe auch ohne Schatten erzeugen — mit Farbe, Overlap und Solid Shadows</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Schatten sind keine Dekoration — sie sind ein Kommunikationswerkzeug. Ein gut gewählter Schatten sagt dem Nutzer: „Dieses Element ist interaktiv", „Diese Karte schwebt über dem Hintergrund" oder „Dieser Dialog braucht deine volle Aufmerksamkeit."</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 2 — THEORIE: LICHTQUELLE + ELEVATION
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Theorie</div>
+    <h2 class="section-title">Licht kommt von oben — die Grundregel</h2>
+
+    <p class="body-text">Im echten Leben erzeugen Objekte Schatten, weil eine Lichtquelle von oben scheint. Dieses Prinzip übertragen wir auf unsere Interfaces: <strong>Erhabene Elemente haben helle Oberkanten und werfen Schatten nach unten.</strong> Eingelassene Elemente (wie Input-Felder) haben dagegen eine dunkle Oberkante und eine helle Unterkante.</p>
+
+    <p class="body-text">Browser-Nutzer schauen leicht von oben auf ihren Bildschirm — deshalb fühlt sich ein <strong>vertikaler Offset nach unten</strong> bei Schatten natürlicher an als ein symmetrischer Schatten. Ein reiner Blur ohne Offset wirkt wie „schwebendes Licht" und kann unnatürlich aussehen.</p>
+
+    <div class="theory-card">
+      <div class="section-label">Die Elevation-Pyramide</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Level 1 — Subtle Raise</h4>
+            <p>Sehr kleiner Schatten für Buttons und Karten im Ruhezustand. Sagt: „Ich bin anklickbar." Box-Shadow mit 1–2px Offset und wenig Blur.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Level 2 — Card Elevation</h4>
+            <p>Standard für Karten und schwebende Panels. Erzeugt eine klare Trennung vom Hintergrund, ohne zu dominieren.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Level 3 — Dropdown / Popover</h4>
+            <p>Für Elemente die temporär über dem UI „schweben" — Dropdown-Menüs, Tooltips, Popovers. Deutlich sichtbarer Schatten.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Level 4 — Dialog / Drawer</h4>
+            <p>Für modale Dialoge und Seitenschubladen. Großer, weicher Schatten der signalisiert: „Alles andere ist gerade zweitrangig."</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Level 5 — Maximum Elevation</h4>
+            <p>Selten benötigt — für Elemente die absolute Aufmerksamkeit brauchen. Sehr großer Blur-Radius, starker vertikaler Offset.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Definiere dein Shadow-System vorab mit 5 Stufen — genau wie bei Farben und Spacing. So triffst du schnelle, konsistente Entscheidungen statt jedes Mal Werte zu raten.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 3 — VERGLEICH 1: Flache UI vs. Elevation
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 1</div>
+    <h2 class="section-title">Flache Karten vs. Elevation-System</h2>
+    <p class="body-text">Ohne Schatten verschwimmen Karten mit dem Hintergrund — besonders wenn die Hintergrundfarbe ähnlich ist. Ein abgestuftes Elevation-System gibt jedem Element seinen Platz auf der Z-Achse.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Dashboard Card</div>
+              <div style="font-size: 10px; color: var(--text-tertiary);">Keine Schatten, kein Tiefenunterschied</div>
+            </div>
+            <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 12px;">
+              <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Zweite Card</div>
+              <div style="font-size: 10px; color: var(--text-tertiary);">Visuell gleich — keine Hierarchie</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="background: var(--bg-surface); border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);">
+              <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Dashboard Card</div>
+              <div style="font-size: 10px; color: var(--text-tertiary);">Subtiler Schatten — hebt sich ab</div>
+            </div>
+            <div style="background: var(--bg-surface); border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05);">
+              <div style="font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Fokus-Card</div>
+              <div style="font-size: 10px; color: var(--text-tertiary);">Stärkerer Schatten — mehr Aufmerksamkeit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Shadow Level 1</div>
+        <div class="annotation-value">0 1px 3px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Shadow Level 2</div>
+        <div class="annotation-value">0 4px 12px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Border</div>
+        <div class="annotation-value">entfernt</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel sind beide Karten visuell identisch — <strong>der Nutzer kann nicht erkennen, welche wichtiger ist.</strong> Das „Nachher"-Beispiel nutzt unterschiedliche Elevation-Stufen: die obere Karte mit einem subtilen Level-1-Schatten, die untere mit einem auffälligeren Level-2-Schatten.</p>
+      <p>Beachte auch: <strong>Borders wurden entfernt.</strong> Schatten übernehmen die Aufgabe der visuellen Abgrenzung — und machen Borders in vielen Fällen überflüssig.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Je näher ein Element am Nutzer „schwebt", desto größer sein Schatten. Buttons → klein. Cards → mittel. Modals → groß. Nutze nie den gleichen Schatten für alles.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 4 — VERGLEICH 2: Ein-Schatten vs. Zwei-Schatten-Technik
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 2</div>
+    <h2 class="section-title">Ein Schatten vs. Zwei-Schatten-Technik</h2>
+    <p class="body-text">Professionelle Schatten bestehen oft aus <strong>zwei Layern</strong>: einem großen, weichen Schatten (simuliert direktes Licht) und einem kleinen, schärferen Schatten (simuliert den Bereich unter dem Element, wo selbst Umgebungslicht kaum hinkommt).</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg);">
+            <div style="width: 140px; height: 80px; background: var(--bg-surface); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;">
+              <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost); letter-spacing: 1px; text-transform: uppercase;">1 Shadow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg);">
+            <div style="width: 140px; height: 80px; background: var(--bg-surface); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center;">
+              <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost); letter-spacing: 1px; text-transform: uppercase;">2 Shadows</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Der einzelne Schatten links wirkt <strong>flächig und undifferenziert</strong> — wie ein weicher Nebel um das Element. Die zwei-Schatten-Variante rechts erzeugt einen <strong>realistischeren Eindruck:</strong> der große, weiche Schatten gibt das Gesamtgefühl, während der kleine, scharfe Schatten die Kante definiert.</p>
+      <p>Die Technik funktioniert, weil sie zwei reale Lichtphänomene nachahmt: <strong>direktes Licht</strong> (erzeugt den großen Schatten) und <strong>Ambient Occlusion</strong> (der dunkle Bereich direkt unter dem Objekt, wo Umgebungslicht blockiert wird).</p>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Shadow 1 (Direct)</div>
+        <div class="annotation-value">0 10px 30px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Shadow 2 (Ambient)</div>
+        <div class="annotation-value">0 2px 6px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Opacity</div>
+        <div class="annotation-value">8% + 6%</div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Nutze für professionelle Schatten immer zwei Layer: einen großen, weichen für das Licht und einen kleinen, scharfen für die Ambient Occlusion. Bei höherer Elevation wird der Ambient-Schatten immer subtiler.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 5 — VERGLEICH 3: Schatten-Farbe
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 3</div>
+    <h2 class="section-title">Schwarze Schatten vs. farbige Schatten</h2>
+    <p class="body-text">Standard-Schatten mit <strong>rgba(0,0,0,...)</strong> sind universell einsetzbar, wirken aber manchmal stumpf und leblos. Farbige Schatten — basierend auf der Hintergrund- oder Akzentfarbe — erzeugen ein <strong>lebendigeres, harmonischeres</strong> Gesamtbild. Besonders auf farbigen Hintergründen oder bei markanten UI-Elementen.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 10px;">
+            <div style="padding: 10px 28px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);">Button</div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">shadow: rgba(0,0,0,0.25)</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 10px;">
+            <div style="padding: 10px 28px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px; box-shadow: 0 4px 14px rgba(14, 165, 160, 0.35), 0 2px 4px rgba(14, 165, 160, 0.2);">Button</div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">shadow: rgba(accent, 0.35)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Der schwarze Schatten links wirkt <strong>losgelöst vom Element</strong> — wie ein generischer Effekt, der auf alles gleich angewendet wird. Der farbige Schatten rechts basiert auf der Button-Farbe selbst und erzeugt den Eindruck, als würde der Button <strong>tatsächlich Licht abstrahlen.</strong></p>
+      <p>Dieser Effekt wird besonders wirkungsvoll bei farblich markanten Elementen wie CTAs, aktiven Navigations-Items oder Highlight-Badges. Bei neutralen Elementen bleiben schwarze Schatten oft die bessere Wahl.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verwende farbige Schatten bei Elementen mit kräftiger Hintergrundfarbe — der Schatten sollte eine dunklere, weniger gesättigte Variante der Element-Farbe sein. Bei neutralen Elementen bleiben rgba(0,0,0,...) Schatten die bessere Wahl.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 6 — VERGLEICH 4: Tiefe ohne Schatten
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 4</div>
+    <h2 class="section-title">Tiefe auch ohne Schatten — Flat Depth</h2>
+    <p class="body-text">Flat Design bedeutet nicht „keine Tiefe". Auch ohne <code style="font-family: var(--font-mono); font-size: 12px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px;">box-shadow</code> kannst du Elemente visuell hervorheben oder einlassen — durch <strong>Farbe</strong>, <strong>Solid Shadows</strong> und <strong>Overlap</strong>.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 8px;">
+            <div style="padding: 10px 24px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); font-size: 12px; font-weight: 600; color: var(--text-primary);">Flat — kein Tiefeneffekt</div>
+            <div style="padding: 10px 24px; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); font-size: 12px; font-weight: 600; color: var(--text-primary);">Alles auf gleicher Ebene</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 8px;">
+            <div style="padding: 10px 24px; border-radius: 8px; background: var(--bg-elevated); font-size: 12px; font-weight: 600; color: var(--text-secondary);">Eingelassen (dunkler als BG)</div>
+            <div style="padding: 10px 24px; border-radius: 8px; background: var(--bg-surface); border-bottom: 3px solid var(--accent); font-size: 12px; font-weight: 600; color: var(--text-primary);">Erhaben (Solid Shadow)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Nachher"-Beispiel zeigen wir zwei Flat-Depth-Techniken: <strong>Farbliche Einlassung</strong> — ein Element das dunkler als der Hintergrund ist, wirkt eingelassen (ideal für Input-Felder und „Well"-Bereiche). <strong>Solid Shadow</strong> — ein harter Farbbalken am unteren Rand simuliert eine Kante und lässt das Element erhaben wirken, komplett ohne box-shadow.</p>
+      <p>Beide Techniken eignen sich perfekt für einen <strong>konsequenten Flat-Design-Stil</strong>, bei dem traditionelle Schatten bewusst vermieden werden.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Heller als der Hintergrund = erhaben. Dunkler als der Hintergrund = eingelassen. Solid Shadows (harte Kante ohne Blur) sind eine starke Alternative für Flat Designs.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 7 — INTERAKTIVER SHADOW PLAYGROUND
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Shadow Playground <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Live</span></h2>
+    <p class="body-text">Experimentiere mit den Parametern eines Box-Shadow. Verschiebe die Regler und beobachte in Echtzeit, wie sich der Schatten verändert — inklusive Farbwahl.</p>
+
+    <div class="playground-container">
+      <div class="playground-title">
+        <i data-lucide="sliders-horizontal"></i>
+        Shadow Builder
+        <button class="reset-btn" id="resetPlayground" style="margin-left: auto;">Reset</button>
+      </div>
+
+      <!-- Elevation Presets -->
+      <div class="elevation-presets">
+        <button class="preset-btn active" data-preset="1">Level 1</button>
+        <button class="preset-btn" data-preset="2">Level 2</button>
+        <button class="preset-btn" data-preset="3">Level 3</button>
+        <button class="preset-btn" data-preset="4">Level 4</button>
+        <button class="preset-btn" data-preset="5">Level 5</button>
+      </div>
+
+      <div class="playground-layout">
+        <!-- Preview -->
+        <div class="playground-preview">
+          <div class="preview-card" id="previewCard">
+            <div class="preview-card-icon"><i data-lucide="layers"></i></div>
+            <div class="preview-card-label">Preview</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="playground-controls">
+          <div class="control-group">
+            <div class="control-label">
+              <span>X-Offset</span>
+              <span class="control-value" id="valX">0px</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderX" min="-30" max="30" value="0">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Y-Offset</span>
+              <span class="control-value" id="valY">4px</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderY" min="-30" max="50" value="4">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Blur Radius</span>
+              <span class="control-value" id="valBlur">12px</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderBlur" min="0" max="80" value="12">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Spread</span>
+              <span class="control-value" id="valSpread">0px</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderSpread" min="-20" max="20" value="0">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Opacity</span>
+              <span class="control-value" id="valOpacity">10%</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderOpacity" min="0" max="60" value="10">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Shadow Color</span>
+              <span class="color-hex" id="colorHex">#000000</span>
+            </div>
+            <div class="color-picker-row">
+              <input type="color" class="color-picker-input" id="shadowColorPicker" value="#000000">
+              <span class="small-text">Klicke für farbige Schatten</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Border Radius</span>
+              <span class="control-value" id="valRadius">12px</span>
+            </div>
+            <input type="range" class="control-slider" id="sliderRadius" min="0" max="40" value="12">
+          </div>
+        </div>
+      </div>
+
+      <!-- CSS Output -->
+      <div class="css-output" id="cssOutput">
+        <code>box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.10);</code>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 8 — INTERAKTIVE ELEVATION-STUFEN
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Elevation im Vergleich <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Hover</span></h2>
+    <p class="body-text">Fahre mit der Maus über die Karten, um zu sehen wie verschiedene Elevation-Stufen auf Interaktion reagieren. Beobachte den Zusammenhang zwischen Schattengröße und wahrgenommener Höhe.</p>
+
+    <div class="playground-container">
+      <div class="playground-title">
+        <i data-lucide="layers"></i>
+        5-Stufen Elevation System
+      </div>
+
+      <div class="demo-area" style="padding: var(--space-xl) var(--space-md);">
+        <div class="elevation-scale" id="elevationDemo">
+          <div class="elevation-card" style="box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);" data-hover-shadow="0 2px 4px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)">
+            <div class="elev-num">1</div>
+            <div class="elev-label">Subtle</div>
+          </div>
+          <div class="elevation-card" style="box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);" data-hover-shadow="0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.06)">
+            <div class="elev-num">2</div>
+            <div class="elev-label">Card</div>
+          </div>
+          <div class="elevation-card" style="box-shadow: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05);" data-hover-shadow="0 8px 24px rgba(0,0,0,0.14), 0 3px 8px rgba(0,0,0,0.06)">
+            <div class="elev-num">3</div>
+            <div class="elev-label">Dropdown</div>
+          </div>
+          <div class="elevation-card" style="box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 3px 8px rgba(0,0,0,0.06);" data-hover-shadow="0 16px 40px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08)">
+            <div class="elev-num">4</div>
+            <div class="elev-label">Dialog</div>
+          </div>
+          <div class="elevation-card" style="box-shadow: 0 16px 40px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.07);" data-hover-shadow="0 24px 60px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.10)">
+            <div class="elev-num">5</div>
+            <div class="elev-label">Maximum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Button-Interaktion mit Schatten <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Klick</span></h2>
+    <p class="body-text">Klicke den Button und beobachte, wie der Schatten beim Drücken schrumpft — das Element „sinkt" visuell in die Oberfläche. Lass los und es kehrt zurück.</p>
+
+    <div class="playground-container">
+      <div class="playground-title">
+        <i data-lucide="pointer"></i>
+        Press-Effekt Demo
+      </div>
+      <div class="demo-area" style="align-items: center; padding: var(--space-xl); gap: var(--space-md);">
+        <button class="demo-button" id="pressDemo" style="box-shadow: 0 4px 14px rgba(14, 165, 160, 0.35), 0 2px 4px rgba(14, 165, 160, 0.2);">
+          Klick mich
+        </button>
+        <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost); letter-spacing: 1px; text-transform: uppercase;" id="pressLabel">Ruhezustand — Shadow aktiv</span>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 9 — PRAXISAUFGABE
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Praxisaufgabe</div>
+    <h2 class="section-title">Elevation-System anwenden</h2>
+    <p class="body-text">Du bekommst ein flaches Interface ohne Schatten. Deine Aufgabe: Wende ein konsistentes Elevation-System an und bringe die Elemente auf die richtige Tiefe.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Das UI unten zeigt eine Dashboard-Ansicht mit verschiedenen Elementen — alle auf der gleichen visuellen Ebene. Kopiere den Code und verbessere ihn mit einem durchdachten Schatten-System.</p>
+      <ul class="task-list">
+        <li>Erstelle ein 5-stufiges Shadow-System als CSS Custom Properties</li>
+        <li>Weise jeder Karte einen angemessenen Schatten zu (Level 1 oder 2)</li>
+        <li>Gib dem Button einen farbigen Schatten basierend auf seiner Hintergrundfarbe</li>
+        <li>Füge dem Dropdown-Menü einen Level-3-Schatten hinzu</li>
+        <li>Nutze die Zwei-Schatten-Technik für mindestens ein Element</li>
+        <li>Bonus: Füge eine Hover-Transition hinzu, die den Schatten beim Hovern verstärkt</li>
+      </ul>
+    </div>
+
+    <!-- Preview of the broken UI -->
+    <div class="demo-area" style="padding: var(--space-lg); gap: var(--space-md);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 10px; font-weight: 600; color: var(--text-ghost); letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 4px;">Umsatz</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--text-primary);">€24.500</div>
+          <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">+12% zum Vormonat</div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 10px; font-weight: 600; color: var(--text-ghost); letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 4px;">Besucher</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--text-primary);">1.230</div>
+          <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">Heute</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <div style="padding: 8px 20px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Export</div>
+        <div style="padding: 8px 20px; border-radius: 8px; border: 1px solid var(--bg-elevated); font-size: 12px; font-weight: 600; color: var(--text-secondary); background: var(--bg-surface);">Filter ▾</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 10 — CODE-BLOCK
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Startcode</div>
+    <h2 class="section-title">Code zum Verbessern</h2>
+    <p class="body-text">Kopiere den folgenden HTML/CSS-Code und wende dein Elevation-System an. Die Kommentare zeigen dir, wo Schatten ergänzt werden sollen.</p>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 09</span>
+        <button class="copy-btn" id="copyBtn">
+          <i data-lucide="copy"></i>
+          <span class="copy-label">Code kopieren</span>
+        </button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- Modul 09 — Praxisaufgabe: Elevation-System --&gt;</span>
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">:root</span> {
+    <span class="tok-comment">/* TODO: Definiere 5 Shadow-Stufen */</span>
+    <span class="tok-prop">--shadow-1</span>: <span class="tok-comment">/* Level 1: Subtle */</span>;
+    <span class="tok-prop">--shadow-2</span>: <span class="tok-comment">/* Level 2: Card */</span>;
+    <span class="tok-prop">--shadow-3</span>: <span class="tok-comment">/* Level 3: Dropdown */</span>;
+    <span class="tok-prop">--shadow-4</span>: <span class="tok-comment">/* Level 4: Dialog */</span>;
+    <span class="tok-prop">--shadow-5</span>: <span class="tok-comment">/* Level 5: Maximum */</span>;
+  }
+
+  <span class="tok-sel">.dashboard</span> {
+    <span class="tok-prop">max-width</span>: <span class="tok-num">600</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">40</span><span class="tok-val">px</span> auto;
+    <span class="tok-prop">padding</span>: <span class="tok-num">24</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-family</span>: <span class="tok-val">system-ui, sans-serif</span>;
+  }
+
+  <span class="tok-sel">.cards</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">grid</span>;
+    <span class="tok-prop">grid-template-columns</span>: <span class="tok-val">1fr 1fr</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">20</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.card</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#ffffff</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1</span><span class="tok-val">px</span> solid <span class="tok-val">#e5e5e5</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">20</span><span class="tok-val">px</span>;
+    <span class="tok-comment">/* TODO: Shadow hinzufügen */</span>
+    <span class="tok-comment">/* TODO: Hover-Transition */</span>
+  }
+
+  <span class="tok-sel">.card:hover</span> {
+    <span class="tok-comment">/* TODO: Stärkerer Shadow */</span>
+  }
+
+  <span class="tok-sel">.card-label</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">11</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">text-transform</span>: <span class="tok-val">uppercase</span>;
+    <span class="tok-prop">letter-spacing</span>: <span class="tok-num">1</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#999</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">6</span><span class="tok-val">px</span>;
+  }
+
+  <span class="tok-sel">.card-value</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">28</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">800</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#111</span>;
+  }
+
+  <span class="tok-sel">.btn-primary</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">10</span><span class="tok-val">px</span> <span class="tok-num">24</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#0ea5a0</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#fff</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">border</span>: <span class="tok-val">none</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+    <span class="tok-comment">/* TODO: Farbiger Shadow */</span>
+  }
+
+  <span class="tok-sel">.dropdown</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#ffffff</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1</span><span class="tok-val">px</span> solid <span class="tok-val">#e5e5e5</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">8</span><span class="tok-val">px</span> <span class="tok-num">0</span>;
+    <span class="tok-prop">margin-top</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">width</span>: <span class="tok-num">180</span><span class="tok-val">px</span>;
+    <span class="tok-comment">/* TODO: Dropdown-Shadow (Zwei-Schatten-Technik) */</span>
+  }
+
+  <span class="tok-sel">.dropdown-item</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">8</span><span class="tok-val">px</span> <span class="tok-num">16</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">13</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#333</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+  }
+  <span class="tok-sel">.dropdown-item:hover</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#f5f5f5</span>;
+  }
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dashboard"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"cards"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-label"</span><span class="tok-tag">&gt;</span>Umsatz<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-value"</span><span class="tok-tag">&gt;</span>€24.500<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-label"</span><span class="tok-tag">&gt;</span>Besucher<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-value"</span><span class="tok-tag">&gt;</span>1.230<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+
+  <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-primary"</span><span class="tok-tag">&gt;</span>Export<span class="tok-tag">&lt;/button&gt;</span>
+
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dropdown"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dropdown-item"</span><span class="tok-tag">&gt;</span>Letzte 7 Tage<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dropdown-item"</span><span class="tok-tag">&gt;</span>Letzte 30 Tage<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dropdown-item"</span><span class="tok-tag">&gt;</span>Dieses Quartal<span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 09 — Schatten, Tiefe & Elevation</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<script>
+lucide.createIcons();
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE
+══════════════════════════════════════════ */
+const themeBtn = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+      ? 'light' : 'dark'
+  );
+});
+
+/* ══════════════════════════════════════════
+   VIEW MODE TOGGLE
+══════════════════════════════════════════ */
+const viewBtn = document.getElementById('viewToggle');
+
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf');
+    body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web');
+    body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+/* ══════════════════════════════════════════
+   PAGE NUMBERS
+══════════════════════════════════════════ */
+document.querySelectorAll('.pnum').forEach((el, i) => {
+  el.textContent = i + 1;
+});
+
+/* ══════════════════════════════════════════
+   SHADOW PLAYGROUND — Interactive Controls
+══════════════════════════════════════════ */
+const previewCard = document.getElementById('previewCard');
+const cssOutput   = document.getElementById('cssOutput');
+
+const sliderX       = document.getElementById('sliderX');
+const sliderY       = document.getElementById('sliderY');
+const sliderBlur    = document.getElementById('sliderBlur');
+const sliderSpread  = document.getElementById('sliderSpread');
+const sliderOpacity = document.getElementById('sliderOpacity');
+const sliderRadius  = document.getElementById('sliderRadius');
+const colorPicker   = document.getElementById('shadowColorPicker');
+
+const valX       = document.getElementById('valX');
+const valY       = document.getElementById('valY');
+const valBlur    = document.getElementById('valBlur');
+const valSpread  = document.getElementById('valSpread');
+const valOpacity = document.getElementById('valOpacity');
+const valRadius  = document.getElementById('valRadius');
+const colorHex   = document.getElementById('colorHex');
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return { r, g, b };
+}
+
+function updateShadow() {
+  const x = parseInt(sliderX.value);
+  const y = parseInt(sliderY.value);
+  const blur = parseInt(sliderBlur.value);
+  const spread = parseInt(sliderSpread.value);
+  const opacity = parseInt(sliderOpacity.value) / 100;
+  const radius = parseInt(sliderRadius.value);
+  const color = colorPicker.value;
+  const rgb = hexToRgb(color);
+
+  valX.textContent = x + 'px';
+  valY.textContent = y + 'px';
+  valBlur.textContent = blur + 'px';
+  valSpread.textContent = spread + 'px';
+  valOpacity.textContent = Math.round(opacity * 100) + '%';
+  valRadius.textContent = radius + 'px';
+  colorHex.textContent = color;
+
+  const shadowStr = `${x}px ${y}px ${blur}px ${spread}px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity.toFixed(2)})`;
+
+  previewCard.style.boxShadow = shadowStr;
+  previewCard.style.borderRadius = radius + 'px';
+
+  cssOutput.innerHTML = `<code><span class="tok-prop">box-shadow</span>: <span class="tok-val">${shadowStr}</span>;\n<span class="tok-prop">border-radius</span>: <span class="tok-num">${radius}</span><span class="tok-val">px</span>;</code>`;
+}
+
+[sliderX, sliderY, sliderBlur, sliderSpread, sliderOpacity, sliderRadius, colorPicker].forEach(el => {
+  el.addEventListener('input', updateShadow);
+});
+
+/* Elevation Presets */
+const presets = {
+  1: { x: 0, y: 1, blur: 3, spread: 0, opacity: 7, color: '#000000', radius: 12 },
+  2: { x: 0, y: 4, blur: 12, spread: 0, opacity: 10, color: '#000000', radius: 12 },
+  3: { x: 0, y: 8, blur: 24, spread: -4, opacity: 14, color: '#000000', radius: 12 },
+  4: { x: 0, y: 16, blur: 40, spread: -6, opacity: 18, color: '#000000', radius: 16 },
+  5: { x: 0, y: 24, blur: 60, spread: -8, opacity: 22, color: '#000000', radius: 20 },
+};
+
+function applyPreset(level) {
+  const p = presets[level];
+  sliderX.value = p.x;
+  sliderY.value = p.y;
+  sliderBlur.value = p.blur;
+  sliderSpread.value = p.spread;
+  sliderOpacity.value = p.opacity;
+  sliderRadius.value = p.radius;
+  colorPicker.value = p.color;
+  updateShadow();
+
+  document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.preset-btn[data-preset="${level}"]`).classList.add('active');
+}
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(parseInt(btn.dataset.preset)));
+});
+
+document.getElementById('resetPlayground').addEventListener('click', () => applyPreset(1));
+
+// Initialize
+updateShadow();
+
+/* ══════════════════════════════════════════
+   ELEVATION HOVER DEMO
+══════════════════════════════════════════ */
+document.querySelectorAll('.elevation-card').forEach(card => {
+  const originalShadow = card.style.boxShadow;
+  const hoverShadow = card.dataset.hoverShadow;
+
+  card.addEventListener('mouseenter', () => {
+    card.style.boxShadow = hoverShadow;
+    card.style.transform = 'translateY(-4px)';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.boxShadow = originalShadow;
+    card.style.transform = 'translateY(0)';
+  });
+});
+
+/* ══════════════════════════════════════════
+   BUTTON PRESS DEMO
+══════════════════════════════════════════ */
+const pressDemo = document.getElementById('pressDemo');
+const pressLabel = document.getElementById('pressLabel');
+
+pressDemo.addEventListener('mousedown', () => {
+  pressDemo.style.boxShadow = '0 1px 3px rgba(14, 165, 160, 0.2)';
+  pressDemo.style.transform = 'translateY(2px)';
+  pressLabel.textContent = 'Gedrückt — Shadow reduziert';
+});
+pressDemo.addEventListener('mouseup', () => {
+  pressDemo.style.boxShadow = '0 4px 14px rgba(14, 165, 160, 0.35), 0 2px 4px rgba(14, 165, 160, 0.2)';
+  pressDemo.style.transform = 'translateY(0)';
+  pressLabel.textContent = 'Losgelassen — Shadow zurück';
+  setTimeout(() => { pressLabel.textContent = 'Ruhezustand — Shadow aktiv'; }, 1500);
+});
+pressDemo.addEventListener('mouseleave', () => {
+  pressDemo.style.boxShadow = '0 4px 14px rgba(14, 165, 160, 0.35), 0 2px 4px rgba(14, 165, 160, 0.2)';
+  pressDemo.style.transform = 'translateY(0)';
+  pressLabel.textContent = 'Ruhezustand — Shadow aktiv';
+});
+
+/* ══════════════════════════════════════════
+   COPY BUTTON
+══════════════════════════════════════════ */
+const rawCode = `<!-- Modul 09 — Praxisaufgabe: Elevation-System -->
+<style>
+  :root {
+    /* TODO: Definiere 5 Shadow-Stufen */
+    --shadow-1: /* Level 1: Subtle */;
+    --shadow-2: /* Level 2: Card */;
+    --shadow-3: /* Level 3: Dropdown */;
+    --shadow-4: /* Level 4: Dialog */;
+    --shadow-5: /* Level 5: Maximum */;
+  }
+
+  .dashboard {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 24px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 20px;
+    /* TODO: Shadow hinzufügen */
+    /* TODO: Hover-Transition */
+  }
+
+  .card:hover {
+    /* TODO: Stärkerer Shadow */
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 6px;
+  }
+
+  .card-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111;
+  }
+
+  .btn-primary {
+    padding: 10px 24px;
+    border-radius: 8px;
+    background: #0ea5a0;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    /* TODO: Farbiger Shadow */
+  }
+
+  .dropdown {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 8px 0;
+    margin-top: 8px;
+    width: 180px;
+    /* TODO: Dropdown-Shadow (Zwei-Schatten-Technik) */
+  }
+
+  .dropdown-item {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+  }
+  .dropdown-item:hover {
+    background: #f5f5f5;
+  }
+</style>
+
+<div class="dashboard">
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Umsatz</div>
+      <div class="card-value">€24.500</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Besucher</div>
+      <div class="card-value">1.230</div>
+    </div>
+  </div>
+
+  <button class="btn-primary">Export</button>
+
+  <div class="dropdown">
+    <div class="dropdown-item">Letzte 7 Tage</div>
+    <div class="dropdown-item">Letzte 30 Tage</div>
+    <div class="dropdown-item">Dieses Quartal</div>
+  </div>
+</div>`;
+
+const copyBtn   = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyLabel.textContent = 'Code kopieren';
+  }, 2500);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 13 — Design Systems & Tokens</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT SETTINGS
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS  (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS  (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* ── Web-Modus Schriftgrößen-Overrides ── */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 520px;
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.body-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md) 0;
+}
+.body-text strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.small-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-ghost);
+}
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.learning-goals-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.learning-goals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.learning-goals-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 24px;
+  position: relative;
+}
+.learning-goals-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-border);
+}
+.learning-goals-list li::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--bg-elevated);
+  margin: var(--space-lg) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list {
+  counter-reset: concept;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.concept-item {
+  display: flex;
+  gap: var(--space-md);
+  counter-increment: concept;
+}
+.concept-num {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+.concept-body h4 {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.insight-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS (Vorher / Nachher)
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color);     background: var(--bad-bg);     border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p {
+  font-size: 13px; line-height: 1.6;
+  margin: 0; font-weight: 500;
+}
+/* Theme-aware rule-box text color */
+.rule-box p { color: #0a6e6a; }
+[data-theme="dark"] .rule-box p { color: var(--accent-text); }
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+/* Syntax-Highlighting */
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   INTERACTIVE: TOKEN PLAYGROUND
+══════════════════════════════════════════ */
+.token-playground {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.token-playground-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-md) 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+
+.token-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.token-control-group label {
+  display: block;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-xs);
+}
+
+.token-control-group select,
+.token-control-group input[type="range"] {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bg-elevated);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.token-control-group input[type="range"] {
+  padding: 0;
+  height: 28px;
+  accent-color: var(--accent);
+}
+
+.token-preview-card {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: all 0.3s ease;
+}
+.token-preview-card h3 {
+  margin: 0 0 var(--space-sm) 0;
+  font-weight: 700;
+  transition: font-size 0.3s ease;
+}
+.token-preview-card p {
+  margin: 0 0 var(--space-md) 0;
+  line-height: 1.6;
+  transition: font-size 0.3s ease, color 0.3s ease;
+}
+.token-preview-card .preview-btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.token-output {
+  margin-top: var(--space-md);
+  background: #1a1a2e;
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: #c8d3f5;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ══════════════════════════════════════════
+   INTERACTIVE: REFLECTION PANELS
+══════════════════════════════════════════ */
+.reflection-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.reflection-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 var(--space-md) 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+
+.reflection-question {
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+  line-height: 1.5;
+}
+
+.reflection-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--bg-elevated);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.reflection-textarea:focus {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.reflection-textarea::placeholder {
+  color: var(--text-ghost);
+}
+
+.reflection-reveal-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  padding: 6px 14px; border-radius: 100px; cursor: pointer;
+  margin-top: var(--space-md);
+  transition: background 0.2s;
+}
+.reflection-reveal-btn:hover {
+  background: var(--accent-border);
+}
+.reflection-reveal-btn svg { width: 14px; height: 14px; }
+
+.reflection-answer {
+  margin-top: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  display: none;
+}
+.reflection-answer.visible { display: block; }
+.reflection-answer p {
+  font-size: 13px; line-height: 1.7;
+  margin: 0; font-weight: 500;
+}
+.reflection-answer p { color: #0a6e6a; }
+[data-theme="dark"] .reflection-answer p { color: var(--accent-text); }
+.reflection-answer p + p { margin-top: var(--space-sm); }
+.reflection-answer strong { font-weight: 700; }
+
+/* ══════════════════════════════════════════
+   INTERACTIVE: TOKEN ANATOMY DIAGRAM
+══════════════════════════════════════════ */
+.token-anatomy {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.token-layer {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+}
+.token-layer:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.token-layer-num {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: var(--space-xs);
+}
+.token-layer-name {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary); margin-bottom: var(--space-xs);
+}
+.token-layer-example {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  padding: 3px 8px; border-radius: 4px;
+  display: inline-block;
+  margin-bottom: var(--space-xs);
+}
+.token-layer:nth-child(1) .token-layer-example {
+  background: rgba(99,102,241,0.1); color: #6366f1;
+}
+[data-theme="dark"] .token-layer:nth-child(1) .token-layer-example {
+  background: rgba(99,102,241,0.15); color: #818cf8;
+}
+.token-layer:nth-child(2) .token-layer-example {
+  background: rgba(14,165,160,0.1); color: #0ea5a0;
+}
+[data-theme="dark"] .token-layer:nth-child(2) .token-layer-example {
+  background: rgba(45,212,191,0.15); color: #2dd4bf;
+}
+.token-layer:nth-child(3) .token-layer-example {
+  background: rgba(217,119,6,0.1); color: #d97706;
+}
+[data-theme="dark"] .token-layer:nth-child(3) .token-layer-example {
+  background: rgba(251,191,36,0.15); color: #fbbf24;
+}
+.token-layer-desc {
+  font-size: 11px; line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+.token-arrow {
+  display: none; /* hidden on small, shown via grid alignment */
+}
+
+/* ══════════════════════════════════════════
+   INTERACTIVE: CONSISTENCY CHECKER
+══════════════════════════════════════════ */
+.consistency-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.consistency-card {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+}
+.consistency-card-title {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: var(--space-sm);
+}
+
+/* Color swatch rows */
+.swatch-row {
+  display: flex; gap: 4px; margin-bottom: var(--space-sm);
+}
+.swatch {
+  width: 100%; height: 28px; border-radius: 4px;
+  position: relative;
+}
+.swatch-label {
+  position: absolute; bottom: -16px; left: 0;
+  font-family: var(--font-mono); font-size: 8px;
+  color: var(--text-ghost); white-space: nowrap;
+}
+
+/* Spacing scale visual */
+.spacing-scale {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 60px;
+}
+.spacing-bar {
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  opacity: 0.7;
+  flex: 1;
+  position: relative;
+}
+.spacing-bar-label {
+  position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 8px;
+  color: var(--text-ghost); white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   PRINT OVERRIDES
+══════════════════════════════════════════ */
+@media print {
+  .toggle-group { display: none !important; }
+  .reflection-textarea { border: 1px solid #ccc; }
+  .token-control-group select,
+  .token-control-group input[type="range"] { border: 1px solid #ccc; }
+  .reflection-reveal-btn { display: none; }
+  .reflection-answer { display: block !important; }
+}
+</style>
+</head>
+
+<body>
+<!-- ════════════════════════════════════════════════════════
+     TOGGLE BUTTONS
+════════════════════════════════════════════════════════ -->
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+    <i data-lucide="monitor"></i>
+  </button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+    <i data-lucide="sun"></i>
+  </button>
+</div>
+
+<div class="web-container">
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 1 — Titelseite
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="module-tag">Modul 13</div>
+
+    <h1 class="page-title">Design Systems &amp; Tokens</h1>
+    <p class="page-subtitle">Wie du aus einzelnen Design-Entscheidungen ein wiederverwendbares, skalierbares System baust — und warum das für Entwickler besonders wertvoll ist.</p>
+
+    <div class="module-meta">
+      <div class="meta-item">
+        <i data-lucide="clock"></i>
+        <span>90 Minuten</span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="code"></i>
+        <span>Praxisaufgabe: ~30 Min.</span>
+      </div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title">
+        <i data-lucide="target"></i>
+        Lernziele
+      </div>
+      <ul class="learning-goals-list">
+        <li>Verstehen, was ein Design System ist und warum es Konsistenz und Geschwindigkeit gleichzeitig verbessert</li>
+        <li>Die drei Ebenen von Design Tokens unterscheiden: Global, Alias und Component Tokens</li>
+        <li>Eine Farbpalette, Spacing-Skala und Typografie-Skala als Token-System definieren</li>
+        <li>Erkennen, wann Ad-hoc-Werte ein Zeichen für ein fehlendes System sind</li>
+        <li>Ein eigenes Mini-Design-System mit CSS Custom Properties aufbauen</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Ein Design System ist kein starres Regelwerk — es ist eine gemeinsame Sprache zwischen Design und Entwicklung. Tokens sind die Vokabeln dieser Sprache: benannte, wiederverwendbare Werte, die Entscheidungen kodifizieren statt sie jedes Mal neu zu treffen.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 2 — Theorie: Was ist ein Design System?
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Theorie</div>
+    <h2 class="section-title">Was ist ein Design System?</h2>
+
+    <p class="body-text">Stell dir vor, fünf Entwickler im selben Team bauen jeweils ein eigenes Feature. Jeder wählt Farben, Abstände, Schriftgrößen und Border-Radien nach Gefühl. Das Ergebnis: eine Anwendung, die aussieht, als wäre sie aus fünf verschiedenen Apps zusammengesetzt. <strong>Genau dieses Problem löst ein Design System.</strong></p>
+
+    <p class="body-text">Ein Design System ist eine Sammlung von <strong>wiederverwendbaren Komponenten, Gestaltungsregeln und dokumentierten Entscheidungen</strong>, die sicherstellen, dass ein Produkt konsistent aussieht und sich konsistent anfühlt — unabhängig davon, wer daran arbeitet. Es besteht typischerweise aus drei Schichten:</p>
+
+    <div class="theory-card">
+      <div class="section-label">Die drei Säulen</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Design Tokens</h4>
+            <p>Die atomaren Bausteine: Farben, Abstände, Schriftgrößen, Schatten, Border-Radien — als benannte Variablen gespeichert. Sie sind plattformunabhängig und können in CSS, iOS, Android oder Figma genutzt werden.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Komponenten-Bibliothek</h4>
+            <p>Fertige UI-Bausteine (Buttons, Cards, Inputs, Modals), die die Tokens verwenden. Sie definieren nicht nur Aussehen, sondern auch Verhalten, States und Accessibility-Anforderungen.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Dokumentation &amp; Richtlinien</h4>
+            <p>Wann, wo und wie die Komponenten eingesetzt werden. Dazu gehören Usage Guidelines, Do/Don't-Beispiele und Designprinzipien, die die Philosophie hinter dem System erklären.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Warum Entwickler das besonders schätzen</div>
+      <p>Als Entwickler kennst du das Prinzip DRY — Don't Repeat Yourself. Design Tokens sind das DRY-Prinzip für visuelle Entscheidungen: Einmal definieren, überall verwenden, zentral ändern.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 3 — Theorie: Token-Ebenen
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Token-Architektur</div>
+    <h2 class="section-title">Die drei Ebenen von Design Tokens</h2>
+
+    <p class="body-text">Design Tokens sind nicht einfach nur CSS-Variablen mit hübschen Namen. Ein durchdachtes Token-System hat <strong>drei Abstraktionsebenen</strong>, die — ähnlich wie Variablen in einer Software-Architektur — unterschiedliche Verantwortlichkeiten tragen. Diese Struktur macht Theming, Rebranding und Plattformwechsel dramatisch einfacher.</p>
+
+    <div class="token-anatomy">
+      <div class="token-layer">
+        <div class="token-layer-num">Ebene 1</div>
+        <div class="token-layer-name">Global Tokens</div>
+        <div class="token-layer-example">--blue-500: #3b82f6</div>
+        <div class="token-layer-desc">Rohe Werte ohne Kontext. Der „Was"-Layer.</div>
+      </div>
+      <div class="token-layer">
+        <div class="token-layer-num">Ebene 2</div>
+        <div class="token-layer-name">Alias Tokens</div>
+        <div class="token-layer-example">--color-primary: var(--blue-500)</div>
+        <div class="token-layer-desc">Semantische Bedeutung. Der „Wofür"-Layer.</div>
+      </div>
+      <div class="token-layer">
+        <div class="token-layer-num">Ebene 3</div>
+        <div class="token-layer-name">Component Tokens</div>
+        <div class="token-layer-example">--btn-bg: var(--color-primary)</div>
+        <div class="token-layer-desc">Komponentenspezifisch. Der „Wo"-Layer.</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Warum drei Ebenen?</div>
+      <p>Stell dir vor, die Markenfarbe ändert sich von Blau zu Violett. <strong>Mit Global Tokens</strong> änderst du einen einzigen Wert (<code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--blue-500</code>), und alle Alias- und Component-Tokens aktualisieren sich automatisch.</p>
+      <p>Oder du brauchst einen <strong>Dark Mode</strong>: Die Global Tokens bleiben gleich, aber die Alias-Tokens zeigen auf andere Werte — <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--color-primary</code> zeigt dann auf <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--blue-300</code> statt <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--blue-500</code>.</p>
+      <p>Dieses Prinzip kennst du aus der Softwareentwicklung: Es ist <strong>Dependency Inversion</strong> — Komponenten hängen nicht von konkreten Werten ab, sondern von Abstraktionen.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Komponenten sollten nie direkt auf Global Tokens zugreifen. Der Pfad ist immer: Global → Alias → Component. So bleibt das System flexibel und thembar.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 4 — Vergleich 1: Ad-hoc vs. System (Farben)
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Vergleich 01</div>
+    <h2 class="section-title">Farbwerte: Ad-hoc vs. Systematisch</h2>
+
+    <p class="body-text">Eines der häufigsten Probleme in gewachsenen Codebasen: Dutzende leicht unterschiedliche Blautöne, die alle dasselbe sein sollten. <strong>Ein Farbsystem mit definierten Stufen</strong> eliminiert diese „35 Shades of Blue" und macht Farbentscheidungen trivial.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="font-family:var(--font-mono);font-size:10px;line-height:2.2;color:var(--text-secondary);">
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#2563eb;vertical-align:middle;margin-right:6px;"></span>color: #2563eb;</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#2864ec;vertical-align:middle;margin-right:6px;"></span>color: #2864ec;</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#2761e8;vertical-align:middle;margin-right:6px;"></span>color: #2761e8;</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#3b82f6;vertical-align:middle;margin-right:6px;"></span>color: #3b82f6;</div>
+              <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#3a80f3;vertical-align:middle;margin-right:6px;"></span>color: #3a80f3;</div>
+              <div style="font-size:9px;color:var(--text-ghost);margin-top:4px;">5 verschiedene „Blautöne" im selben Projekt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="display:flex;gap:4px;margin-bottom:8px;">
+              <div style="flex:1;height:28px;border-radius:4px;background:#eff6ff;"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#bfdbfe;"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#60a5fa;"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#3b82f6;border:2px solid var(--accent);"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#2563eb;"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#1e40af;"></div>
+              <div style="flex:1;height:28px;border-radius:4px;background:#1e3a8a;"></div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:10px;line-height:1.8;color:var(--text-secondary);">
+              <div>--blue-100 … --blue-900</div>
+              <div>--color-primary: var(--blue-500)</div>
+              <div style="font-size:9px;color:var(--text-ghost);margin-top:2px;">7 definierte Stufen, 1 semantischer Alias</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Vorher</div>
+        <div class="annotation-value">5+ Magic Values</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Nachher</div>
+        <div class="annotation-value">7 Stufen, 1 Alias</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Vorteil</div>
+        <div class="annotation-value">Grep-freundlich</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel sind fünf Blautöne im Einsatz, die sich kaum unterscheiden — Ergebnis von Copy-Paste und Colorpicker-Roulette. <strong>Kein Mensch sieht den Unterschied zwischen #2563eb und #2761e8</strong>, aber im Code existieren sie als getrennte Werte.</p>
+      <p>Das „Nachher"-System definiert eine <strong>Farbskala mit 7 benannten Stufen</strong> (100–900). Jede Stufe hat einen klar wahrnehmbaren Unterschied zur nächsten. Der semantische Alias <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--color-primary</code> verweist auf <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--blue-500</code> — so weiß jeder Entwickler sofort, welches Blau gemeint ist.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 5 — Vergleich 2: Spacing Ad-hoc vs. System
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Vergleich 02</div>
+    <h2 class="section-title">Spacing: Pixel-Raten vs. Skalensystem</h2>
+
+    <p class="body-text">Spacing-Inkonsistenz ist der häufigste „unsichtbare" Designfehler. Wenn Abstände per Augenmaß gewählt werden, schwanken sie zwischen 11px, 13px, 14px, 17px — alles ähnlich, aber nie gleich. <strong>Ein definiertes Spacing-System mit geometrisch wachsenden Stufen</strong> macht jede Abstandsentscheidung zum Kinderspiel.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">
+              <div style="margin-bottom:11px;padding:6px 9px;background:var(--bg-elevated);border-radius:4px;">margin-bottom: 11px</div>
+              <div style="margin-bottom:14px;padding:6px 9px;background:var(--bg-elevated);border-radius:4px;">margin-bottom: 14px</div>
+              <div style="margin-bottom:17px;padding:6px 9px;background:var(--bg-elevated);border-radius:4px;">margin-bottom: 17px</div>
+              <div style="margin-bottom:13px;padding:6px 9px;background:var(--bg-elevated);border-radius:4px;">padding: 13px 19px</div>
+              <div style="font-size:9px;color:var(--text-ghost);margin-top:4px;">Alle leicht unterschiedlich — keiner weiß warum</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;margin-bottom:8px;">
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.3;border-radius:3px 3px 0 0;height:6%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.4;border-radius:3px 3px 0 0;height:12%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.5;border-radius:3px 3px 0 0;height:25%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.6;border-radius:3px 3px 0 0;height:38%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.7;border-radius:3px 3px 0 0;height:50%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.8;border-radius:3px 3px 0 0;height:75%;"></div>
+              <div style="width:100%;flex:1;background:var(--accent);opacity:0.9;border-radius:3px 3px 0 0;height:100%;"></div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);display:flex;justify-content:space-between;">
+              <span>4</span><span>8</span><span>16</span><span>24</span><span>32</span><span>48</span><span>64</span>
+            </div>
+            <div style="font-size:9px;color:var(--text-ghost);margin-top:4px;font-family:var(--font-mono);">Geometrische Skala: ×1.5 – ×2 pro Stufe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links: Vier verschiedene Abstände, die alle „ungefähr 12–17px" sind — sie sehen fast gleich aus, erzeugen aber eine subtile visuelle Unruhe. <strong>Das Problem ist nicht der einzelne Wert, sondern dass es kein System gibt</strong>, aus dem man wählen kann.</p>
+      <p>Rechts: Eine Skala mit 7 Stufen (4, 8, 16, 24, 32, 48, 64px). Der Abstand zwischen den Stufen wächst proportional — am unteren Ende liegen die Werte nah beieinander (wo kleine Unterschiede sichtbar sind), am oberen Ende weiter auseinander (wo 48px vs. 50px niemand bemerkt). <strong>Dieses Prinzip empfehlen auch Adam Wathan und Steve Schoger in „Refactoring UI"</strong> — ein System, das echte Wahlmöglichkeiten bietet statt Pixel-Raten.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Definiere deine Spacing-Skala mit Werten, die mindestens 25% auseinander liegen. So ist jede Stufe visuell klar unterscheidbar, und die Entscheidung „zu eng oder zu weit?" wird zum einfachen Ausschlussverfahren.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 6 — Vergleich 3: Typografie ohne vs. mit System
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Vergleich 03</div>
+    <h2 class="section-title">Typografie: Freestyle vs. Type Scale</h2>
+
+    <p class="body-text">Wenn jeder Entwickler Schriftgrößen frei wählt, landen in einem Projekt schnell 15+ verschiedene Font-Sizes — von 10px bis 48px, mit vielen kaum unterscheidbaren Zwischenstufen. <strong>Eine handgemachte Type Scale</strong> reduziert die Optionen auf 8–10 klar differenzierte Stufen.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="font-family:var(--font-body);">
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Überschrift — 22px</div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Unterüberschrift — 18px</div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Body Copy — 15px</div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Sidebar-Text — 14px</div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Caption — 13px</div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:2px;">Small Print — 12px</div>
+              <div style="font-size:9px;color:var(--text-ghost);margin-top:6px;">14px vs. 15px: kaum sichtbar, aber 2 Tokens</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="font-family:var(--font-body);">
+              <div style="font-size:24px;font-weight:800;color:var(--text-primary);line-height:1.2;">Display — 32px</div>
+              <div style="font-size:18px;font-weight:700;color:var(--text-primary);line-height:1.3;">Heading — 24px</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.4;">Title — 19px</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Body — 15px</div>
+              <div style="font-size:10px;color:var(--text-tertiary);line-height:1.5;">Small — 12px</div>
+              <div style="font-size:9px;color:var(--text-ghost);margin-top:6px;">5 Stufen, jede klar unterscheidbar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Vorher</div>
+        <div class="annotation-value">6+ Sizes (12–22)</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Nachher</div>
+        <div class="annotation-value">5 Stufen, klar</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Methode</div>
+        <div class="annotation-value">Hand-crafted Scale</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel liegen 13px, 14px und 15px so nah beieinander, dass der Unterschied <strong>visuell kaum wahrnehmbar</strong> ist — trotzdem existieren sie als getrennte Werte im Code. Das schafft keine Hierarchie, sondern Rauschen.</p>
+      <p>Die „Nachher"-Skala nutzt ein <strong>handgemachtes System</strong> (nicht streng mathematisch, sondern bewusst gewählt), bei dem jede Stufe einen klar sichtbaren Sprung macht. Wie in Refactoring UI empfohlen: Mathematische Reinheit ist weniger wichtig als praktische Unterscheidbarkeit.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 7 — Vergleich 4: Theming ohne vs. mit Tokens
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Vergleich 04</div>
+    <h2 class="section-title">Theming: Hardcoded vs. Token-basiert</h2>
+
+    <p class="body-text">Der ultimative Test für ein Token-System: Wie schwer ist es, einen Dark Mode hinzuzufügen? Ohne Tokens bedeutet das Suchen-und-Ersetzen durch hunderte Dateien. Mit Tokens: <strong>ein paar Alias-Werte umschalten, fertig.</strong></p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:9px;line-height:1.9;color:var(--text-secondary);">
+              <div><span class="tok-sel">.card</span> {</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">background</span>: <span class="tok-val">#ffffff</span>;</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">color</span>: <span class="tok-val">#1a1a2e</span>;</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">border</span>: <span class="tok-num">1px</span> solid <span class="tok-val">#e5e5e5</span>;</div>
+              <div>}</div>
+              <div style="color:var(--text-ghost);margin-top:2px;">/* Dark Mode? → 47 Dateien ändern */</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:9px;line-height:1.9;color:var(--text-secondary);">
+              <div><span class="tok-sel">.card</span> {</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">background</span>: <span class="tok-val">var(--bg-surface)</span>;</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">color</span>: <span class="tok-val">var(--text-primary)</span>;</div>
+              <div>&nbsp;&nbsp;<span class="tok-prop">border</span>: <span class="tok-num">1px</span> solid <span class="tok-val">var(--bg-elevated)</span>;</div>
+              <div>}</div>
+              <div style="color:var(--text-ghost);margin-top:2px;">/* Dark Mode? → 1 Stelle ändern ✓ */</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links: Hardcoded Hex-Werte. Für einen Dark Mode müsstest du <strong>jede einzelne Farbverwendung</strong> in jeder Datei finden und ersetzen — fehleranfällig und zeitintensiv.</p>
+      <p>Rechts: <strong>Semantische Alias-Tokens</strong> wie <code style="font-family:var(--font-mono);font-size:11px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--bg-surface</code> und <code style="font-family:var(--font-mono);font-size:11px;background:var(--bg-elevated);padding:1px 4px;border-radius:3px;">--text-primary</code>. Diese werden an einer zentralen Stelle für Light und Dark Mode definiert. Die Komponente selbst bleibt unverändert — sie „weiß" nicht, in welchem Theme sie läuft.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verwende in Komponenten ausschließlich semantische Tokens (Alias oder Component Level). Hardcoded Hex-Werte in Komponenten-CSS sind ein Code Smell — sie deuten auf ein fehlendes Token hin.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 8 — Vergleich 5: Shadows & Border-Radius System
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Vergleich 05</div>
+    <h2 class="section-title">Schatten &amp; Radien: Individuell vs. Elevation-System</h2>
+
+    <p class="body-text">Schatten und Border-Radien sind die Werte, die am häufigsten „frei Hand" gewählt werden. Dabei profitieren gerade sie enorm von einem System: <strong>Ein Elevation-System mit 3–5 Stufen</strong> erzeugt eine klare visuelle Tiefenhierarchie und spart Entscheidungszeit.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="display:flex;gap:8px;justify-content:center;align-items:center;min-height:70px;">
+              <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.12);"></div>
+              <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div>
+              <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,0.1);"></div>
+              <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.18);"></div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);text-align:center;margin-top:4px;">4 Cards, 4 verschiedene Radien + Schatten</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="display:flex;gap:8px;justify-content:center;align-items:center;min-height:70px;">
+              <div style="text-align:center;">
+                <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:8px;box-shadow:var(--shadow-sm);margin:0 auto;"></div>
+                <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">sm</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:8px;box-shadow:var(--shadow-md);margin:0 auto;"></div>
+                <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">md</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="width:50px;height:40px;background:var(--bg-surface);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);margin:0 auto;"></div>
+                <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">lg</div>
+              </div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);text-align:center;margin-top:4px;">3 Elevation-Stufen, konsistenter Radius</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links: Jede Card hat ihren eigenen Schatten und Border-Radius — das Ergebnis sieht <strong>zufällig statt geplant</strong> aus. Es gibt keine erkennbare Tiefenhierarchie.</p>
+      <p>Rechts: Drei klar definierte Elevation-Stufen (sm, md, lg) mit <strong>zunehmendem Blur-Radius und Offset</strong>. Der Border-Radius ist bei allen gleich. Material Design 3 nutzt dasselbe Prinzip mit 5 Elevation-Stufen (Level 0–5). Wie in Refactoring UI empfohlen: Definiere 3–5 Schatten vorher und wähle basierend auf der gewünschten Tiefe, nicht auf Gefühl.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 9 — Interaktiv: Token Playground
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Token Playground — Lebe den Unterschied</h2>
+
+    <p class="body-text">Verändere die Token-Werte und beobachte in Echtzeit, wie sie die Komponente beeinflussen. <strong>Beachte, wie sich das Token-Output automatisch aktualisiert</strong> — das ist die Stärke eines Systems.</p>
+
+    <div class="token-playground" id="tokenPlayground">
+      <div class="token-playground-title">
+        <i data-lucide="sliders"></i>
+        Token-Werte anpassen
+      </div>
+
+      <div class="token-controls">
+        <div class="token-control-group">
+          <label>--color-primary</label>
+          <select id="tkColorPrimary">
+            <option value="#0ea5a0">Teal (#0ea5a0)</option>
+            <option value="#3b82f6">Blue (#3b82f6)</option>
+            <option value="#8b5cf6">Purple (#8b5cf6)</option>
+            <option value="#ec4899">Pink (#ec4899)</option>
+            <option value="#f59e0b">Amber (#f59e0b)</option>
+          </select>
+        </div>
+        <div class="token-control-group">
+          <label>--radius</label>
+          <select id="tkRadius">
+            <option value="0px">0px (Sharp)</option>
+            <option value="4px">4px (Subtle)</option>
+            <option value="8px" selected>8px (Default)</option>
+            <option value="16px">16px (Rounded)</option>
+            <option value="9999px">Full (Pill)</option>
+          </select>
+        </div>
+        <div class="token-control-group">
+          <label>--spacing-md</label>
+          <input type="range" id="tkSpacing" min="8" max="32" value="16" step="4">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary);margin-top:2px;" id="tkSpacingLabel">16px</div>
+        </div>
+        <div class="token-control-group">
+          <label>--font-size-body</label>
+          <select id="tkFontSize">
+            <option value="12px">12px (Small)</option>
+            <option value="14px" selected>14px (Default)</option>
+            <option value="16px">16px (Large)</option>
+            <option value="18px">18px (X-Large)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="token-preview-card" id="tokenPreview">
+        <h3 id="previewTitle" style="font-size:18px;color:var(--text-primary);">Dein Design Token-System</h3>
+        <p id="previewBody" style="font-size:14px;color:var(--text-secondary);">Diese Card reagiert auf die Token-Änderungen oben. Verändere Farbe, Radius, Spacing oder Schriftgröße — und sieh, wie ein einziger Wert das gesamte Look &amp; Feel beeinflusst.</p>
+        <button class="preview-btn" id="previewBtn" style="padding:8px 20px;border-radius:8px;font-size:14px;color:#fff;background:#0ea5a0;">Primary Button</button>
+      </div>
+
+      <div class="token-output" id="tokenOutput">/* Live Token-Output */
+:root {
+  --color-primary: #0ea5a0;
+  --radius: 8px;
+  --spacing-md: 16px;
+  --font-size-body: 14px;
+}</div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 10 — Reflexion 1 + 2
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Reflexion</div>
+    <h2 class="section-title">Eigene Gedanken festhalten</h2>
+
+    <p class="body-text">Bevor du weitergehst: Nimm dir einen Moment, um die zentralen Konzepte in eigenen Worten zu reflektieren. <strong>Schreibe deine Überlegungen auf, dann decke die Musterantwort auf.</strong> Das Aufschreiben verankert das Gelernte deutlich besser als nur Lesen.</p>
+
+    <div class="reflection-block">
+      <div class="reflection-title">
+        <i data-lucide="message-circle"></i>
+        Reflexion 1
+      </div>
+      <div class="reflection-question">Ein Kollege fragt: „Warum brauchen wir ein Token-System? CSS-Variablen reichen doch." — Was antwortest du?</div>
+      <textarea class="reflection-textarea" placeholder="Deine Überlegung hier notieren…"></textarea>
+      <button class="reflection-reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible')">
+        <i data-lucide="eye"></i>
+        Musterantwort anzeigen
+      </button>
+      <div class="reflection-answer">
+        <p><strong>CSS-Variablen sind die Technik — ein Token-System ist die Architektur.</strong> Einfache CSS-Variablen wie <code style="font-family:var(--font-mono);font-size:11px;">--blue: #3b82f6</code> sind besser als Hardcoded Values, aber sie lösen nicht das Benennungs- und Strukturproblem.</p>
+        <p>Ein Token-System fügt <strong>semantische Ebenen</strong> hinzu: <code style="font-family:var(--font-mono);font-size:11px;">--color-primary</code> sagt etwas über die Verwendung aus, nicht nur über den Wert. Es ermöglicht Theming (Light/Dark), macht Rebranding trivial und schafft eine gemeinsame Sprache zwischen Designern und Entwicklern.</p>
+      </div>
+    </div>
+
+    <div class="reflection-block">
+      <div class="reflection-title">
+        <i data-lucide="message-circle"></i>
+        Reflexion 2
+      </div>
+      <div class="reflection-question">Du öffnest eine Codebasis und findest: padding: 13px, margin: 17px, gap: 11px. Was sagt dir das über das vorhandene Design System?</div>
+      <textarea class="reflection-textarea" placeholder="Deine Überlegung hier notieren…"></textarea>
+      <button class="reflection-reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible')">
+        <i data-lucide="eye"></i>
+        Musterantwort anzeigen
+      </button>
+      <div class="reflection-answer">
+        <p><strong>Es gibt wahrscheinlich kein Spacing-System</strong> — oder es wird nicht konsequent genutzt. Die Werte 13, 17 und 11 liegen auf keiner gängigen Skala (4er, 8er, oder geometrisch). Sie wirken wie „was gerade passte".</p>
+        <p>Die Lösung: Eine Spacing-Skala einführen (z.B. 4, 8, 12, 16, 24, 32, 48, 64) und die Ad-hoc-Werte schrittweise migrieren. Jeder neue Code sollte dann nur noch Werte aus der Skala verwenden.</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 11 — Reflexion 3 + Bekannte Design Systems
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="reflection-block">
+      <div class="reflection-title">
+        <i data-lucide="message-circle"></i>
+        Reflexion 3
+      </div>
+      <div class="reflection-question">Warum sollten Component Tokens nicht direkt auf Global Tokens zugreifen? Nenne ein konkretes Problem, das dabei entstehen kann.</div>
+      <textarea class="reflection-textarea" placeholder="Deine Überlegung hier notieren…"></textarea>
+      <button class="reflection-reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible')">
+        <i data-lucide="eye"></i>
+        Musterantwort anzeigen
+      </button>
+      <div class="reflection-answer">
+        <p>Wenn ein Button direkt <code style="font-family:var(--font-mono);font-size:11px;">var(--blue-500)</code> nutzt, ist er <strong>an eine konkrete Farbe gebunden</strong>. Ein Rebranding von Blau zu Violett erfordert dann, jeden Button zu finden und zu ändern.</p>
+        <p>Mit der Alias-Ebene dazwischen (<code style="font-family:var(--font-mono);font-size:11px;">--btn-bg: var(--color-primary)</code> und <code style="font-family:var(--font-mono);font-size:11px;">--color-primary: var(--blue-500)</code>) änderst du nur <strong>eine Zeile</strong>, und alle Buttons passen sich an. Dasselbe Prinzip wie bei einem Interface/Abstraktion in Code — die Komponente kennt den konkreten Wert nicht.</p>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="section-label">Referenz</div>
+    <h2 class="section-title">Bekannte Design Systems in der Praxis</h2>
+
+    <p class="body-text">Um zu sehen, wie die Theorie in der echten Welt aussieht, lohnt ein Blick auf etablierte Design Systems. Jedes löst die Token-Frage etwas anders — aber alle folgen dem Prinzip der Abstraktion:</p>
+
+    <div class="theory-card">
+      <div class="section-label">Praxis-Referenzen</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Material Design 3 (Google)</h4>
+            <p>Nutzt „Color Roles" als Alias-Tokens: --md-sys-color-primary, --md-sys-color-surface. Die „sys"-Prefix zeigt: das ist die System-Ebene (Alias), nicht die Referenz-Ebene (Global).</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Tailwind CSS</h4>
+            <p>Der Konfigurationsansatz: Design Tokens werden in tailwind.config.js als JavaScript-Objekte definiert. Utility-Klassen (bg-blue-500, p-4, text-lg) sind im Grunde Component Tokens in Klassenform.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>IBM Carbon</h4>
+            <p>Vorbildliche Token-Dokumentation mit expliziter Trennung in „global", „contextual" und „component" Tokens. Besonders stark bei Accessibility: Jeder Token trägt WCAG-Kontrastinformationen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 12 — Praxisaufgabe
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Praxis</div>
+    <h2 class="section-title">Praxisaufgabe: Token-System aufbauen</h2>
+
+    <p class="body-text">Im folgenden Startcode findest du eine kleine UI mit <strong>ausschließlich hardcoded Werten</strong> — Hex-Farben, Pixel-Werte, direkte Schatten. Deine Aufgabe: Extrahiere die Werte in ein dreistufiges Token-System und wende es auf die Komponenten an.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Refaktoriere den hardcoded CSS-Code zu einem Token-basierten System. Folge dabei den Prinzipien aus diesem Modul.</p>
+      <ul class="task-list">
+        <li><strong>Global Tokens definieren:</strong> Erstelle eine Farbskala (mindestens 3 Stufen für die Primärfarbe), eine Spacing-Skala (4, 8, 16, 24, 32px) und eine Schatten-Skala (sm, md, lg)</li>
+        <li><strong>Alias Tokens erstellen:</strong> Definiere semantische Namen wie --color-primary, --color-surface, --text-primary, --text-secondary, --spacing-md, --radius-md</li>
+        <li><strong>Component Tokens ableiten:</strong> Erstelle mindestens 3 Component Tokens für den Button (--btn-bg, --btn-text, --btn-radius) und 2 für die Card (--card-bg, --card-shadow)</li>
+        <li><strong>Dark Mode hinzufügen:</strong> Nutze [data-theme="dark"] um die Alias-Tokens umzuschalten — ohne eine einzige Zeile Komponenten-CSS zu ändern</li>
+        <li><strong>Reflexion:</strong> Wie viele Stellen müsstest du ändern, um die Primärfarbe von Blau zu Grün zu wechseln? Schreibe die Antwort als Kommentar in den Code</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Tipp</div>
+      <p>Beginne mit den Global Tokens (rohe Werte), leite dann die Alias Tokens ab, und referenziere in den Komponenten nur die Alias/Component Tokens. So baust du das System von unten nach oben auf — genau wie in einer Software-Architektur.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 13 — Code-Block
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 13</span>
+        <button class="copy-btn" id="copyBtn">
+          <i data-lucide="copy"></i>
+          <span class="copy-label">Code kopieren</span>
+        </button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- AUFGABE: Refaktoriere die hardcoded Werte zu Design Tokens --&gt;</span>
+<span class="tok-comment">&lt;!-- Tipp: Erstelle :root { } mit Global → Alias → Component Tokens --&gt;</span>
+
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-comment">/* ❌ Alles hardcoded — extrahiere in Tokens! */</span>
+
+  <span class="tok-sel">body</span> {
+    <span class="tok-prop">font-family</span>: <span class="tok-val">'Plus Jakarta Sans', sans-serif</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#f4f4f8</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#12121e</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">32px</span>;
+  }
+
+  <span class="tok-sel">.card</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#ffffff</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">12px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">24px</span>;
+    <span class="tok-prop">box-shadow</span>: <span class="tok-val">0 4px 12px rgba(0,0,0,0.08)</span>;
+    <span class="tok-prop">max-width</span>: <span class="tok-num">400px</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">0</span> auto;
+  }
+
+  <span class="tok-sel">.card h2</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">20px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">700</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#12121e</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">0 0 8px 0</span>;
+  }
+
+  <span class="tok-sel">.card p</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#52526e</span>;
+    <span class="tok-prop">line-height</span>: <span class="tok-num">1.6</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">0 0 16px 0</span>;
+  }
+
+  <span class="tok-sel">.btn-primary</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#3b82f6</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#ffffff</span>;
+    <span class="tok-prop">border</span>: <span class="tok-val">none</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">10px 20px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+  }
+
+  <span class="tok-sel">.btn-secondary</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">transparent</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#3b82f6</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1px</span> solid <span class="tok-val">#3b82f6</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">10px 20px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+  }
+
+  <span class="tok-sel">.badge</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">inline-block</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">rgba(59,130,246,0.1)</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#3b82f6</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">4px 12px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">100px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">12px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">16px</span>;
+  }
+
+  <span class="tok-sel">.actions</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">8px</span>;
+  }
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"badge"</span><span class="tok-tag">&gt;</span>Design System<span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;h2&gt;</span>Token-basierte Card<span class="tok-tag">&lt;/h2&gt;</span>
+  <span class="tok-tag">&lt;p&gt;</span>Diese Komponente nutzt nur hardcoded Werte. Refaktoriere sie, sodass alle
+    visuellen Eigenschaften aus Design Tokens kommen.<span class="tok-tag">&lt;/p&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"actions"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-primary"</span><span class="tok-tag">&gt;</span>Speichern<span class="tok-tag">&lt;/button&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-secondary"</span><span class="tok-tag">&gt;</span>Abbrechen<span class="tok-tag">&lt;/button&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SEITE 14 — Abschluss-Reflexion
+════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+
+    <div class="section-label">Abschluss</div>
+    <h2 class="section-title">Abschluss-Reflexion</h2>
+
+    <p class="body-text">Zum Abschluss dieses Moduls: Verbinde das Gelernte mit deiner eigenen Arbeit. Diese Reflexionen haben kein „richtig" oder „falsch" — sie helfen dir, die Konzepte in deinen Arbeitsalltag zu transferieren.</p>
+
+    <div class="reflection-block">
+      <div class="reflection-title">
+        <i data-lucide="message-circle"></i>
+        Transfer-Reflexion
+      </div>
+      <div class="reflection-question">Denke an das letzte Projekt, an dem du gearbeitet hast. An welcher Stelle hätte ein Token-System den größten Unterschied gemacht? Welche Werte wurden am häufigsten inkonsistent verwendet?</div>
+      <textarea class="reflection-textarea" placeholder="Denke konkret an Farben, Abstände, Schatten, Schriftgrößen…"></textarea>
+      <button class="reflection-reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible')">
+        <i data-lucide="lightbulb"></i>
+        Denkanstoß anzeigen
+      </button>
+      <div class="reflection-answer">
+        <p>Häufige Problemstellen: <strong>Grautöne</strong> (viele leicht verschiedene), <strong>Abstände</strong> (besonders padding und margin in Forms), <strong>Border-Radien</strong> (4px hier, 6px dort, 8px woanders), und <strong>Schatten</strong> (jede Komponente hat ihren eigenen). Wenn du mehr als 3 verschiedene Hex-Werte für „fast dasselbe Grau" findest, ist das ein klares Zeichen für ein fehlendes Token-System.</p>
+      </div>
+    </div>
+
+    <div class="reflection-block">
+      <div class="reflection-title">
+        <i data-lucide="message-circle"></i>
+        Nächster Schritt
+      </div>
+      <div class="reflection-question">Wenn du morgen ein Token-System in dein Team einführen müsstest — mit welcher Kategorie (Farbe, Spacing, Typografie, Schatten) würdest du anfangen und warum?</div>
+      <textarea class="reflection-textarea" placeholder="Überlege: Was bringt den größten ROI bei geringstem Aufwand?"></textarea>
+      <button class="reflection-reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible')">
+        <i data-lucide="lightbulb"></i>
+        Denkanstoß anzeigen
+      </button>
+      <div class="reflection-answer">
+        <p>Empfehlung: <strong>Farben zuerst.</strong> Sie haben den höchsten visuellen Impact, die meisten Inkonsistenzen, und sind die Grundlage für Theming. Danach Spacing (weil es alles beeinflusst), dann Typografie, dann Schatten. Wichtig: Nicht alles auf einmal — lieber ein System gut einführen als vier halb.</p>
+      </div>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Zusammenfassung</div>
+      <p>Design Tokens sind die Brücke zwischen Design und Code. Sie machen Entscheidungen explizit, wiederverwendbar und zentral änderbar. Denke in drei Ebenen (Global → Alias → Component), starte klein, und baue dein System organisch aus.</p>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 13 — Design Systems & Tokens</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+lucide.createIcons();
+
+/* ── Theme Toggle ─────────────────────────────── */
+const themeBtn = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+      ? 'light' : 'dark'
+  );
+});
+
+/* ── View Mode Toggle ─────────────────────────── */
+const viewBtn = document.getElementById('viewToggle');
+
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf');
+    body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web');
+    body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+/* ── Seitennummern ────────────────────────────── */
+document.querySelectorAll('.pnum').forEach((el, i) => {
+  el.textContent = i + 1;
+});
+
+/* ── Token Playground ─────────────────────────── */
+const tkColor = document.getElementById('tkColorPrimary');
+const tkRadius = document.getElementById('tkRadius');
+const tkSpacing = document.getElementById('tkSpacing');
+const tkFontSize = document.getElementById('tkFontSize');
+const tkSpacingLabel = document.getElementById('tkSpacingLabel');
+const tokenPreview = document.getElementById('tokenPreview');
+const previewBtn = document.getElementById('previewBtn');
+const previewBody = document.getElementById('previewBody');
+const tokenOutput = document.getElementById('tokenOutput');
+
+function updateTokenPlayground() {
+  const color = tkColor.value;
+  const radius = tkRadius.value;
+  const spacing = tkSpacing.value + 'px';
+  const fontSize = tkFontSize.value;
+
+  tkSpacingLabel.textContent = spacing;
+
+  // Update preview card
+  tokenPreview.style.padding = spacing;
+  tokenPreview.style.borderRadius = radius;
+  previewBtn.style.background = color;
+  previewBtn.style.borderRadius = radius === '9999px' ? '9999px' :
+    (parseInt(radius) > 0 ? Math.max(4, parseInt(radius) - 4) + 'px' : '0px');
+  previewBtn.style.padding = `${Math.max(6, parseInt(spacing) - 8)}px ${parseInt(spacing) + 4}px`;
+  previewBtn.style.fontSize = fontSize;
+  previewBody.style.fontSize = fontSize;
+
+  // Update output
+  tokenOutput.textContent = `/* Live Token-Output */
+:root {
+  --color-primary: ${color};
+  --radius: ${radius};
+  --spacing-md: ${spacing};
+  --font-size-body: ${fontSize};
+}
+
+.card {
+  padding: var(--spacing-md);
+  border-radius: var(--radius);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  font-size: var(--font-size-body);
+}`;
+}
+
+tkColor.addEventListener('change', updateTokenPlayground);
+tkRadius.addEventListener('change', updateTokenPlayground);
+tkSpacing.addEventListener('input', updateTokenPlayground);
+tkFontSize.addEventListener('change', updateTokenPlayground);
+
+/* ── Copy Button ──────────────────────────────── */
+const rawCode = `<!-- AUFGABE: Refaktoriere die hardcoded Werte zu Design Tokens -->
+<!-- Tipp: Erstelle :root { } mit Global → Alias → Component Tokens -->
+
+<style>
+  /* ❌ Alles hardcoded — extrahiere in Tokens! */
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #f4f4f8;
+    color: #12121e;
+    padding: 32px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #12121e;
+    margin: 0 0 8px 0;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: #52526e;
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+  }
+
+  .btn-primary {
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(59,130,246,0.1);
+    color: #3b82f6;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+</style>
+
+<div class="card">
+  <div class="badge">Design System</div>
+  <h2>Token-basierte Card</h2>
+  <p>Diese Komponente nutzt nur hardcoded Werte. Refaktoriere sie, sodass alle
+    visuellen Eigenschaften aus Design Tokens kommen.</p>
+  <div class="actions">
+    <button class="btn-primary">Speichern</button>
+    <button class="btn-secondary">Abbrechen</button>
+  </div>
+</div>`;
+
+const copyBtn = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyLabel.textContent = 'Code kopieren';
+  }, 2500);
+});
+</script>
+</body>
+</html>

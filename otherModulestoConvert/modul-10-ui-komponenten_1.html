@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 10 — UI-Komponenten: Buttons, Cards, Forms</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT SETTINGS
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PDF-MODUS (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* Web-Modus Schriftgrößen-Overrides */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.5px; color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.page-subtitle {
+  font-size: 15px; font-weight: 500; line-height: 1.5;
+  color: var(--text-secondary); margin: 0 0 var(--space-xl) 0; max-width: 520px;
+}
+.section-title {
+  font-size: 19px; font-weight: 700; line-height: 1.3;
+  letter-spacing: -0.2px; color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+.section-label {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.body-text {
+  font-size: 13px; font-weight: 400; line-height: 1.7;
+  color: var(--text-secondary); margin: 0 0 var(--space-md) 0;
+}
+.body-text strong { font-weight: 600; color: var(--text-primary); }
+.small-text {
+  font-size: 11px; font-weight: 400; line-height: 1.6; color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex; gap: var(--space-lg); margin-bottom: var(--space-xl);
+}
+.meta-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+}
+.meta-item svg { width: 14px; height: 14px; stroke-width: 2; color: var(--text-ghost); }
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.learning-goals-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-md) 0; display: flex; align-items: center; gap: var(--space-sm);
+}
+.learning-goals-title svg { width: 14px; height: 14px; }
+.learning-goals-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--space-sm);
+}
+.learning-goals-list li {
+  font-size: 13px; line-height: 1.5; color: var(--text-secondary);
+  padding-left: 24px; position: relative;
+}
+.learning-goals-list li::before {
+  content: ''; position: absolute; left: 0; top: 6px;
+  width: 14px; height: 14px; border-radius: 4px;
+  background: var(--accent-dim); border: 1.5px solid var(--accent-border);
+}
+.learning-goals-list li::after {
+  content: ''; position: absolute; left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px; background: var(--bg-elevated);
+  margin: var(--space-lg) 0; border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+.concept-list {
+  counter-reset: concept; display: flex; flex-direction: column; gap: var(--space-md);
+}
+.concept-item {
+  display: flex; gap: var(--space-md); counter-increment: concept;
+}
+.concept-num {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  color: var(--accent); flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+.concept-body h4 {
+  font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS (Vorher / Nachher)
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--space-md); margin-bottom: var(--space-lg);
+}
+.panel {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); overflow: hidden; position: relative;
+}
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color); background: var(--bad-bg); border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: var(--space-md);
+  min-height: 80px; display: flex; flex-direction: column; justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7; color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p { font-size: 13px; line-height: 1.6; margin: 0; font-weight: 500; }
+.rule-box p { color: #0a6e6a; }
+[data-theme="dark"] .rule-box p { color: var(--accent-text); }
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm); margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0;
+}
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   MODULE 10 — INTERACTIVE COMPONENTS
+══════════════════════════════════════════ */
+
+/* Interactive badge */
+.interactive-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 100px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.20);
+  color: #6366f1;
+  margin-left: var(--space-sm);
+}
+[data-theme="dark"] .interactive-badge {
+  background: rgba(129, 140, 248, 0.10);
+  border: 1px solid rgba(129, 140, 248, 0.20);
+  color: #818cf8;
+}
+
+/* Playground container (reused from M09) */
+.playground-container {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.playground-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.playground-title svg { width: 14px; height: 14px; }
+
+.playground-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg);
+}
+
+.playground-preview {
+  background: var(--bg-base); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md); min-height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.playground-preview::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, var(--accent-dim) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(99,102,241,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.playground-controls {
+  display: flex; flex-direction: column; gap: var(--space-md);
+}
+
+/* Control groups */
+.control-group { display: flex; flex-direction: column; gap: 4px; }
+.control-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-ghost);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.control-value { color: var(--accent); font-weight: 700; }
+
+/* Range slider */
+.control-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: var(--bg-elevated); outline: none; cursor: pointer;
+}
+.control-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.control-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Option pills */
+.option-pills {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.option-pill {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.5px; padding: 4px 10px; border-radius: 100px;
+  border: 1px solid var(--bg-elevated); background: var(--bg-surface);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+}
+.option-pill:hover { border-color: var(--accent-border); color: var(--accent); }
+.option-pill.active {
+  background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent);
+}
+
+/* Color picker */
+.color-picker-row { display: flex; align-items: center; gap: var(--space-sm); }
+.color-picker-input {
+  -webkit-appearance: none; appearance: none;
+  width: 28px; height: 28px; border: 2px solid var(--bg-elevated);
+  border-radius: 6px; cursor: pointer; background: transparent; padding: 0;
+}
+.color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-picker-input::-webkit-color-swatch { border: none; border-radius: 4px; }
+.color-picker-input::-moz-color-swatch { border: none; border-radius: 4px; }
+
+/* CSS Output */
+.css-output {
+  background: #1a1a2e; border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md); margin-top: var(--space-sm);
+}
+.css-output code {
+  font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+  color: #c8d3f5; white-space: pre-wrap;
+}
+
+/* Reset button */
+.reset-btn {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--bg-elevated); background: var(--bg-surface);
+  color: var(--text-tertiary); cursor: pointer; transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+
+/* ── Button Hierarchy Demo ────────────── */
+.btn-hierarchy-row {
+  display: flex; gap: var(--space-md); align-items: center;
+  justify-content: center; flex-wrap: wrap;
+}
+.demo-btn {
+  font-family: var(--font-body); font-weight: 600; cursor: pointer;
+  transition: all 0.2s; border: none; display: inline-flex;
+  align-items: center; gap: 6px;
+}
+.demo-btn svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+/* ── Form States Demo ─────────────────── */
+.form-states-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+.form-state-card {
+  background: var(--bg-surface); border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm); padding: var(--space-md);
+}
+.form-state-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.demo-input {
+  width: 100%; padding: 8px 12px; border-radius: 8px;
+  font-family: var(--font-body); font-size: 13px;
+  background: var(--bg-base); color: var(--text-primary);
+  outline: none; transition: all 0.2s;
+}
+
+/* ── Card Anatomy Demo ────────────────── */
+.anatomy-card {
+  background: var(--bg-surface); border-radius: var(--radius-md);
+  overflow: hidden; max-width: 280px; margin: 0 auto;
+  position: relative; z-index: 1;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.anatomy-card:hover { transform: translateY(-2px); }
+.anatomy-header {
+  height: 80px; position: relative; overflow: hidden;
+}
+.anatomy-body { padding: var(--space-md); }
+.anatomy-eyebrow {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 4px;
+}
+.anatomy-title {
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 6px; line-height: 1.3;
+}
+.anatomy-desc {
+  font-size: 11px; line-height: 1.5; color: var(--text-tertiary);
+  margin-bottom: var(--space-md);
+}
+.anatomy-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--space-md) var(--space-md) var(--space-md);
+}
+.anatomy-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+.anatomy-meta {
+  font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);
+}
+
+/* Annotation markers for anatomy */
+.anatomy-marker {
+  position: absolute; z-index: 5;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(14,165,160,0.4);
+  cursor: default;
+}
+.anatomy-legend {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: var(--space-md);
+}
+.anatomy-legend-item {
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.anatomy-legend-num {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  color: var(--accent); display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+}
+.anatomy-legend-text {
+  font-size: 11px; color: var(--text-secondary); line-height: 1.3;
+}
+.anatomy-legend-text strong {
+  font-weight: 600; color: var(--text-primary);
+}
+</style>
+</head>
+<body>
+
+<!-- Toggle Buttons -->
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+    <i data-lucide="monitor"></i>
+  </button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+    <i data-lucide="sun"></i>
+  </button>
+</div>
+
+<div class="web-container">
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 1 — TITELSEITE
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="module-tag">Modul 10</div>
+
+    <h1 class="page-title">UI-Komponenten:<br>Buttons, Cards, Forms</h1>
+    <p class="page-subtitle">Die drei häufigsten Bausteine jeder Anwendung — und warum kleine Details bei Padding, States und Hierarchie den Unterschied zwischen „funktioniert" und „fühlt sich richtig an" ausmachen.</p>
+
+    <div class="module-meta">
+      <div class="meta-item">
+        <i data-lucide="clock"></i>
+        <span>75 Minuten</span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="code"></i>
+        <span>Praxisaufgabe: ~25 Min.</span>
+      </div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title">
+        <i data-lucide="target"></i>
+        Lernziele
+      </div>
+      <ul class="learning-goals-list">
+        <li>Die drei Hierarchie-Stufen von Buttons verstehen und visuell korrekt umsetzen (Primary, Secondary, Tertiary)</li>
+        <li>Card-Anatomie kennen: Header, Body, Footer, Eyebrow — und wissen, wann welches Element zum Einsatz kommt</li>
+        <li>Form-Felder mit klaren visuellen States gestalten (Default, Focus, Error, Disabled, Success)</li>
+        <li>Konsistente Komponenten-Proportionen aufbauen: Padding, Border-Radius und Font-Size als System</li>
+        <li>Interaktive States (Hover, Active, Focus) als integralen Teil des Designs begreifen, nicht als Nachgedanke</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Gute Komponenten entstehen nicht durch Zufall. Jeder Button, jede Card und jedes Formular-Feld folgt Regeln — zu Hierarchie, Proportionen und States. Wer diese Regeln kennt, baut konsistente UIs, ohne jede Entscheidung neu treffen zu müssen.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 2 — THEORIE
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Theorie</div>
+    <h2 class="section-title">Die Anatomie guter Komponenten</h2>
+
+    <p class="body-text">Jede UI-Komponente lässt sich auf wenige Grundbausteine zurückführen: <strong>Container</strong> (der äußere Rahmen mit Background, Border, Shadow), <strong>Content</strong> (Text, Icons, Bilder) und <strong>States</strong> (wie sich die Komponente bei Interaktion verändert). Wer diese drei Ebenen bewusst gestaltet, baut professionelle UIs.</p>
+
+    <div class="theory-card">
+      <div class="section-label">Die drei Säulen</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Hierarchie bestimmt das Styling</h4>
+            <p>Nicht jede Aktion ist gleich wichtig. Primary Buttons bekommen die volle visuelle Kraft — solider Hintergrund, hoher Kontrast. Secondary Buttons treten zurück — Outline oder gedämpfte Farbe. Tertiary Buttons sind kaum sichtbar, oft nur Text-Links. Genau eine Primary Action pro Bildschirmbereich.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Proportionen sind ein System</h4>
+            <p>Padding, Border-Radius und Font-Size bilden ein zusammenhängendes System. Ein Button mit 14px Font braucht ~10px vertikales und ~20px horizontales Padding. Das Verhältnis bleibt über Größen hinweg konsistent — nur die Absolutwerte ändern sich.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>States sind kein Nachgedanke</h4>
+            <p>Hover, Focus, Active, Disabled, Error — jeder State kommuniziert etwas Wichtiges. Focus zeigt Tastatur-Navigation. Disabled sagt „nicht jetzt". Error erklärt, was schiefging. Alle States sollten von Anfang an mitgedacht werden, nicht erst am Ende draufgeklebt.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Cards sind Container mit Struktur</h4>
+            <p>Eine gute Card hat eine klare Leserichtung: Eyebrow (Kategorie), Titel, Beschreibung, Footer mit Metadata. Nicht jede Card braucht alle Teile — aber die Reihenfolge sollte konsistent sein.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Forms brauchen visuelle Klarheit</h4>
+            <p>Labels über (nie neben) den Feldern. Ausreichend Abstand zwischen Gruppen. Klare Error-Messages direkt am Feld, nicht als Sammlung am Ende. Placeholder-Text ist kein Label-Ersatz.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 3 — VERGLEICH 1: Button-Hierarchie
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 1</div>
+    <h2 class="section-title">Button-Hierarchie: Wenn alles gleich aussieht</h2>
+    <p class="body-text">Wenn alle Buttons die gleiche visuelle Gewichtung haben, kann der Nutzer nicht erkennen, welche Aktion die wichtigste ist. <strong>Primary, Secondary und Tertiary</strong> — drei Stufen, die sofort Klarheit schaffen.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <div style="padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Speichern</div>
+              <div style="padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Abbrechen</div>
+              <div style="padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Löschen</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">Alle identisch — keine Hierarchie</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 2px 8px rgba(14,165,160,0.25);">Speichern</div>
+              <div style="padding: 8px 18px; border-radius: 8px; border: 1.5px solid var(--bg-elevated); color: var(--text-secondary); font-size: 12px; font-weight: 600; background: var(--bg-surface);">Abbrechen</div>
+              <div style="font-size: 12px; font-weight: 500; color: var(--text-tertiary); padding: 8px 10px;">Löschen</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">Primary → Secondary → Tertiary</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Primary</div>
+        <div class="annotation-value">Solid + Shadow</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Secondary</div>
+        <div class="annotation-value">Outline / Ghost</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Tertiary</div>
+        <div class="annotation-value">Text only</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel sind alle drei Buttons visuell identisch — der Nutzer muss den Text lesen, um die Bedeutung zu erkennen. Im „Nachher"-Beispiel <strong>kommuniziert die visuelle Hierarchie sofort:</strong> „Speichern" ist die Hauptaktion, „Abbrechen" ist eine Alternative, „Löschen" ist bewusst dezent gehalten.</p>
+      <p>Beachte: <strong>Die destruktive Aktion „Löschen" ist absichtlich kein roter Button.</strong> Auf dieser Ebene genügt Tertiary-Styling. Erst im Bestätigungs-Dialog wird die Lösch-Aktion zur Primary Action — und bekommt dann die volle rote Kraft.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Pro Bildschirmbereich genau eine Primary Action. Destruktive Aktionen sind nicht automatisch laut und rot — sie werden erst im Bestätigungs-Schritt zur primären Aktion befördert.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 4 — VERGLEICH 2: Button-Proportionen
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 2</div>
+    <h2 class="section-title">Button-Proportionen: Padding als System</h2>
+    <p class="body-text">Buttons, die „irgendwie komisch" aussehen, haben fast immer ein Proportionsproblem. Das Verhältnis von <strong>Font-Size zu Padding zu Border-Radius</strong> muss harmonisch sein — und skaliert nicht linear.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 10px;">
+            <div style="padding: 6px 10px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 600;">Small</div>
+            <div style="padding: 6px 10px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 18px; font-weight: 600;">Medium</div>
+            <div style="padding: 6px 10px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 22px; font-weight: 600;">Large</div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">Gleiches Padding — alle Größen</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="align-items: center; padding: var(--space-lg); gap: 10px;">
+            <div style="padding: 6px 14px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Small</div>
+            <div style="padding: 9px 20px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600;">Medium</div>
+            <div style="padding: 12px 28px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 600;">Large</div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost);">Proportionales Padding-System</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Small</div>
+        <div class="annotation-value">12px / 6px 14px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Medium</div>
+        <div class="annotation-value">14px / 9px 20px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Large</div>
+        <div class="annotation-value">16px / 12px 28px</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel wird nur die Schriftgröße verändert, aber das Padding bleibt gleich. Die Buttons wirken <strong>unproportioniert:</strong> der kleine Button hat zu viel „Luft", der große fühlt sich eingequetscht an.</p>
+      <p>Im „Nachher"-Beispiel skaliert alles zusammen: <strong>Größerer Button = mehr Padding, größerer Border-Radius.</strong> Das horizontale Padding ist dabei immer ~1.5–2× das vertikale. So fühlt sich jede Größe „richtig" an.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Horizontales Padding ≈ 1.5–2× vertikales Padding. Border-Radius wächst proportional mit. Größere Buttons brauchen überproportional mehr Padding — nicht nur eine größere Schrift.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 5 — VERGLEICH 3: Form States
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 3</div>
+    <h2 class="section-title">Formular-States: Mehr als nur ein Border</h2>
+    <p class="body-text">Ein Input-Feld sieht für die meisten Entwickler „fertig" aus, sobald es einen Border hat. Aber ein vollständiges Form-Design berücksichtigt <strong>mindestens fünf States</strong> — und jeder State kommuniziert etwas anderes.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap: 8px; padding: var(--space-md);">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px;">E-Mail</div>
+            <div style="padding: 8px 12px; border: 1px solid var(--bg-elevated); border-radius: 6px; font-size: 12px; color: var(--text-tertiary); background: var(--bg-surface);">user@example.com</div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 2px; margin-top: 8px;">Passwort</div>
+            <div style="padding: 8px 12px; border: 1px solid var(--bg-elevated); border-radius: 6px; font-size: 12px; color: var(--text-tertiary); background: var(--bg-surface);">••••••••</div>
+            <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost); margin-top: 4px;">Kein State-Feedback</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="gap: 8px; padding: var(--space-md);">
+            <div style="font-size: 11px; font-weight: 600; color: var(--accent); margin-bottom: 2px;">E-Mail</div>
+            <div style="padding: 8px 12px; border: 2px solid var(--accent); border-radius: 8px; font-size: 12px; color: var(--text-primary); background: var(--bg-surface); box-shadow: 0 0 0 3px var(--accent-dim);">user@example.com</div>
+            <div style="font-size: 11px; font-weight: 600; color: var(--bad-color); margin-bottom: 2px; margin-top: 8px;">Passwort</div>
+            <div style="padding: 8px 12px; border: 2px solid var(--bad-color); border-radius: 8px; font-size: 12px; color: var(--text-primary); background: var(--bg-surface); box-shadow: 0 0 0 3px var(--bad-bg);">••••</div>
+            <div style="font-size: 10px; color: var(--bad-color); font-weight: 500; display: flex; align-items: center; gap: 4px;">
+              <span>⚠</span> Mindestens 8 Zeichen erforderlich
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Links: Beide Felder sehen identisch aus — der Nutzer hat <strong>kein Feedback</strong> darüber, wo der Cursor ist oder ob ein Fehler vorliegt. Rechts: Das E-Mail-Feld zeigt einen <strong>Focus-State</strong> mit farbigem Border und äußerem Glow. Das Passwort-Feld zeigt einen <strong>Error-State</strong> mit rotem Border, Glow und einer hilfreichen Fehlermeldung direkt am Feld.</p>
+      <p>Beachte auch die Labels: Im „Nachher"-Beispiel <strong>ändern die Labels ihre Farbe passend zum State</strong> — das stärkt die visuelle Verbindung zwischen Label und Feld.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Jedes Formularfeld braucht mindestens 5 visuelle States: Default, Hover, Focus, Error und Disabled. Der Focus-Ring sollte über box-shadow (nicht outline) gestaltet werden, damit er zum Design-System passt.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 6 — VERGLEICH 4: Card-Anatomie
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Vergleichsbeispiel 4</div>
+    <h2 class="section-title">Card-Anatomie: Struktur statt Chaos</h2>
+    <p class="body-text">Eine Card ohne klare innere Struktur wirkt wie ein willkürlicher Textblock mit Rahmen. Eine gut aufgebaute Card hat eine <strong>Leserichtung:</strong> Eyebrow → Titel → Beschreibung → Footer mit Metadata.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding: var(--space-md);">
+            <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 14px;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Neues Feature: Dark Mode</div>
+              <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">Wir haben einen Dark Mode hinzugefügt. Er wurde von unserem Team entwickelt und ist ab sofort verfügbar. Anna, 3 Tage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area" style="padding: var(--space-md);">
+            <div style="background: var(--bg-surface); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="height: 40px; background: linear-gradient(135deg, var(--accent-dim), var(--bg-elevated));"></div>
+              <div style="padding: 12px 14px 10px 14px;">
+                <div style="font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px;">Feature</div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3;">Neues Feature: Dark Mode</div>
+                <div style="font-size: 10px; color: var(--text-tertiary); line-height: 1.4;">Ein vollständiger Dark Mode ist ab sofort verfügbar.</div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 14px 10px 14px;">
+                <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--accent-dim); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: var(--accent);">A</div>
+                <div style="font-family: var(--font-mono); font-size: 8px; color: var(--text-ghost);">vor 3 Tagen</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Header</div>
+        <div class="annotation-value">Visual / Image</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Body</div>
+        <div class="annotation-value">Eyebrow → Title → Desc</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Footer</div>
+        <div class="annotation-value">Avatar + Metadata</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Die linke Card hat <strong>alle Informationen in einen Textblock gequetscht</strong> — Kategorie, Inhalt und Metadata verschmelzen zu einem undifferenzierten Block. Die rechte Card nutzt die volle Anatomie: Ein visueller <strong>Header</strong> zieht den Blick an, ein <strong>Eyebrow-Label</strong> kategorisiert, der <strong>Titel</strong> ist dominant, die Beschreibung zurückhaltend, und der <strong>Footer</strong> trennt Metadata klar vom Inhalt.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Jede Card braucht klare Zonen: Header (optional, visuell), Body (Eyebrow + Titel + Beschreibung), Footer (Metadata). Die Leserichtung geht immer von oben nach unten, von wichtig zu sekundär.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 7 — INTERAKTIV: Button Builder
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Button Builder <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Live</span></h2>
+    <p class="body-text">Baue deinen eigenen Button. Verändere Größe, Padding, Radius und Farbe — und beobachte, wie sich die Proportionen anfühlen. Der CSS-Code wird live generiert.</p>
+
+    <div class="playground-container">
+      <div class="playground-title">
+        <i data-lucide="sliders-horizontal"></i>
+        Button Playground
+        <button class="reset-btn" id="resetBtnPlayground" style="margin-left: auto;">Reset</button>
+      </div>
+
+      <!-- Variant pills -->
+      <div style="margin-bottom: var(--space-md);">
+        <div class="control-label" style="margin-bottom: 6px;"><span>Variante</span></div>
+        <div class="option-pills" id="variantPills">
+          <button class="option-pill active" data-variant="solid">Solid (Primary)</button>
+          <button class="option-pill" data-variant="outline">Outline (Secondary)</button>
+          <button class="option-pill" data-variant="ghost">Ghost (Tertiary)</button>
+        </div>
+      </div>
+
+      <div class="playground-layout">
+        <!-- Preview -->
+        <div class="playground-preview">
+          <button class="demo-btn" id="btnPreview" style="position: relative; z-index: 1; background: var(--accent); color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 14px; box-shadow: 0 2px 8px rgba(14,165,160,0.25);">
+            Button Label
+          </button>
+        </div>
+
+        <!-- Controls -->
+        <div class="playground-controls">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Font Size</span>
+              <span class="control-value" id="btnValFont">14px</span>
+            </div>
+            <input type="range" class="control-slider" id="btnSliderFont" min="10" max="20" value="14">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Padding Vertical</span>
+              <span class="control-value" id="btnValPadY">10px</span>
+            </div>
+            <input type="range" class="control-slider" id="btnSliderPadY" min="4" max="20" value="10">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Padding Horizontal</span>
+              <span class="control-value" id="btnValPadX">24px</span>
+            </div>
+            <input type="range" class="control-slider" id="btnSliderPadX" min="8" max="48" value="24">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Border Radius</span>
+              <span class="control-value" id="btnValRadius">8px</span>
+            </div>
+            <input type="range" class="control-slider" id="btnSliderRadius" min="0" max="30" value="8">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Button Color</span>
+            </div>
+            <div class="color-picker-row">
+              <input type="color" class="color-picker-input" id="btnColorPicker" value="#0ea5a0">
+              <span class="small-text" id="btnColorHex">#0ea5a0</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Font Weight</span>
+            </div>
+            <div class="option-pills" id="weightPills">
+              <button class="option-pill" data-weight="500">500</button>
+              <button class="option-pill active" data-weight="600">600</button>
+              <button class="option-pill" data-weight="700">700</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="css-output" id="btnCssOutput">
+        <code></code>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 8 — INTERAKTIV: Form States Live
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Interaktiv</div>
+    <h2 class="section-title">Form States erleben <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Live</span></h2>
+    <p class="body-text">Klicke in die Felder und tippe Text ein. Beobachte, wie sich Border, Label-Farbe und Feedback-Meldung je nach State verändern. Jeder State hat einen Zweck.</p>
+
+    <div class="playground-container">
+      <div class="playground-title">
+        <i data-lucide="text-cursor-input"></i>
+        Form States Demo
+      </div>
+
+      <div class="form-states-grid">
+        <!-- Default -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--text-ghost);">Default</div>
+          <input type="text" class="demo-input" placeholder="Placeholder-Text" style="border: 1.5px solid var(--bg-elevated);" readonly>
+        </div>
+
+        <!-- Hover (simulated) -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--text-tertiary);">Hover</div>
+          <input type="text" class="demo-input" placeholder="Maus-Hover" style="border: 1.5px solid var(--text-ghost);" readonly>
+        </div>
+
+        <!-- Focus -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--accent);">Focus</div>
+          <input type="text" class="demo-input" value="Aktives Feld" style="border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);" readonly>
+        </div>
+
+        <!-- Error -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--bad-color);">Error</div>
+          <input type="text" class="demo-input" value="abc" style="border: 2px solid var(--bad-color); box-shadow: 0 0 0 3px var(--bad-bg);" readonly>
+          <div style="font-size: 10px; color: var(--bad-color); font-weight: 500; margin-top: 4px; display: flex; align-items: center; gap: 4px;">⚠ Ungültige E-Mail-Adresse</div>
+        </div>
+
+        <!-- Success -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--accent);">Success</div>
+          <input type="text" class="demo-input" value="user@example.com" style="border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);" readonly>
+          <div style="font-size: 10px; color: var(--accent); font-weight: 500; margin-top: 4px; display: flex; align-items: center; gap: 4px;">✓ Gültige E-Mail</div>
+        </div>
+
+        <!-- Disabled -->
+        <div class="form-state-card">
+          <div class="form-state-label" style="color: var(--text-ghost);">Disabled</div>
+          <input type="text" class="demo-input" value="Nicht editierbar" style="border: 1.5px solid var(--bg-elevated); opacity: 0.5; cursor: not-allowed;" disabled>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <div class="playground-title" style="margin-top: var(--space-sm);">
+        <i data-lucide="pencil-line"></i>
+        Probiere es selbst
+      </div>
+      <p class="small-text" style="margin-bottom: var(--space-md);">Klicke ins Feld und tippe etwas ein. Der State ändert sich automatisch.</p>
+
+      <div style="max-width: 340px;">
+        <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px; transition: color 0.2s;" id="liveLabel">E-Mail-Adresse</label>
+        <input type="email" class="demo-input" id="liveInput" placeholder="du@beispiel.de" style="border: 1.5px solid var(--bg-elevated); transition: all 0.2s;">
+        <div style="font-size: 10px; font-weight: 500; margin-top: 4px; min-height: 16px; transition: color 0.2s;" id="liveHint"></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 9 — PRAXISAUFGABE
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Praxisaufgabe</div>
+    <h2 class="section-title">Komponenten-System aufbauen</h2>
+    <p class="body-text">Du bekommst ein unfertiges Settings-Panel. Buttons sehen alle gleich aus, Cards haben keine Struktur, und die Formular-Felder zeigen keine States. Baue ein konsistentes Komponenten-System.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Das unten stehende Settings-Panel hat Verbesserungspotenzial. Kopiere den Code und überarbeite alle drei Komponenten-Typen.</p>
+      <ul class="task-list">
+        <li>Implementiere eine klare Button-Hierarchie (Primary, Secondary, Tertiary) — genau eine Primary Action</li>
+        <li>Gib dem „Profil"-Card eine klare Anatomie: Eyebrow, Titel, Beschreibung, Footer mit Metadata</li>
+        <li>Gestalte die Input-Felder mit allen 5 States (Default, Hover, Focus, Error, Disabled)</li>
+        <li>Sorge für konsistente Proportionen: Padding-Verhältnisse, Border-Radius, Font-Sizes</li>
+        <li>Bonus: Füge Hover-Transitions für Buttons und Cards hinzu (transform + box-shadow)</li>
+        <li>Bonus: Verwende einen Focus-Ring via box-shadow statt outline für die Formularfelder</li>
+      </ul>
+    </div>
+
+    <!-- Preview des unfertigen UIs -->
+    <div class="demo-area" style="padding: var(--space-lg); gap: var(--space-md);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+        <!-- Card ohne Struktur -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">Max Mustermann</div>
+          <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Profil, Admin, Mitglied seit 2023, Letzte Aktivität vor 2h</div>
+        </div>
+        <!-- Input ohne States -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px; padding: 14px;">
+          <div style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px;">Display Name</div>
+          <div style="padding: 6px 10px; border: 1px solid var(--bg-elevated); border-radius: 4px; font-size: 12px; color: var(--text-primary); background: var(--bg-base);">Max Mustermann</div>
+        </div>
+      </div>
+      <!-- Buttons alle gleich -->
+      <div style="display: flex; gap: 8px;">
+        <div style="padding: 8px 16px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Speichern</div>
+        <div style="padding: 8px 16px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Vorschau</div>
+        <div style="padding: 8px 16px; border-radius: 6px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;">Zurücksetzen</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SEITE 10 — CODE-BLOCK
+═══════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Startcode</div>
+    <h2 class="section-title">Code zum Verbessern</h2>
+    <p class="body-text">Kopiere den folgenden HTML/CSS-Code und überarbeite die Komponenten. Die TODOs zeigen dir, wo Verbesserungen nötig sind.</p>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 10</span>
+        <button class="copy-btn" id="copyBtn">
+          <i data-lucide="copy"></i>
+          <span class="copy-label">Code kopieren</span>
+        </button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- Modul 10 — Praxisaufgabe: Komponenten-System --&gt;</span>
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">:root</span> {
+    <span class="tok-prop">--color-primary</span>: <span class="tok-val">#0ea5a0</span>;
+    <span class="tok-prop">--color-error</span>: <span class="tok-val">#d94f4f</span>;
+  }
+
+  <span class="tok-sel">.settings</span> {
+    <span class="tok-prop">max-width</span>: <span class="tok-num">600</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">40</span><span class="tok-val">px</span> auto;
+    <span class="tok-prop">padding</span>: <span class="tok-num">24</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-family</span>: <span class="tok-val">system-ui, sans-serif</span>;
+  }
+
+  <span class="tok-comment">/* ── CARD ── */</span>
+  <span class="tok-sel">.profile-card</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#fff</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1</span><span class="tok-val">px</span> solid <span class="tok-val">#e5e5e5</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">20</span><span class="tok-val">px</span>;
+    <span class="tok-comment">/* TODO: Card-Anatomie — Header, Eyebrow, Footer */</span>
+    <span class="tok-comment">/* TODO: Shadow + Hover-Transition */</span>
+  }
+
+  <span class="tok-sel">.profile-name</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">700</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#111</span>;
+  }
+  <span class="tok-sel">.profile-info</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#999</span>;
+    <span class="tok-comment">/* TODO: Metadata in Footer auslagern */</span>
+  }
+
+  <span class="tok-comment">/* ── FORM ── */</span>
+  <span class="tok-sel">.form-group</span> {
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">16</span><span class="tok-val">px</span>;
+  }
+  <span class="tok-sel">.form-label</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#666</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">4</span><span class="tok-val">px</span>;
+    <span class="tok-prop">display</span>: <span class="tok-val">block</span>;
+    <span class="tok-comment">/* TODO: Label-Farbe je nach State anpassen */</span>
+  }
+  <span class="tok-sel">.form-input</span> {
+    <span class="tok-prop">width</span>: <span class="tok-num">100</span><span class="tok-val">%</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">8</span><span class="tok-val">px</span> <span class="tok-num">12</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1</span><span class="tok-val">px</span> solid <span class="tok-val">#e5e5e5</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">6</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14</span><span class="tok-val">px</span>;
+    <span class="tok-comment">/* TODO: :hover — dunklerer Border */</span>
+    <span class="tok-comment">/* TODO: :focus — Akzent-Border + box-shadow Ring */</span>
+    <span class="tok-comment">/* TODO: .error — Rot-Border + Fehlermeldung */</span>
+    <span class="tok-comment">/* TODO: :disabled — Opacity + cursor */</span>
+  }
+
+  <span class="tok-comment">/* ── BUTTONS ── */</span>
+  <span class="tok-sel">.btn</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">8</span><span class="tok-val">px</span> <span class="tok-num">16</span><span class="tok-val">px</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">6</span><span class="tok-val">px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14</span><span class="tok-val">px</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+    <span class="tok-prop">border</span>: <span class="tok-val">none</span>;
+  }
+  <span class="tok-comment">/* TODO: .btn-primary — Solid, Shadow, Hover */</span>
+  <span class="tok-comment">/* TODO: .btn-secondary — Outline, subtiler Hover */</span>
+  <span class="tok-comment">/* TODO: .btn-tertiary — Text-only, kein BG */</span>
+
+  <span class="tok-sel">.btn-actions</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">8</span><span class="tok-val">px</span>;
+    <span class="tok-prop">margin-top</span>: <span class="tok-num">20</span><span class="tok-val">px</span>;
+  }
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"settings"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-card"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-name"</span><span class="tok-tag">&gt;</span>Max Mustermann<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"profile-info"</span><span class="tok-tag">&gt;</span>
+      Admin · Mitglied seit 2023
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-group"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;label</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-label"</span><span class="tok-tag">&gt;</span>Display Name<span class="tok-tag">&lt;/label&gt;</span>
+    <span class="tok-tag">&lt;input</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-input"</span> <span class="tok-attr">value</span>=<span class="tok-str">"Max Mustermann"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-group"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;label</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-label"</span><span class="tok-tag">&gt;</span>E-Mail<span class="tok-tag">&lt;/label&gt;</span>
+    <span class="tok-tag">&lt;input</span> <span class="tok-attr">class</span>=<span class="tok-str">"form-input"</span> <span class="tok-attr">value</span>=<span class="tok-str">"max@beispiel.de"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-actions"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn"</span><span class="tok-tag">&gt;</span>Speichern<span class="tok-tag">&lt;/button&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn"</span><span class="tok-tag">&gt;</span>Vorschau<span class="tok-tag">&lt;/button&gt;</span>
+    <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn"</span><span class="tok-tag">&gt;</span>Zurücksetzen<span class="tok-tag">&lt;/button&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 10 — UI-Komponenten</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<script>
+lucide.createIcons();
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE
+══════════════════════════════════════════ */
+const themeBtn = document.getElementById('themeToggle');
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+/* ══════════════════════════════════════════
+   VIEW MODE TOGGLE
+══════════════════════════════════════════ */
+const viewBtn = document.getElementById('viewToggle');
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf');
+    body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web');
+    body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+/* ══════════════════════════════════════════
+   PAGE NUMBERS
+══════════════════════════════════════════ */
+document.querySelectorAll('.pnum').forEach((el, i) => { el.textContent = i + 1; });
+
+/* ══════════════════════════════════════════
+   BUTTON BUILDER — Interactive Playground
+══════════════════════════════════════════ */
+const btnPreview = document.getElementById('btnPreview');
+const btnCssOutput = document.getElementById('btnCssOutput');
+
+const btnSliderFont   = document.getElementById('btnSliderFont');
+const btnSliderPadY   = document.getElementById('btnSliderPadY');
+const btnSliderPadX   = document.getElementById('btnSliderPadX');
+const btnSliderRadius = document.getElementById('btnSliderRadius');
+const btnColorPicker  = document.getElementById('btnColorPicker');
+
+const btnValFont   = document.getElementById('btnValFont');
+const btnValPadY   = document.getElementById('btnValPadY');
+const btnValPadX   = document.getElementById('btnValPadX');
+const btnValRadius = document.getElementById('btnValRadius');
+const btnColorHex  = document.getElementById('btnColorHex');
+
+let currentVariant = 'solid';
+let currentWeight  = '600';
+
+function hexToRgb(hex) {
+  return {
+    r: parseInt(hex.slice(1, 3), 16),
+    g: parseInt(hex.slice(3, 5), 16),
+    b: parseInt(hex.slice(5, 7), 16)
+  };
+}
+
+function updateBtn() {
+  const font   = parseInt(btnSliderFont.value);
+  const padY   = parseInt(btnSliderPadY.value);
+  const padX   = parseInt(btnSliderPadX.value);
+  const radius = parseInt(btnSliderRadius.value);
+  const color  = btnColorPicker.value;
+  const rgb    = hexToRgb(color);
+
+  btnValFont.textContent   = font + 'px';
+  btnValPadY.textContent   = padY + 'px';
+  btnValPadX.textContent   = padX + 'px';
+  btnValRadius.textContent = radius + 'px';
+  btnColorHex.textContent  = color;
+
+  btnPreview.style.fontSize = font + 'px';
+  btnPreview.style.padding = `${padY}px ${padX}px`;
+  btnPreview.style.borderRadius = radius + 'px';
+  btnPreview.style.fontWeight = currentWeight;
+
+  let cssLines = [];
+
+  if (currentVariant === 'solid') {
+    btnPreview.style.background = color;
+    btnPreview.style.color = '#fff';
+    btnPreview.style.border = 'none';
+    btnPreview.style.boxShadow = `0 2px 8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`;
+    cssLines = [
+      `background: ${color};`,
+      `color: #ffffff;`,
+      `border: none;`,
+      `box-shadow: 0 2px 8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25);`,
+    ];
+  } else if (currentVariant === 'outline') {
+    btnPreview.style.background = 'transparent';
+    btnPreview.style.color = color;
+    btnPreview.style.border = `1.5px solid ${color}`;
+    btnPreview.style.boxShadow = 'none';
+    cssLines = [
+      `background: transparent;`,
+      `color: ${color};`,
+      `border: 1.5px solid ${color};`,
+      `box-shadow: none;`,
+    ];
+  } else {
+    btnPreview.style.background = 'transparent';
+    btnPreview.style.color = color;
+    btnPreview.style.border = 'none';
+    btnPreview.style.boxShadow = 'none';
+    cssLines = [
+      `background: transparent;`,
+      `color: ${color};`,
+      `border: none;`,
+      `box-shadow: none;`,
+    ];
+  }
+
+  cssLines.push(`font-size: ${font}px;`);
+  cssLines.push(`font-weight: ${currentWeight};`);
+  cssLines.push(`padding: ${padY}px ${padX}px;`);
+  cssLines.push(`border-radius: ${radius}px;`);
+
+  const highlighted = cssLines.map(line => {
+    return line.replace(/^([^:]+):\s*(.+);$/, '<span class="tok-prop">$1</span>: <span class="tok-val">$2</span>;');
+  }).join('\n');
+
+  btnCssOutput.innerHTML = `<code>${highlighted}</code>`;
+}
+
+[btnSliderFont, btnSliderPadY, btnSliderPadX, btnSliderRadius, btnColorPicker].forEach(el => {
+  el.addEventListener('input', updateBtn);
+});
+
+// Variant pills
+document.querySelectorAll('#variantPills .option-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#variantPills .option-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentVariant = pill.dataset.variant;
+    updateBtn();
+  });
+});
+
+// Weight pills
+document.querySelectorAll('#weightPills .option-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#weightPills .option-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentWeight = pill.dataset.weight;
+    updateBtn();
+  });
+});
+
+// Reset
+document.getElementById('resetBtnPlayground').addEventListener('click', () => {
+  btnSliderFont.value = 14; btnSliderPadY.value = 10;
+  btnSliderPadX.value = 24; btnSliderRadius.value = 8;
+  btnColorPicker.value = '#0ea5a0'; currentVariant = 'solid'; currentWeight = '600';
+  document.querySelectorAll('#variantPills .option-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#variantPills [data-variant="solid"]').classList.add('active');
+  document.querySelectorAll('#weightPills .option-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#weightPills [data-weight="600"]').classList.add('active');
+  updateBtn();
+});
+
+updateBtn();
+
+/* ══════════════════════════════════════════
+   LIVE FORM INPUT DEMO
+══════════════════════════════════════════ */
+const liveInput = document.getElementById('liveInput');
+const liveLabel = document.getElementById('liveLabel');
+const liveHint  = document.getElementById('liveHint');
+
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+function updateFormState() {
+  const val = liveInput.value.trim();
+  const style = getComputedStyle(document.documentElement);
+
+  if (document.activeElement === liveInput) {
+    if (val.length === 0) {
+      // Focus, empty
+      liveInput.style.border = '2px solid var(--accent)';
+      liveInput.style.boxShadow = '0 0 0 3px var(--accent-dim)';
+      liveLabel.style.color = 'var(--accent)';
+      liveHint.textContent = '';
+      liveHint.style.color = '';
+    } else if (isValidEmail(val)) {
+      // Success
+      liveInput.style.border = '2px solid var(--accent)';
+      liveInput.style.boxShadow = '0 0 0 3px var(--accent-dim)';
+      liveLabel.style.color = 'var(--accent)';
+      liveHint.textContent = '✓ Gültige E-Mail-Adresse';
+      liveHint.style.color = 'var(--accent)';
+    } else {
+      // Error
+      liveInput.style.border = '2px solid var(--bad-color)';
+      liveInput.style.boxShadow = '0 0 0 3px var(--bad-bg)';
+      liveLabel.style.color = 'var(--bad-color)';
+      liveHint.textContent = '⚠ Ungültige E-Mail-Adresse';
+      liveHint.style.color = 'var(--bad-color)';
+    }
+  } else {
+    // Default / Blur
+    liveInput.style.border = '1.5px solid var(--bg-elevated)';
+    liveInput.style.boxShadow = 'none';
+    liveLabel.style.color = 'var(--text-secondary)';
+    if (val.length > 0 && !isValidEmail(val)) {
+      liveHint.textContent = '⚠ Ungültige E-Mail-Adresse';
+      liveHint.style.color = 'var(--bad-color)';
+      liveInput.style.border = '1.5px solid var(--bad-color)';
+    } else if (val.length > 0 && isValidEmail(val)) {
+      liveHint.textContent = '✓ Gültig';
+      liveHint.style.color = 'var(--accent)';
+    } else {
+      liveHint.textContent = '';
+    }
+  }
+}
+
+liveInput.addEventListener('focus', updateFormState);
+liveInput.addEventListener('blur', updateFormState);
+liveInput.addEventListener('input', updateFormState);
+
+/* ══════════════════════════════════════════
+   COPY BUTTON
+══════════════════════════════════════════ */
+const rawCode = `<!-- Modul 10 — Praxisaufgabe: Komponenten-System -->
+<style>
+  :root {
+    --color-primary: #0ea5a0;
+    --color-error: #d94f4f;
+  }
+
+  .settings {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 24px;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* ── CARD ── */
+  .profile-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    /* TODO: Card-Anatomie — Header, Eyebrow, Footer */
+    /* TODO: Shadow + Hover-Transition */
+  }
+
+  .profile-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+  }
+  .profile-info {
+    font-size: 12px;
+    color: #999;
+    /* TODO: Metadata in Footer auslagern */
+  }
+
+  /* ── FORM ── */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    display: block;
+    /* TODO: Label-Farbe je nach State anpassen */
+  }
+  .form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 14px;
+    /* TODO: :hover — dunklerer Border */
+    /* TODO: :focus — Akzent-Border + box-shadow Ring */
+    /* TODO: .error — Rot-Border + Fehlermeldung */
+    /* TODO: :disabled — Opacity + cursor */
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+  }
+  /* TODO: .btn-primary — Solid, Shadow, Hover */
+  /* TODO: .btn-secondary — Outline, subtiler Hover */
+  /* TODO: .btn-tertiary — Text-only, kein BG */
+
+  .btn-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+</style>
+
+<div class="settings">
+  <div class="profile-card">
+    <div class="profile-name">Max Mustermann</div>
+    <div class="profile-info">
+      Admin · Mitglied seit 2023
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Display Name</label>
+    <input class="form-input" value="Max Mustermann">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">E-Mail</label>
+    <input class="form-input" value="max@beispiel.de">
+  </div>
+
+  <div class="btn-actions">
+    <button class="btn">Speichern</button>
+    <button class="btn">Vorschau</button>
+    <button class="btn">Zurücksetzen</button>
+  </div>
+</div>`;
+
+const copyBtn   = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyLabel.textContent = 'Code kopieren';
+  }, 2500);
+});
+</script>
+
+</body>
+</html>

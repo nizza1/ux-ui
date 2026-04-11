@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 11 — Bilder & Icons</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════ LIGHT ══════════════════════════════════════════ */
+:root{--bg-base:#f4f4f8;--bg-surface:#ffffff;--bg-elevated:#eeeef4;--bg-hover:#e6e6f0;--text-primary:#12121e;--text-secondary:#52526e;--text-tertiary:#9090aa;--text-ghost:#b8b8cc;--accent:#0ea5a0;--accent-dim:rgba(14,165,160,0.08);--accent-border:rgba(14,165,160,0.22);--accent-text:#0ea5a0;--success-color:var(--accent);--success-bg:var(--accent-dim);--success-border:var(--accent-border);--bad-color:#d94f4f;--bad-bg:rgba(217,79,79,0.07);--bad-border:rgba(217,79,79,0.22);--warning-color:#d97706;--warning-bg:rgba(217,119,6,0.07);--warning-border:rgba(217,119,6,0.22);--font-body:'Plus Jakarta Sans',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;--shadow-sm:0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);--shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);}
+/* ══════════════════════════════════════════ DARK ══════════════════════════════════════════ */
+[data-theme="dark"]{--bg-base:#0c0c12;--bg-surface:#131320;--bg-elevated:#1a1a2f;--bg-hover:#20203a;--text-primary:#eeeef4;--text-secondary:#8d8da8;--text-tertiary:#525270;--text-ghost:#3a3a52;--accent:#2dd4bf;--accent-dim:rgba(45,212,191,0.10);--accent-border:rgba(45,212,191,0.20);--accent-text:#2dd4bf;--success-color:var(--accent);--success-bg:var(--accent-dim);--success-border:var(--accent-border);--bad-color:#f06060;--bad-bg:rgba(240,96,96,0.06);--bad-border:rgba(240,96,96,0.18);--warning-color:#fbbf24;--warning-bg:rgba(251,191,36,0.07);--warning-border:rgba(251,191,36,0.18);--shadow-sm:0 1px 3px rgba(0,0,0,0.3);--shadow-md:0 4px 12px rgba(0,0,0,0.4);}
+[data-theme="dark"] body{background-image:radial-gradient(ellipse at 20% 0%,rgba(45,212,191,0.03) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(99,102,241,0.02) 0%,transparent 60%);}
+@page{size:A4 portrait;margin:0;}*,*::before,*::after{box-sizing:border-box;}body{font-family:var(--font-body);background:var(--bg-base);color:var(--text-primary);-webkit-print-color-adjust:exact;print-color-adjust:exact;transition:background .3s,color .3s;margin:0;}
+/* TOGGLE */.toggle-group{position:fixed;top:20px;right:20px;z-index:1000;display:flex;gap:8px;}.toggle-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--accent-border);background:var(--bg-elevated);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:background .2s,color .2s;color:var(--text-secondary);}.toggle-btn:hover{background:var(--bg-hover);color:var(--accent);}.toggle-btn svg{width:16px;height:16px;stroke-width:2;}@media print{.toggle-group{display:none!important;}}
+/* PDF */body.view-pdf{padding:20px 0;min-height:100vh;}body.view-pdf .page{width:210mm;height:297mm;padding:18mm 16mm 0 16mm;margin:0 auto 28px auto;background:var(--bg-base);position:relative;display:flex;flex-direction:column;overflow:hidden;break-before:page;box-shadow:0 2px 16px rgba(0,0,0,.1);border-radius:3px;}body.view-pdf .page:first-child{break-before:auto;}body.view-pdf .page-content{flex:1;overflow:hidden;min-height:0;}body.view-pdf .page-footer{margin-top:auto;flex-shrink:0;}body.view-pdf .code-block-wrapper{display:flex;flex-direction:column;min-height:420px;}body.view-pdf .code-block{flex:1;min-height:380px;max-height:380px;overflow-y:auto;}
+/* WEB */body.view-web{padding:0;min-height:100vh;}body.view-web .web-container{max-width:900px;margin:0 auto;padding:60px 40px;}body.view-web .page{width:auto;height:auto;min-height:unset;overflow:visible;padding:0;margin:0;background:transparent;break-before:auto;display:block;box-shadow:none;border-radius:0;}body.view-web .page+.page{margin-top:var(--space-3xl);padding-top:var(--space-3xl);border-top:2px solid var(--bg-elevated);}body.view-web .page-footer{display:none!important;}body.view-web .code-block{max-height:700px;overflow-y:auto;}body.view-web .page-title{font-size:40px;}body.view-web .section-title{font-size:24px;}body.view-web .page-subtitle{font-size:17px;}body.view-web .body-text{font-size:15px;}body.view-web .explanation p{font-size:15px;}body.view-web .rule-box p{font-size:15px;}body.view-web .learning-goals-list li{font-size:15px;}body.view-web .concept-body p{font-size:14px;}body.view-web .insight-content p{font-size:14px;}body.view-web .exercise-intro p{font-size:14px;}body.view-web .task-list li{font-size:14px;}body.view-web .small-text{font-size:13px;}
+/* FOOTER */.page-footer{padding:var(--space-md) 0 8mm 0;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--bg-elevated);}.page-footer-module,.page-footer-num{font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--text-ghost);letter-spacing:2px;text-transform:uppercase;}
+/* TYPO */.page-title{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.5px;color:var(--text-primary);margin:0 0 var(--space-sm) 0;}.page-subtitle{font-size:15px;font-weight:500;line-height:1.5;color:var(--text-secondary);margin:0 0 var(--space-xl) 0;max-width:520px;}.section-title{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.2px;color:var(--text-primary);margin:0 0 var(--space-md) 0;}.section-label{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:0 0 var(--space-sm) 0;}.body-text{font-size:13px;font-weight:400;line-height:1.7;color:var(--text-secondary);margin:0 0 var(--space-md) 0;}.body-text strong{font-weight:600;color:var(--text-primary);}.small-text{font-size:11px;font-weight:400;line-height:1.6;color:var(--text-tertiary);}
+/* TAG+META+GOALS */.module-tag{display:inline-flex;align-items:center;gap:var(--space-sm);background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:100px;padding:5px 14px;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--space-lg);width:fit-content;}.module-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);}.module-meta{display:flex;gap:var(--space-lg);margin-bottom:var(--space-xl);}.meta-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--text-tertiary);}.meta-item svg{width:14px;height:14px;stroke-width:2;color:var(--text-ghost);}.learning-goals{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-xl);}.learning-goals-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:0 0 var(--space-md) 0;display:flex;align-items:center;gap:var(--space-sm);}.learning-goals-title svg{width:14px;height:14px;}.learning-goals-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--space-sm);}.learning-goals-list li{font-size:13px;line-height:1.5;color:var(--text-secondary);padding-left:24px;position:relative;}.learning-goals-list li::before{content:'';position:absolute;left:0;top:6px;width:14px;height:14px;border-radius:4px;background:var(--accent-dim);border:1.5px solid var(--accent-border);}.learning-goals-list li::after{content:'';position:absolute;left:4px;top:10px;width:6px;height:3px;border-left:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);transform:rotate(-45deg);}
+.section-divider{height:1px;background:var(--bg-elevated);margin:var(--space-lg) 0;border:none;}
+/* THEORY */.theory-card{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-lg);}.theory-card .section-label{margin-bottom:var(--space-sm);}.concept-list{counter-reset:concept;display:flex;flex-direction:column;gap:var(--space-md);}.concept-item{display:flex;gap:var(--space-md);counter-increment:concept;}.concept-num{width:28px;height:28px;border-radius:var(--radius-sm);background:var(--accent-dim);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;}.concept-item .concept-num::after{content:counter(concept);}.concept-body h4{font-size:14px;font-weight:700;color:var(--text-primary);margin:0 0 2px 0;}.concept-body p{font-size:12px;line-height:1.6;color:var(--text-secondary);margin:0;}
+/* COMPARE */.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-lg);}.panel{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-md);overflow:hidden;position:relative;}.panel-topline{height:3px;width:100%;}.panel.bad .panel-topline{background:linear-gradient(to right,var(--bad-color),transparent);}.panel.good .panel-topline{background:linear-gradient(to right,var(--success-color),transparent);}.panel-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;margin:var(--space-md) var(--space-md) var(--space-sm) var(--space-md);}.panel-badge.bad{color:var(--bad-color);background:var(--bad-bg);border:1px solid var(--bad-border);}.panel-badge.good{color:var(--success-color);background:var(--success-bg);border:1px solid var(--success-border);}.panel-badge .dot{width:6px;height:6px;border-radius:50%;}.panel-badge.bad .dot{background:var(--bad-color);}.panel-badge.good .dot{background:var(--success-color);}.panel-body{padding:0 var(--space-md) var(--space-md) var(--space-md);}.demo-area{background:var(--bg-base);border:1px solid var(--bg-elevated);border-radius:var(--radius-sm);padding:var(--space-md);min-height:80px;display:flex;flex-direction:column;justify-content:center;}
+/* EXPLAIN+RULE+ANNO */.explanation{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-md);}.explanation-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:0 0 var(--space-sm) 0;}.explanation p{font-size:13px;line-height:1.7;color:var(--text-secondary);margin:0;}.explanation p+p{margin-top:var(--space-sm);}.explanation strong{font-weight:600;color:var(--text-primary);}.rule-box{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);}.rule-box-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:0 0 var(--space-xs) 0;}.rule-box p{font-size:13px;line-height:1.6;margin:0;font-weight:500;color:#0a6e6a;}[data-theme="dark"] .rule-box p{color:var(--accent-text);}.annotation-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-sm);margin-bottom:var(--space-md);}.annotation-item{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-sm);padding:var(--space-sm) var(--space-md);}.annotation-label{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:2px;}.annotation-value{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent);}
+/* EXERCISE */.exercise-intro{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-lg);}.exercise-intro h3{font-size:15px;font-weight:700;color:var(--text-primary);margin:0 0 var(--space-sm) 0;}.exercise-intro p{font-size:12px;line-height:1.6;color:var(--text-secondary);margin:0;}.task-list{list-style:none;padding:0;margin:var(--space-md) 0 0 0;display:flex;flex-direction:column;gap:6px;}.task-list li{font-size:12px;line-height:1.5;color:var(--text-secondary);padding-left:20px;position:relative;}.task-list li::before{content:'→';position:absolute;left:0;color:var(--accent);font-weight:600;}
+/* CODE */.code-block-wrapper{position:relative;break-inside:avoid;}.code-block-header{display:flex;align-items:center;justify-content:space-between;background:#12121e;padding:8px var(--space-md);border-radius:var(--radius-md) var(--radius-md) 0 0;}.code-block-lang{font-family:var(--font-mono);font-size:10px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;}.copy-btn{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;font-weight:600;color:rgba(255,255,255,.5);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);padding:4px 10px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;letter-spacing:1px;text-transform:uppercase;}.copy-btn:hover{background:rgba(255,255,255,.14);color:rgba(255,255,255,.85);}.copy-btn.copied{color:var(--accent);border-color:var(--accent-border);background:var(--accent-dim);}.copy-btn svg{width:13px;height:13px;}.code-block{background:#1a1a2e;border-radius:0 0 var(--radius-md) var(--radius-md);padding:var(--space-md);overflow-x:auto;margin:0;}.code-block code{font-family:var(--font-mono);font-size:12px;line-height:1.7;color:#c8d3f5;white-space:pre;display:block;}.tok-tag{color:#ff757f;}.tok-attr{color:#ffc777;}.tok-str{color:#c3e88d;}.tok-comment{color:#636da6;font-style:italic;}.tok-prop{color:#86e1fc;}.tok-val{color:#c3e88d;}.tok-sel{color:#ffc777;}.tok-num{color:#ff966c;}@media print{.copy-btn,.code-block-header{display:none;}.code-block{border-radius:var(--radius-md);}}
+/* ══════ M11 SPECIFIC ══════ */
+.interactive-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:100px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);color:#6366f1;margin-left:var(--space-sm);}[data-theme="dark"] .interactive-badge{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:#818cf8;}
+.playground-container{background:var(--bg-surface);border:1px solid var(--bg-elevated);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-lg);}.playground-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin:0 0 var(--space-md) 0;display:flex;align-items:center;gap:var(--space-sm);}.playground-title svg{width:14px;height:14px;}.playground-layout{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg);}.playground-preview{background:var(--bg-base);border:1px solid var(--bg-elevated);border-radius:var(--radius-md);min-height:200px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}.playground-preview::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,var(--accent-dim) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(99,102,241,.04) 0%,transparent 50%);pointer-events:none;}.playground-controls{display:flex;flex-direction:column;gap:var(--space-md);}
+.control-group{display:flex;flex-direction:column;gap:4px;}.control-label{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-ghost);display:flex;justify-content:space-between;align-items:center;}.control-value{color:var(--accent);font-weight:700;}.control-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--bg-elevated);outline:none;cursor:pointer;}.control-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg-surface);box-shadow:0 1px 4px rgba(0,0,0,.2);}.control-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg-surface);box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.option-pills{display:flex;gap:6px;flex-wrap:wrap;}.option-pill{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:100px;border:1px solid var(--bg-elevated);background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;transition:all .2s;}.option-pill:hover{border-color:var(--accent-border);color:var(--accent);}.option-pill.active{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent);}
+.color-picker-row{display:flex;align-items:center;gap:var(--space-sm);}.color-picker-input{-webkit-appearance:none;appearance:none;width:28px;height:28px;border:2px solid var(--bg-elevated);border-radius:6px;cursor:pointer;background:transparent;padding:0;}.color-picker-input::-webkit-color-swatch-wrapper{padding:0;}.color-picker-input::-webkit-color-swatch{border:none;border-radius:4px;}.color-picker-input::-moz-color-swatch{border:none;border-radius:4px;}
+.css-output{background:#1a1a2e;border-radius:var(--radius-sm);padding:var(--space-sm) var(--space-md);margin-top:var(--space-sm);}.css-output code{font-family:var(--font-mono);font-size:11px;line-height:1.6;color:#c8d3f5;white-space:pre-wrap;}
+.reset-btn{font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;border:1px solid var(--bg-elevated);background:var(--bg-surface);color:var(--text-tertiary);cursor:pointer;transition:all .2s;}.reset-btn:hover{border-color:var(--accent-border);color:var(--accent);}
+.icon-gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--space-sm);}.icon-gallery-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:var(--space-sm);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;border:1px solid transparent;}.icon-gallery-item:hover{background:var(--accent-dim);}.icon-gallery-item span{font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);}.icon-gallery-item.selected{background:var(--accent-dim);border-color:var(--accent-border);}
+.opinionated-callout{background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-lg);}.opinionated-callout-title{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--warning-color);margin:0 0 var(--space-xs) 0;display:flex;align-items:center;gap:6px;}.opinionated-callout p{font-size:13px;line-height:1.6;color:var(--text-secondary);margin:0;}.opinionated-callout strong{font-weight:600;color:var(--text-primary);}
+</style>
+</head>
+<body>
+<div class="toggle-group"><button class="toggle-btn" id="viewToggle" title="Ansicht wechseln"><i data-lucide="monitor"></i></button><button class="toggle-btn" id="themeToggle" title="Theme wechseln"><i data-lucide="sun"></i></button></div>
+<div class="web-container">
+
+<!-- ═══ S1 TITEL ═══ -->
+<div class="page"><div class="page-content">
+  <div class="module-tag">Modul 11</div>
+  <h1 class="page-title">Bilder &amp; Icons</h1>
+  <p class="page-subtitle">SVG vs. Pixel, Stroke vs. Fill, Icon-Libraries, object-fit, Text-Overlays und der Umgang mit User-Uploaded Content — alles über visuelle Assets in UIs.</p>
+  <div class="module-meta"><div class="meta-item"><i data-lucide="clock"></i><span>45 Minuten</span></div><div class="meta-item"><i data-lucide="code"></i><span>Praxisaufgabe: ~15 Min.</span></div></div>
+  <div class="learning-goals"><div class="learning-goals-title"><i data-lucide="target"></i>Lernziele</div>
+    <ul class="learning-goals-list">
+      <li>Vektor (SVG) vs. Pixel (PNG/JPG/WebP) — wann du welches Format einsetzt</li>
+      <li>Stroke- vs. Fill-Icons: Stil wählen, konsistent bleiben, Stroke-Width richtig skalieren</li>
+      <li>Icons korrekt mit Text pairen: Größe, Farbe und Gewichtung ausbalancieren</li>
+      <li>Bilder layoutsicher einbinden: object-fit, aspect-ratio, Background-Bleed-Schutz</li>
+      <li>Text auf Bildern lesbar machen: Gradient-Overlays und alternative Techniken</li>
+    </ul>
+  </div>
+  <div class="rule-box"><div class="rule-box-title">Kerngedanke</div><p>Icons und Bilder sind keine Dekoration — sie sind Kommunikationswerkzeuge. Ein konsistentes Icon-Set und richtig eingebundene Bilder machen den Unterschied zwischen „zusammengeklickt" und „durchdacht designed".</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S2 THEORIE ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Theorie</div>
+  <h2 class="section-title">Vektor vs. Pixel — und die Grundregeln für Icons &amp; Bilder</h2>
+  <p class="body-text"><strong>SVG (Vektor)</strong> beschreibt Formen mathematisch — skaliert verlustfrei, ideal für Icons und Logos. <strong>PNG/JPG/WebP (Pixel)</strong> speichern ein Farbpunktraster — ideal für Fotos. Die richtige Format-Wahl spart Dateigröße und verhindert unscharfe Darstellungen.</p>
+  <div class="theory-card"><div class="section-label">6 Grundregeln</div>
+    <div class="concept-list">
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>SVG für alles Gezeichnete</h4><p>Icons, Logos, Illustrationen → immer SVG. Skaliert auf jede Pixeldichte, Farbe und Stroke per CSS steuerbar.</p></div></div>
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>WebP/JPG für Fotos</h4><p>Fotos als WebP (beste Kompression) oder JPG. PNG nur bei Transparenz-Bedarf. Niemals Fotos als SVG.</p></div></div>
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>Stroke-Icons: Leicht und modern</h4><p>Bestehen aus offenen Linien. Ideal neben Text. Stroke-Width muss zur Größe passen — zu dünn = fragil, zu dick = klobig.</p></div></div>
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>Fill-Icons: Schwer und auffällig</h4><p>Mehr visuelles Gewicht. Ideal für aktive Zustände (z.B. gefüllter Stern) und alleinstehende Icons ohne Text.</p></div></div>
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>object-fit ist dein bester Freund</h4><p>User-Bilder haben unvorhersehbare Proportionen. Feste Container + object-fit: cover verhindert Layout-Brüche.</p></div></div>
+      <div class="concept-item"><div class="concept-num"></div><div class="concept-body"><h4>Text auf Bildern braucht Overlay-Schutz</h4><p>Bilder sind dynamisch — weißer Text auf hellem Bereich verschwindet. Gradient-Overlays sichern konsistenten Kontrast.</p></div></div>
+    </div>
+  </div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S3 VERGLEICH 1: Stroke vs Fill ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Vergleichsbeispiel 1</div>
+  <h2 class="section-title">Stroke vs. Fill: Konsistenz bewahren</h2>
+  <p class="body-text">Im selben UI-Bereich einen Stil wählen und durchhalten. Der einzige akzeptable Mix: aktiv/inaktiv-Zustände.</p>
+  <div class="comparison-grid">
+    <div class="panel bad"><div class="panel-topline"></div><div class="panel-badge bad"><span class="dot"></span>Vorher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-lg);">
+      <div style="display:flex;gap:20px;justify-content:center;">
+        <div style="text-align:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-primary);"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Fill</div></div>
+        <div style="text-align:center;"><i data-lucide="users" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+        <div style="text-align:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-primary);"><circle cx="11" cy="11" r="8"/></svg><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Fill</div></div>
+        <div style="text-align:center;"><i data-lucide="settings" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);text-align:center;display:block;margin-top:8px;">Gemischt — unruhig</span>
+    </div></div></div>
+    <div class="panel good"><div class="panel-topline"></div><div class="panel-badge good"><span class="dot"></span>Nachher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-lg);">
+      <div style="display:flex;gap:20px;justify-content:center;">
+        <div style="text-align:center;"><i data-lucide="home" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+        <div style="text-align:center;"><i data-lucide="users" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+        <div style="text-align:center;"><i data-lucide="search" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+        <div style="text-align:center;"><i data-lucide="settings" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-size:9px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:4px;">Stroke</div></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);text-align:center;display:block;margin-top:8px;">Konsistent — ruhig</span>
+    </div></div></div>
+  </div>
+  <div class="explanation"><div class="explanation-title">Analyse</div><p>Links wechseln Icons willkürlich zwischen Stroke und Fill — <strong>unterschiedliches visuelles Gewicht.</strong> Rechts: einheitlicher Stroke-Stil mit identischer Strichstärke — <strong>visuell ruhig und professionell.</strong></p></div>
+  <div class="rule-box"><div class="rule-box-title">Regel</div><p>Ein Icon-Stil pro UI-Bereich. Der einzige akzeptable Mix: aktiv/inaktiv-Zustände (Outline → Filled beim Aktivieren).</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S4 VERGLEICH 2: Stroke-Width Skalierung ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Vergleichsbeispiel 2</div>
+  <h2 class="section-title">Stroke-Width skaliert nicht automatisch</h2>
+  <p class="body-text">SVG-Icons skalieren verlustfrei — aber die <strong>Strichstärke bleibt absolut.</strong> Ein 2px-Stroke bei 24px fühlt sich anders an als bei 16px.</p>
+  <div class="comparison-grid">
+    <div class="panel bad"><div class="panel-topline"></div><div class="panel-badge bad"><span class="dot"></span>Vorher</div><div class="panel-body"><div class="demo-area" style="align-items:center;padding:var(--space-lg);gap:14px;">
+      <div style="display:flex;gap:24px;align-items:flex-end;">
+        <div style="text-align:center;"><i data-lucide="bell" style="width:16px;height:16px;color:var(--text-primary);stroke-width:2.5;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">16px / 2.5</div></div>
+        <div style="text-align:center;"><i data-lucide="bell" style="width:24px;height:24px;color:var(--text-primary);stroke-width:2.5;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">24px / 2.5</div></div>
+        <div style="text-align:center;"><i data-lucide="bell" style="width:32px;height:32px;color:var(--text-primary);stroke-width:2.5;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">32px / 2.5</div></div>
+      </div>
+    </div></div></div>
+    <div class="panel good"><div class="panel-topline"></div><div class="panel-badge good"><span class="dot"></span>Nachher</div><div class="panel-body"><div class="demo-area" style="align-items:center;padding:var(--space-lg);gap:14px;">
+      <div style="display:flex;gap:24px;align-items:flex-end;">
+        <div style="text-align:center;"><i data-lucide="bell" style="width:16px;height:16px;color:var(--text-primary);stroke-width:1.5;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">16px / 1.5</div></div>
+        <div style="text-align:center;"><i data-lucide="bell" style="width:24px;height:24px;color:var(--text-primary);stroke-width:1.75;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">24px / 1.75</div></div>
+        <div style="text-align:center;"><i data-lucide="bell" style="width:32px;height:32px;color:var(--text-primary);stroke-width:2;"></i><div style="font-family:var(--font-mono);font-size:8px;color:var(--text-ghost);margin-top:4px;">32px / 2.0</div></div>
+      </div>
+    </div></div></div>
+  </div>
+  <div class="annotation-grid"><div class="annotation-item"><div class="annotation-label">16px</div><div class="annotation-value">stroke: 1.5</div></div><div class="annotation-item"><div class="annotation-label">24px</div><div class="annotation-value">stroke: 1.75</div></div><div class="annotation-item"><div class="annotation-label">32px</div><div class="annotation-value">stroke: 2.0</div></div></div>
+  <div class="explanation"><div class="explanation-title">Analyse</div><p>Links: Gleiche Stroke-Width überall — das <strong>16px-Icon wirkt erdrückt,</strong> das 32px wirkt dünn. Rechts: Angepasste Strichstärke — <strong>optisch gleichwertiges Gewicht</strong> trotz unterschiedlicher Größe.</p></div>
+  <div class="rule-box"><div class="rule-box-title">Regel</div><p>Stroke-Width zur Icon-Größe passen. 16px→1.5, 20px→1.75, 24px→1.75–2.0, 32px+→2.0. Lieber zu dünn als zu dick.</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S5 VERGLEICH 3: Icon-Text + Library ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Vergleichsbeispiel 3</div>
+  <h2 class="section-title">Icon-Text Pairing + Library-Empfehlung</h2>
+  <p class="body-text">Icons neben Text brauchen eine <strong>weichere Farbe</strong> als der Text selbst — sonst dominieren sie visuell.</p>
+  <div class="comparison-grid">
+    <div class="panel bad"><div class="panel-topline"></div><div class="panel-badge bad"><span class="dot"></span>Vorher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-md);gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;"><i data-lucide="home" style="width:22px;height:22px;color:var(--text-primary);stroke-width:2.5;"></i><span style="font-size:13px;font-weight:500;color:var(--text-primary);">Dashboard</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><i data-lucide="users" style="width:22px;height:22px;color:var(--text-primary);stroke-width:2.5;"></i><span style="font-size:13px;font-weight:500;color:var(--text-primary);">Team</span></div>
+    </div></div></div>
+    <div class="panel good"><div class="panel-topline"></div><div class="panel-badge good"><span class="dot"></span>Nachher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-md);gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;"><i data-lucide="home" style="width:18px;height:18px;color:var(--text-tertiary);stroke-width:1.75;"></i><span style="font-size:13px;font-weight:500;color:var(--text-primary);">Dashboard</span></div>
+      <div style="display:flex;align-items:center;gap:8px;"><i data-lucide="users" style="width:18px;height:18px;color:var(--text-tertiary);stroke-width:1.75;"></i><span style="font-size:13px;font-weight:500;color:var(--text-primary);">Team</span></div>
+    </div></div></div>
+  </div>
+  <div class="explanation"><div class="explanation-title">Analyse</div><p>Links: Icons gleiche Farbe/Größe wie Text — <strong>visuell zu schwer.</strong> Rechts: Kleiner (18px), dünner (1.75), <strong>text-tertiary</strong> — unterstützt den Text ohne zu überstrahlen.</p></div>
+  <hr class="section-divider">
+  <div class="section-label">Empfehlung</div>
+  <h2 class="section-title">Icon-Library: Lucide (React)</h2>
+  <p class="body-text">Für React: <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 6px;border-radius:3px;color:var(--accent);">npm install lucide-react</code> — 1400+ konsistente Stroke-Icons, tree-shakeable, konfigurierbar.</p>
+  <div class="opinionated-callout"><div class="opinionated-callout-title">⚠ Opinionated</div><p>Lucide ist <strong>eine von vielen guten Optionen.</strong> Alternativen: Heroicons (Tailwind), Phosphor, Tabler, Radix Icons. Das Wichtigste ist <strong>Konsistenz innerhalb deines Projekts,</strong> nicht welche Library du wählst.</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S6 VERGLEICH 4: object-fit ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Vergleichsbeispiel 4</div>
+  <h2 class="section-title">Bilder: object-fit rettet dein Layout</h2>
+  <p class="body-text">User-uploaded Bilder haben unvorhersehbare Seitenverhältnisse. Ohne feste Container und <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-elevated);padding:1px 5px;border-radius:3px;">object-fit</code> zerstören sie jedes Grid.</p>
+  <div class="comparison-grid">
+    <div class="panel bad"><div class="panel-topline"></div><div class="panel-badge bad"><span class="dot"></span>Vorher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-md);gap:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:6px;height:70px;display:flex;align-items:center;justify-content:center;"><span style="font-size:18px;">🏔️</span></div>
+        <div style="background:linear-gradient(45deg,#f093fb,#f5576c);border-radius:6px;height:110px;display:flex;align-items:center;justify-content:center;"><span style="font-size:18px;">🌅</span></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);">Natürliche Höhe — Layout bricht</span>
+    </div></div></div>
+    <div class="panel good"><div class="panel-topline"></div><div class="panel-badge good"><span class="dot"></span>Nachher</div><div class="panel-body"><div class="demo-area" style="padding:var(--space-md);gap:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:6px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="font-size:18px;">🏔️</span></div>
+        <div style="background:linear-gradient(45deg,#f093fb,#f5576c);border-radius:6px;height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><span style="font-size:18px;">🌅</span></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-ghost);">Feste Höhe + object-fit: cover</span>
+    </div></div></div>
+  </div>
+  <div class="annotation-grid"><div class="annotation-item"><div class="annotation-label">cover</div><div class="annotation-value">Füllt, schneidet</div></div><div class="annotation-item"><div class="annotation-label">contain</div><div class="annotation-value">Passt, Letterbox</div></div><div class="annotation-item"><div class="annotation-label">aspect-ratio</div><div class="annotation-value">16/9, 4/3, 1/1</div></div></div>
+  <div class="explanation"><div class="explanation-title">Analyse</div><p>Links: Bilder behalten natürliche Höhe — <strong>Grid bricht.</strong> Rechts: Feste Container-Höhe + overflow hidden. <strong>cover</strong> füllt komplett (schneidet ab), <strong>contain</strong> zeigt alles (mit Letterbox), <strong>aspect-ratio</strong> für responsive Proportionen.</p></div>
+  <div class="rule-box"><div class="rule-box-title">Regel</div><p>Immer feste Container (oder aspect-ratio) + object-fit: cover für Bilder-Grids. Niemals Bilder mit natürlicher Größe in Layouts, die Konsistenz brauchen.</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S7 VERGLEICH 5: Text auf Bildern ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Vergleichsbeispiel 5</div>
+  <h2 class="section-title">Text auf Bildern: Kontrast sicherstellen</h2>
+  <p class="body-text">Bilder sind dynamisch — weißer Text auf hellem Bereich verschwindet. <strong>Gradient-Overlays</strong> sichern konsistenten Kontrast, ohne das gesamte Bild zu verdunkeln.</p>
+  <div class="comparison-grid">
+    <div class="panel bad"><div class="panel-topline"></div><div class="panel-badge bad"><span class="dot"></span>Vorher</div><div class="panel-body"><div class="demo-area" style="padding:0;overflow:hidden;border-radius:var(--radius-sm);">
+      <div style="height:120px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 50%,#1a1a2e 100%);display:flex;align-items:flex-end;padding:var(--space-md);">
+        <div><div style="font-size:15px;font-weight:700;color:#fff;">Artikeltitel hier</div><div style="font-size:10px;color:#fff;">Unleserlich auf hellem Bereich</div></div>
+      </div>
+    </div></div></div>
+    <div class="panel good"><div class="panel-topline"></div><div class="panel-badge good"><span class="dot"></span>Nachher</div><div class="panel-body"><div class="demo-area" style="padding:0;overflow:hidden;border-radius:var(--radius-sm);">
+      <div style="height:120px;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 50%,#1a1a2e 100%);display:flex;align-items:flex-end;padding:var(--space-md);position:relative;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%);"></div>
+        <div style="position:relative;z-index:1;"><div style="font-size:15px;font-weight:700;color:#fff;">Artikeltitel hier</div><div style="font-size:10px;color:rgba(255,255,255,0.85);">Gradient-Overlay sichert Lesbarkeit</div></div>
+      </div>
+    </div></div></div>
+  </div>
+  <div class="annotation-grid"><div class="annotation-item"><div class="annotation-label">Gradient</div><div class="annotation-value">rgba(0,0,0,0.7)</div></div><div class="annotation-item"><div class="annotation-label">Richtung</div><div class="annotation-value">bottom → top</div></div><div class="annotation-item"><div class="annotation-label">Alternative</div><div class="annotation-value">text-shadow</div></div></div>
+  <div class="explanation"><div class="explanation-title">Analyse</div><p>Links: Text ist auf dem hellen Teil <strong>unsichtbar.</strong> Rechts: <strong>Gradient-Overlay</strong> verdunkelt gezielt den Textbereich. Oberer Teil bleibt hell. Alternativen: text-shadow (subtiler) oder Vollfarben-Overlay (wenn Markenfarbe gewünscht).</p></div>
+  <div class="rule-box"><div class="rule-box-title">Regel</div><p>Text auf Bildern braucht immer Kontrasthilfe: Gradient-Overlay, Vollfarben-Overlay oder text-shadow. Bei User-Uploads hast du keine Kontrolle über den Inhalt.</p></div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S8 INTERAKTIV: Icon Playground ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Interaktiv</div>
+  <h2 class="section-title">Icon Playground <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Live</span></h2>
+  <p class="body-text">Wähle ein Icon, verändere Größe, Stroke-Width und Farbe. Beobachte das Icon solo und im Container.</p>
+  <div class="playground-container">
+    <div class="playground-title"><i data-lucide="palette"></i>Icon Builder<button class="reset-btn" id="resetIcon" style="margin-left:auto;">Reset</button></div>
+    <div style="margin-bottom:var(--space-md);"><div class="control-label" style="margin-bottom:6px;"><span>Icon wählen</span></div>
+      <div class="icon-gallery" id="iconGallery">
+        <div class="icon-gallery-item selected" data-icon="home"><i data-lucide="home" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>home</span></div>
+        <div class="icon-gallery-item" data-icon="search"><i data-lucide="search" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>search</span></div>
+        <div class="icon-gallery-item" data-icon="bell"><i data-lucide="bell" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>bell</span></div>
+        <div class="icon-gallery-item" data-icon="heart"><i data-lucide="heart" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>heart</span></div>
+        <div class="icon-gallery-item" data-icon="star"><i data-lucide="star" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>star</span></div>
+        <div class="icon-gallery-item" data-icon="image"><i data-lucide="image" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>image</span></div>
+        <div class="icon-gallery-item" data-icon="shield-check"><i data-lucide="shield-check" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>shield</span></div>
+        <div class="icon-gallery-item" data-icon="zap"><i data-lucide="zap" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>zap</span></div>
+        <div class="icon-gallery-item" data-icon="globe"><i data-lucide="globe" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>globe</span></div>
+        <div class="icon-gallery-item" data-icon="layers"><i data-lucide="layers" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>layers</span></div>
+        <div class="icon-gallery-item" data-icon="code-2"><i data-lucide="code-2" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>code</span></div>
+        <div class="icon-gallery-item" data-icon="rocket"><i data-lucide="rocket" style="width:20px;height:20px;color:var(--text-secondary);stroke-width:1.75;"></i><span>rocket</span></div>
+      </div>
+    </div>
+    <div class="playground-layout">
+      <div class="playground-preview" style="flex-direction:column;gap:var(--space-md);"><div id="iPB" style="position:relative;z-index:1;"></div><div id="iPC" style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;"></div></div>
+      <div class="playground-controls">
+        <div class="control-group"><div class="control-label"><span>Icon Size</span><span class="control-value" id="iVS">24px</span></div><input type="range" class="control-slider" id="iSS" min="12" max="48" value="24"></div>
+        <div class="control-group"><div class="control-label"><span>Stroke Width</span><span class="control-value" id="iVSt">1.8</span></div><input type="range" class="control-slider" id="iSSt" min="5" max="35" value="18"></div>
+        <div class="control-group"><div class="control-label"><span>Container Size</span><span class="control-value" id="iVC">48px</span></div><input type="range" class="control-slider" id="iSC" min="24" max="80" value="48"></div>
+        <div class="control-group"><div class="control-label"><span>Container Radius</span><span class="control-value" id="iVR">12px</span></div><input type="range" class="control-slider" id="iSR" min="0" max="40" value="12"></div>
+        <div class="control-group"><div class="control-label"><span>Icon Color</span></div><div class="color-picker-row"><input type="color" class="color-picker-input" id="iCP" value="#0ea5a0"><span class="small-text" id="iCH">#0ea5a0</span></div></div>
+        <div class="control-group"><div class="control-label"><span>Container BG</span></div><div class="option-pills" id="cBG"><button class="option-pill active" data-bg="accent">Accent</button><button class="option-pill" data-bg="surface">Surface</button><button class="option-pill" data-bg="elevated">Elevated</button><button class="option-pill" data-bg="none">None</button></div></div>
+      </div>
+    </div>
+    <div class="css-output" id="iCO"><code></code></div>
+  </div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S9 INTERAKTIV: Overlay Builder ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Interaktiv</div>
+  <h2 class="section-title">Text-Overlay Builder <span class="interactive-badge"><i data-lucide="mouse-pointer-click" style="width:10px;height:10px;"></i> Live</span></h2>
+  <p class="body-text">Experimentiere mit Overlay-Techniken für Text auf Bildern. Ändere Overlay-Art, Stärke, Richtung und Farbe.</p>
+  <div class="playground-container">
+    <div class="playground-title"><i data-lucide="image"></i>Overlay Playground</div>
+    <div class="playground-layout">
+      <div class="playground-preview" style="padding:0;overflow:hidden;min-height:220px;">
+        <div id="oPreview" style="width:100%;height:100%;background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 30%,#667eea 70%,#1a1a2e 100%);display:flex;align-items:flex-end;padding:var(--space-lg);position:relative;">
+          <div id="oLayer" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 60%);transition:all .3s;"></div>
+          <div style="position:relative;z-index:1;"><div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.2);">Artikeltitel</div><div style="font-size:11px;color:rgba(255,255,255,.85);">Subtitle mit Overlay-Schutz</div></div>
+        </div>
+      </div>
+      <div class="playground-controls">
+        <div class="control-group"><div class="control-label"><span>Overlay Type</span></div><div class="option-pills" id="oType"><button class="option-pill active" data-type="gradient">Gradient</button><button class="option-pill" data-type="solid">Solid</button><button class="option-pill" data-type="none">None</button></div></div>
+        <div class="control-group"><div class="control-label"><span>Opacity</span><span class="control-value" id="oValOp">60%</span></div><input type="range" class="control-slider" id="oSlOp" min="0" max="90" value="60"></div>
+        <div class="control-group"><div class="control-label"><span>Direction</span></div><div class="option-pills" id="oDir"><button class="option-pill active" data-dir="to top">↑ Bottom</button><button class="option-pill" data-dir="to bottom">↓ Top</button><button class="option-pill" data-dir="to right">→ Left</button></div></div>
+        <div class="control-group"><div class="control-label"><span>Overlay Color</span></div><div class="color-picker-row"><input type="color" class="color-picker-input" id="oCP" value="#000000"><span class="small-text" id="oCH">#000000</span></div></div>
+      </div>
+    </div>
+    <div class="css-output" id="oCO"><code></code></div>
+  </div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S10 PRAXISAUFGABE ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Praxisaufgabe</div>
+  <h2 class="section-title">Visuelle Assets aufräumen</h2>
+  <p class="body-text">Feature-Icons sind inkonsistent, eine Bildergalerie bricht das Layout, und der Hero-Text ist unleserlich. Bringe alles in Ordnung.</p>
+  <div class="exercise-intro">
+    <h3>Aufgabenstellung</h3>
+    <p>Kopiere den Code und überarbeite Icons UND Bilder systematisch.</p>
+    <ul class="task-list">
+      <li>Einheitlicher Stroke-Stil für alle Feature-Icons (empfohlen: 24px, stroke 1.75)</li>
+      <li>Icons nicht aufblasen — in farbige Container (56px, border-radius 14px) einbetten</li>
+      <li>Bildergalerie: Feste Container-Höhe (150px) + object-fit: cover + border-radius</li>
+      <li>Hero-Section: Gradient-Overlay als ::before Pseudo-Element hinzufügen</li>
+      <li>Bonus: inset box-shadow für Background-Bleed-Schutz bei Galerie-Bildern</li>
+      <li>Bonus: lucide-react statt inline SVGs verwenden</li>
+    </ul>
+  </div>
+  <div class="demo-area" style="padding:var(--space-lg);gap:var(--space-md);">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div style="text-align:center;"><i data-lucide="shield-check" style="width:48px;height:48px;color:var(--accent);stroke-width:1;"></i><div style="font-size:11px;font-weight:600;color:var(--text-primary);margin-top:4px;">Sicherheit</div></div>
+      <div style="text-align:center;"><svg width="48" height="48" viewBox="0 0 24 24" fill="var(--accent)"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><div style="font-size:11px;font-weight:600;color:var(--text-primary);margin-top:4px;">Performance</div></div>
+      <div style="text-align:center;"><i data-lucide="globe" style="width:36px;height:36px;color:var(--accent);stroke-width:2.5;"></i><div style="font-size:11px;font-weight:600;color:var(--text-primary);margin-top:4px;">Global</div></div>
+    </div>
+    <div style="height:60px;background:linear-gradient(135deg,#ffecd2,#fcb69f);border-radius:8px;display:flex;align-items:flex-end;padding:8px;">
+      <span style="font-size:13px;font-weight:700;color:#fff;">Hero — kaum lesbar</span>
+    </div>
+  </div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+<!-- ═══ S11 CODE ═══ -->
+<div class="page"><div class="page-content">
+  <div class="section-label">Startcode</div>
+  <h2 class="section-title">Code zum Verbessern</h2>
+  <p class="body-text">Feature-Icons mit gemischten Stilen, Hero ohne Overlay, Galerie ohne object-fit.</p>
+  <div class="code-block-wrapper">
+    <div class="code-block-header"><span class="code-block-lang">HTML + CSS — Aufgabe Modul 11</span><button class="copy-btn" id="copyBtn"><i data-lucide="copy"></i><span class="copy-label">Code kopieren</span></button></div>
+    <pre class="code-block"><code><span class="tok-comment">&lt;!-- Modul 11 — Praxisaufgabe: Bilder & Icons --&gt;</span>
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">.features</span> { <span class="tok-prop">display</span>:<span class="tok-val">grid</span>; <span class="tok-prop">grid-template-columns</span>:<span class="tok-val">repeat(3,1fr)</span>; <span class="tok-prop">gap</span>:<span class="tok-num">24</span><span class="tok-val">px</span>; <span class="tok-prop">text-align</span>:<span class="tok-val">center</span>; }
+  <span class="tok-sel">.feature-icon</span> {
+    <span class="tok-comment">/* TODO: Nicht aufblasen — in Container einbetten */</span>
+    <span class="tok-comment">/* TODO: Einheitlicher Stil, Größe, Stroke */</span>
+  }
+  <span class="tok-sel">.icon-container</span> {
+    <span class="tok-comment">/* TODO: width:56px; height:56px; border-radius:14px; */</span>
+    <span class="tok-comment">/* background: rgba(14,165,160,0.08); */</span>
+  }
+  <span class="tok-sel">.hero</span> {
+    <span class="tok-prop">height</span>:<span class="tok-num">200</span><span class="tok-val">px</span>; <span class="tok-prop">background</span>:<span class="tok-val">url('hero.jpg') center/cover</span>;
+    <span class="tok-prop">display</span>:<span class="tok-val">flex</span>; <span class="tok-prop">align-items</span>:<span class="tok-val">flex-end</span>; <span class="tok-prop">padding</span>:<span class="tok-num">24</span><span class="tok-val">px</span>;
+    <span class="tok-prop">position</span>:<span class="tok-val">relative</span>;
+    <span class="tok-comment">/* TODO: Gradient-Overlay als ::before */</span>
+  }
+  <span class="tok-sel">.hero::before</span> {
+    <span class="tok-comment">/* content:''; position:absolute; inset:0; */</span>
+    <span class="tok-comment">/* background: linear-gradient(to top, */</span>
+    <span class="tok-comment">/*   rgba(0,0,0,0.7) 0%, transparent 60%); */</span>
+  }
+  <span class="tok-sel">.gallery img</span> {
+    <span class="tok-prop">width</span>:<span class="tok-num">100</span><span class="tok-val">%</span>;
+    <span class="tok-comment">/* TODO: height:150px; object-fit:cover; */</span>
+    <span class="tok-comment">/* TODO: border-radius:8px; */</span>
+    <span class="tok-comment">/* BONUS: box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06); */</span>
+  }
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-comment">&lt;!-- lucide-react: import { ShieldCheck, Zap, Globe } from 'lucide-react'; --&gt;</span>
+<span class="tok-comment">&lt;!-- &lt;ShieldCheck size={24} strokeWidth={1.75} /&gt; --&gt;</span></code></pre>
+  </div>
+</div><div class="page-footer"><span class="page-footer-module">Modul 11 — Bilder & Icons</span><span class="page-footer-num">Seite <span class="pnum"></span></span></div></div>
+
+</div>
+
+<script>
+lucide.createIcons();
+const themeBtn=document.getElementById('themeToggle');function applyTheme(t){if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');themeBtn.innerHTML='<i data-lucide="moon"></i>';}else{document.documentElement.removeAttribute('data-theme');themeBtn.innerHTML='<i data-lucide="sun"></i>';}lucide.createIcons();localStorage.setItem('workshop-theme',t);}applyTheme(localStorage.getItem('workshop-theme')||'light');themeBtn.addEventListener('click',()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+const viewBtn=document.getElementById('viewToggle');function applyView(m){if(m==='web'){document.body.classList.remove('view-pdf');document.body.classList.add('view-web');viewBtn.innerHTML='<i data-lucide="file-text"></i>';}else{document.body.classList.remove('view-web');document.body.classList.add('view-pdf');viewBtn.innerHTML='<i data-lucide="monitor"></i>';}lucide.createIcons();localStorage.setItem('workshop-view',m);}applyView(localStorage.getItem('workshop-view')||'pdf');viewBtn.addEventListener('click',()=>applyView(document.body.classList.contains('view-pdf')?'web':'pdf'));
+document.querySelectorAll('.pnum').forEach((e,i)=>e.textContent=i+1);
+
+/* ═══ ICON PLAYGROUND ═══ */
+let sIcon='home',cBg='accent';
+const $=id=>document.getElementById(id);
+document.querySelectorAll('#iconGallery .icon-gallery-item').forEach(it=>{it.addEventListener('click',()=>{document.querySelectorAll('#iconGallery .icon-gallery-item').forEach(i=>i.classList.remove('selected'));it.classList.add('selected');sIcon=it.dataset.icon;uI();});});
+document.querySelectorAll('#cBG .option-pill').forEach(p=>{p.addEventListener('click',()=>{document.querySelectorAll('#cBG .option-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');cBg=p.dataset.bg;uI();});});
+function uI(){
+  const sz=+$('iSS').value,sw=(+$('iSSt').value/10).toFixed(1),cs=+$('iSC').value,cr=+$('iSR').value,cl=$('iCP').value;
+  $('iVS').textContent=sz+'px';$('iVSt').textContent=sw;$('iVC').textContent=cs+'px';$('iVR').textContent=cr+'px';$('iCH').textContent=cl;
+  $('iPB').innerHTML=`<i data-lucide="${sIcon}" style="width:${sz}px;height:${sz}px;color:${cl};stroke-width:${sw};"></i>`;
+  let bg='',bd='';
+  if(cBg==='accent'){bg='var(--accent-dim)';bd='1px solid var(--accent-border)';}else if(cBg==='surface'){bg='var(--bg-surface)';bd='1px solid var(--bg-elevated)';}else if(cBg==='elevated'){bg='var(--bg-elevated)';bd='1px solid var(--bg-hover)';}else{bg='transparent';bd='1px dashed var(--bg-elevated)';}
+  const inner=Math.min(sz,Math.round(cs*.55));
+  $('iPC').style.cssText=`position:relative;z-index:1;width:${cs}px;height:${cs}px;border-radius:${cr}px;background:${bg};border:${bd};display:flex;align-items:center;justify-content:center;`;
+  $('iPC').innerHTML=`<i data-lucide="${sIcon}" style="width:${inner}px;height:${inner}px;color:${cl};stroke-width:${sw};"></i>`;
+  lucide.createIcons();
+  $('iCO').innerHTML=`<code><span class="tok-comment">/* Icon */</span>\n<span class="tok-prop">width</span>: <span class="tok-val">${sz}px</span>; <span class="tok-prop">stroke-width</span>: <span class="tok-val">${sw}</span>; <span class="tok-prop">color</span>: <span class="tok-val">${cl}</span>;\n\n<span class="tok-comment">/* Container */</span>\n<span class="tok-prop">width</span>: <span class="tok-val">${cs}px</span>; <span class="tok-prop">border-radius</span>: <span class="tok-val">${cr}px</span>;</code>`;
+}
+['iSS','iSSt','iSC','iSR','iCP'].forEach(id=>{$(id).addEventListener('input',uI);});
+$('resetIcon').addEventListener('click',()=>{$('iSS').value=24;$('iSSt').value=18;$('iSC').value=48;$('iSR').value=12;$('iCP').value='#0ea5a0';sIcon='home';cBg='accent';document.querySelectorAll('#iconGallery .icon-gallery-item').forEach(i=>i.classList.remove('selected'));document.querySelector('#iconGallery [data-icon="home"]').classList.add('selected');document.querySelectorAll('#cBG .option-pill').forEach(p=>p.classList.remove('active'));document.querySelector('#cBG [data-bg="accent"]').classList.add('active');uI();});
+uI();
+
+/* ═══ OVERLAY PLAYGROUND ═══ */
+let oT='gradient',oD='to top';
+function hex2rgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)};}
+function uO(){
+  const op=+$('oSlOp').value/100,cl=$('oCP').value,rgb=hex2rgb(cl);
+  $('oValOp').textContent=Math.round(op*100)+'%';$('oCH').textContent=cl;
+  let css='';
+  if(oT==='gradient')css=`linear-gradient(${oD},rgba(${rgb.r},${rgb.g},${rgb.b},${op.toFixed(2)}) 0%,transparent 60%)`;
+  else if(oT==='solid')css=`rgba(${rgb.r},${rgb.g},${rgb.b},${op.toFixed(2)})`;
+  else css='transparent';
+  $('oLayer').style.background=css;
+  const txt=oT==='none'?'/* No overlay */':oT==='gradient'?`background: linear-gradient(${oD},\n  rgba(${rgb.r},${rgb.g},${rgb.b},${op.toFixed(2)}) 0%,\n  transparent 60%);`:`background: rgba(${rgb.r},${rgb.g},${rgb.b},${op.toFixed(2)});`;
+  $('oCO').innerHTML=`<code>${txt}</code>`;
+}
+document.querySelectorAll('#oType .option-pill').forEach(p=>{p.addEventListener('click',()=>{document.querySelectorAll('#oType .option-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');oT=p.dataset.type;uO();});});
+document.querySelectorAll('#oDir .option-pill').forEach(p=>{p.addEventListener('click',()=>{document.querySelectorAll('#oDir .option-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');oD=p.dataset.dir;uO();});});
+['oSlOp','oCP'].forEach(id=>{$(id).addEventListener('input',uO);});
+uO();
+
+/* ═══ COPY ═══ */
+const rawCode=`<!-- Modul 11 — Praxisaufgabe: Bilder & Icons -->
+<style>
+  .features { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; text-align:center; }
+  .feature-icon { /* TODO: Konsistenter Stroke-Stil, einheitliche Größe */ }
+  .icon-container { /* TODO: 56px Container, border-radius 14px, accent-dim BG */ }
+  .hero { height:200px; background:url('hero.jpg') center/cover; display:flex; align-items:flex-end; padding:24px; position:relative; }
+  .hero::before { /* TODO: content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%); */ }
+  .hero-text { color:#fff; position:relative; z-index:1; }
+  .gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .gallery img { width:100%; /* TODO: height:150px; object-fit:cover; border-radius:8px; */ }
+</style>
+
+<!-- Feature Icons (gemischt — überarbeiten!) -->
+<div class="features">
+  <div><svg width="48" fill="none" stroke="#0ea5a0" stroke-width="1"><!-- Shield: zu groß, zu dünn --></svg><div>Sicherheit</div></div>
+  <div><svg width="48" fill="#0ea5a0"><!-- Zap: Fill — inkonsistent --></svg><div>Performance</div></div>
+  <div><svg width="36" stroke="#0ea5a0" stroke-width="2.5"><!-- Globe: andere Größe --></svg><div>Global</div></div>
+</div>
+
+<!-- Hero (kein Overlay) -->
+<div class="hero"><div class="hero-text"><h1>Headline</h1><p>Subtitle</p></div></div>
+
+<!-- Gallery (kein object-fit) -->
+<div class="gallery">
+  <img src="photo1.jpg"><img src="photo2.jpg"><img src="photo3.jpg">
+</div>
+
+<!-- BONUS: lucide-react -->
+<!-- import { ShieldCheck, Zap, Globe } from 'lucide-react';
+<ShieldCheck size={24} strokeWidth={1.75} /> -->`;
+const cB=$('copyBtn'),cL=cB.querySelector('.copy-label');
+cB.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(rawCode);}catch{const t=document.createElement('textarea');t.value=rawCode;t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}cB.classList.add('copied');cL.textContent='✓ Kopiert!';setTimeout(()=>{cB.classList.remove('copied');cL.textContent='Code kopieren';},2500);});
+</script>
+</body>
+</html>

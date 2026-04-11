@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul 12 — Responsive Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   LIGHT THEME (Standard / PDF)
+══════════════════════════════════════════ */
+:root {
+  --bg-base:     #f4f4f8;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #eeeef4;
+  --bg-hover:    #e6e6f0;
+
+  --text-primary:   #12121e;
+  --text-secondary: #52526e;
+  --text-tertiary:  #9090aa;
+  --text-ghost:     #b8b8cc;
+
+  --accent:        #0ea5a0;
+  --accent-dim:    rgba(14, 165, 160, 0.08);
+  --accent-border: rgba(14, 165, 160, 0.22);
+  --accent-text:   #0ea5a0;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #d94f4f;
+  --bad-bg:     rgba(217, 79, 79, 0.07);
+  --bad-border: rgba(217, 79, 79, 0.22);
+
+  --warning-color:  #d97706;
+  --warning-bg:     rgba(217, 119, 6, 0.07);
+  --warning-border: rgba(217, 119, 6, 0.22);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px; --space-2xl:48px; --space-3xl:64px;
+
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ══════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg-base:     #0c0c12;
+  --bg-surface:  #131320;
+  --bg-elevated: #1a1a2f;
+  --bg-hover:    #20203a;
+
+  --text-primary:   #eeeef4;
+  --text-secondary: #8d8da8;
+  --text-tertiary:  #525270;
+  --text-ghost:     #3a3a52;
+
+  --accent:        #2dd4bf;
+  --accent-dim:    rgba(45, 212, 191, 0.10);
+  --accent-border: rgba(45, 212, 191, 0.20);
+  --accent-text:   #2dd4bf;
+
+  --success-color:  var(--accent);
+  --success-bg:     var(--accent-dim);
+  --success-border: var(--accent-border);
+
+  --bad-color:  #f06060;
+  --bad-bg:     rgba(240, 96, 96, 0.06);
+  --bad-border: rgba(240, 96, 96, 0.18);
+
+  --warning-color:  #fbbf24;
+  --warning-bg:     rgba(251, 191, 36, 0.07);
+  --warning-border: rgba(251, 191, 36, 0.18);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(45,212,191,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(99,102,241,0.02) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET + PRINT SETTINGS
+══════════════════════════════════════════ */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   PDF-MODUS (body.view-pdf)
+══════════════════════════════════════════ */
+body.view-pdf {
+  padding: 20px 0;
+  min-height: 100vh;
+}
+
+body.view-pdf .page {
+  width: 210mm;
+  height: 297mm;
+  padding: 18mm 16mm 0 16mm;
+  margin: 0 auto 28px auto;
+  background: var(--bg-base);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  break-before: page;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+body.view-pdf .page:first-child { break-before: auto; }
+
+body.view-pdf .page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+body.view-pdf .page-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.view-pdf .code-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+body.view-pdf .code-block {
+  flex: 1;
+  min-height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════
+   WEB-MODUS (body.view-web)
+══════════════════════════════════════════ */
+body.view-web {
+  padding: 0;
+  min-height: 100vh;
+}
+
+body.view-web .web-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+body.view-web .page {
+  width: auto;
+  height: auto;
+  min-height: unset;
+  overflow: visible;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  break-before: auto;
+  display: block;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.view-web .page + .page {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+  border-top: 2px solid var(--bg-elevated);
+}
+
+body.view-web .page-footer { display: none !important; }
+
+body.view-web .code-block {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+/* ── Web-Modus Schriftgrößen-Overrides ── */
+body.view-web .page-title           { font-size: 40px; }
+body.view-web .section-title        { font-size: 24px; }
+body.view-web .page-subtitle        { font-size: 17px; }
+body.view-web .body-text            { font-size: 15px; }
+body.view-web .explanation p        { font-size: 15px; }
+body.view-web .rule-box p           { font-size: 15px; }
+body.view-web .learning-goals-list li { font-size: 15px; }
+body.view-web .concept-body p       { font-size: 14px; }
+body.view-web .insight-content p    { font-size: 14px; }
+body.view-web .exercise-intro p     { font-size: 14px; }
+body.view-web .task-list li         { font-size: 14px; }
+body.view-web .small-text           { font-size: 13px; }
+
+/* ══════════════════════════════════════════
+   TOGGLE BUTTONS
+══════════════════════════════════════════ */
+.toggle-group {
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px;
+}
+.toggle-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--accent-border);
+  background: var(--bg-elevated); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s, color 0.2s;
+  color: var(--text-secondary);
+}
+.toggle-btn:hover { background: var(--bg-hover); color: var(--accent); }
+.toggle-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+@media print { .toggle-group { display: none !important; } }
+
+/* ══════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════ */
+.page-footer {
+  padding: var(--space-md) 0 8mm 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--bg-elevated);
+}
+.page-footer-module,
+.page-footer-num {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  color: var(--text-ghost);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+══════════════════════════════════════════ */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xl) 0;
+  max-width: 520px;
+}
+
+.section-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.body-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-md) 0;
+}
+.body-text strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.small-text {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+}
+
+/* ══════════════════════════════════════════
+   MODULE TAG BADGE
+══════════════════════════════════════════ */
+.module-tag {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: var(--space-lg); width: fit-content;
+}
+.module-tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   MODULE META
+══════════════════════════════════════════ */
+.module-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.meta-item svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-ghost);
+}
+
+/* ══════════════════════════════════════════
+   LEARNING GOALS
+══════════════════════════════════════════ */
+.learning-goals {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.learning-goals-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.learning-goals-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 24px;
+  position: relative;
+}
+
+.learning-goals-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  border: 1.5px solid var(--accent-border);
+}
+
+.learning-goals-list li::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 10px;
+  width: 6px; height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: var(--bg-elevated);
+  margin: var(--space-lg) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════
+   THEORY CARD + CONCEPT LIST
+══════════════════════════════════════════ */
+.theory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.theory-card .section-label { margin-bottom: var(--space-sm); }
+
+.concept-list {
+  counter-reset: concept;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.concept-item {
+  display: flex;
+  gap: var(--space-md);
+  counter-increment: concept;
+}
+
+.concept-num {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.concept-item .concept-num::after { content: counter(concept); }
+
+.concept-body h4 {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+.concept-body p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   INSIGHT ROW
+══════════════════════════════════════════ */
+.insight-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.insight-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.insight-icon svg { width: 18px; height: 18px; color: var(--accent); stroke-width: 2; }
+.insight-content { flex: 1; }
+.insight-content h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; }
+.insight-content p { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+/* ══════════════════════════════════════════
+   COMPARISON PANELS
+══════════════════════════════════════════ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.panel-topline { height: 3px; width: 100%; }
+.panel.bad  .panel-topline { background: linear-gradient(to right, var(--bad-color), transparent); }
+.panel.good .panel-topline { background: linear-gradient(to right, var(--success-color), transparent); }
+
+.panel-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px;
+  margin: var(--space-md) var(--space-md) var(--space-sm) var(--space-md);
+}
+.panel-badge.bad  { color: var(--bad-color);     background: var(--bad-bg);     border: 1px solid var(--bad-border); }
+.panel-badge.good { color: var(--success-color); background: var(--success-bg); border: 1px solid var(--success-border); }
+.panel-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.panel-badge.bad  .dot { background: var(--bad-color); }
+.panel-badge.good .dot { background: var(--success-color); }
+
+.panel-body { padding: 0 var(--space-md) var(--space-md) var(--space-md); }
+
+.demo-area {
+  background: var(--bg-base);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   EXPLANATION BLOCK
+══════════════════════════════════════════ */
+.explanation {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.explanation-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-sm) 0;
+}
+.explanation p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary); margin: 0;
+}
+.explanation p + p { margin-top: var(--space-sm); }
+.explanation strong { font-weight: 600; color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   RULE BOX
+══════════════════════════════════════════ */
+.rule-box {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.rule-box-title {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-xs) 0;
+}
+.rule-box p {
+  font-size: 13px; line-height: 1.6;
+  margin: 0; font-weight: 500;
+}
+/* Theme-aware rule-box text color */
+.rule-box p { color: #0a6e6a; }
+[data-theme="dark"] .rule-box p { color: var(--accent-text); }
+
+/* ══════════════════════════════════════════
+   ANNOTATION GRID
+══════════════════════════════════════════ */
+.annotation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.annotation-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+.annotation-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-ghost); margin-bottom: 2px;
+}
+.annotation-value {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════
+   EXERCISE INTRO + TASK LIST
+══════════════════════════════════════════ */
+.exercise-intro {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+.exercise-intro h3 {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+.exercise-intro p {
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); margin: 0;
+}
+
+.task-list {
+  list-style: none; padding: 0;
+  margin: var(--space-md) 0 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.task-list li {
+  font-size: 12px; line-height: 1.5;
+  color: var(--text-secondary);
+  padding-left: 20px; position: relative;
+}
+.task-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--accent); font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block-wrapper { position: relative; break-inside: avoid; }
+
+.code-block-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #12121e;
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.code-block-lang {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.4); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; letter-spacing: 1px; text-transform: uppercase;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+.copy-btn svg { width: 13px; height: 13px; }
+
+.code-block {
+  background: #1a1a2e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding: var(--space-md); overflow-x: auto; margin: 0;
+}
+.code-block code {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  color: #c8d3f5; white-space: pre; display: block;
+}
+
+/* Syntax-Highlighting */
+.tok-tag    { color: #ff757f; }
+.tok-attr   { color: #ffc777; }
+.tok-str    { color: #c3e88d; }
+.tok-comment{ color: #636da6; font-style: italic; }
+.tok-prop   { color: #86e1fc; }
+.tok-val    { color: #c3e88d; }
+.tok-sel    { color: #ffc777; }
+.tok-num    { color: #ff966c; }
+
+@media print {
+  .copy-btn, .code-block-header { display: none; }
+  .code-block { border-radius: var(--radius-md); }
+}
+
+/* ══════════════════════════════════════════
+   DEMO STYLES — MODULE 12 SPECIFIC
+══════════════════════════════════════════ */
+
+/* Breakpoint diagram */
+.bp-diagram {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: var(--space-sm) 0;
+}
+.bp-bar {
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 2px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+.bp-bar .bp-label { font-size: 7px; opacity: 0.7; margin-top: 2px; }
+
+/* Fluid vs fixed demo */
+.fluid-demo-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.fluid-demo-sidebar {
+  border-radius: 4px;
+  padding: 6px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fluid-demo-main {
+  flex: 1;
+  border-radius: 4px;
+  padding: 6px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card layout demos */
+.card-grid-demo {
+  display: grid;
+  gap: 6px;
+}
+.card-demo-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.card-demo-img {
+  border-radius: 4px;
+  height: 28px;
+}
+.card-demo-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.card-demo-desc {
+  font-family: var(--font-body);
+  color: var(--text-tertiary);
+  line-height: 1.3;
+}
+
+/* Nav demo */
+.nav-demo {
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+.nav-demo-logo {
+  font-size: 11px;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+.nav-demo-links {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.nav-demo-link {
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+.nav-demo-burger {
+  margin-left: auto;
+  width: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.nav-demo-burger span {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--text-secondary);
+}
+
+/* Touch target demo */
+.touch-target-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.touch-btn {
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+}
+
+/* Typography scale demo */
+.type-scale-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.type-scale-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.type-scale-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-ghost);
+  width: 36px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.type-scale-sample {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+/* Spacing demo */
+.spacing-demo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.spacing-demo-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-elevated);
+  border-radius: 4px;
+  position: relative;
+}
+.spacing-indicator {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 600;
+  position: absolute;
+  right: 4px;
+  top: 2px;
+}
+</style>
+</head>
+<body>
+<!-- Toggle Buttons -->
+<div class="toggle-group">
+  <button class="toggle-btn" id="viewToggle" title="Ansicht wechseln">
+    <i data-lucide="monitor"></i>
+  </button>
+  <button class="toggle-btn" id="themeToggle" title="Theme wechseln">
+    <i data-lucide="sun"></i>
+  </button>
+</div>
+
+<div class="web-container">
+
+<!-- ═══════════════════════════════════════
+     SEITE 1 — TITELSEITE
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="module-tag">Modul 12</div>
+    <h1 class="page-title">Responsive Design</h1>
+    <p class="page-subtitle">Layouts, die auf jedem Bildschirm funktionieren — von der Smartwatch bis zum Ultrawide-Monitor. Nicht nur „kleiner machen", sondern bewusst für verschiedene Kontexte gestalten.</p>
+
+    <div class="module-meta">
+      <div class="meta-item">
+        <i data-lucide="clock"></i>
+        <span>45 Minuten</span>
+      </div>
+      <div class="meta-item">
+        <i data-lucide="code"></i>
+        <span>Praxisaufgabe: ~15 Min.</span>
+      </div>
+    </div>
+
+    <div class="learning-goals">
+      <div class="learning-goals-title">
+        <i data-lucide="target"></i>
+        Lernziele
+      </div>
+      <ul class="learning-goals-list">
+        <li>Mobile-First als Designstrategie verstehen und anwenden</li>
+        <li>Sinnvolle Breakpoints wählen — basierend auf Inhalten, nicht auf Geräten</li>
+        <li>Fluid vs. Fixed Layouts unterscheiden und gezielt einsetzen</li>
+        <li>Touch-Targets und Typografie für mobile Kontexte optimieren</li>
+        <li>Content-Priorisierung: Was zeigst du wann und wo?</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Kerngedanke</div>
+      <p>Responsive Design bedeutet nicht, das gleiche Layout einfach zu schrumpfen. Es bedeutet, jede Bildschirmgröße als eigenständigen Kontext zu behandeln — mit angepasster Hierarchie, Proportionen und Interaktion.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 2 — THEORIE
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Grundlagen</div>
+    <h2 class="section-title">Responsive Design — Mehr als nur Media Queries</h2>
+    <p class="body-text">Viele Entwickler setzen Responsive Design mit <strong>Media Queries</strong> gleich. Aber Breakpoints allein machen noch kein gutes responsives Layout. Responsive Design ist eine Denkweise: Du gestaltest Inhalte so, dass sie in jedem Kontext verständlich, zugänglich und visuell stimmig sind. Das bedeutet, dass sich nicht nur die Breite ändert — sondern auch <strong>Proportionen, Abstände, Schriftgrößen und die Informationshierarchie</strong> selbst.</p>
+
+    <div class="theory-card">
+      <div class="section-label">Die 5 Säulen von Responsive Design</div>
+      <div class="concept-list">
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Mobile First</h4>
+            <p>Beginne mit dem kleinsten Viewport und erweitere dann. Mobile zwingt dich, Inhalte zu priorisieren — und das ist gut. Desktop bekommt dann mehr Platz für zusätzliche Informationen, nicht für Dekoration.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Content-basierte Breakpoints</h4>
+            <p>Setze Breakpoints nicht bei „iPhone" oder „iPad", sondern dort, wo dein Layout bricht. Wenn Karten zu schmal werden oder Text zu lang wird — dort brauchst du einen Breakpoint. Geräte ändern sich, dein Inhalt bleibt.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Fluid + Fixed kombinieren</h4>
+            <p>Nicht alles muss sich proportional zur Bildschirmbreite verhalten. Sidebars, Icons und Touch-Targets haben oft feste Größen — der Hauptinhalt füllt den Rest flexibel.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Proportionen sind nicht skalierbar</h4>
+            <p>Eine Headline, die auf Desktop 48px groß ist, darf auf Mobile nicht einfach 48px × 0.5 = 24px werden. Die Verhältnisse zwischen Elementen ändern sich — große Elemente schrumpfen schneller als kleine.</p>
+          </div>
+        </div>
+        <div class="concept-item">
+          <div class="concept-num"></div>
+          <div class="concept-body">
+            <h4>Touch vs. Cursor</h4>
+            <p>Touch-Targets müssen mindestens 44×44px groß sein (Apple HIG) oder 48×48dp (Material Design). Ein 32px-Button, der mit der Maus gut funktioniert, frustriert auf dem Smartphone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 3 — BEISPIEL 1: Navigation
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 01</div>
+    <h2 class="section-title">Navigation: Desktop-Links vs. Mobile-Menü</h2>
+    <p class="body-text">Eine der häufigsten Responsive-Aufgaben: die Navigation. Auf Desktop gibt es Platz für horizontale Links. Auf Mobile muss die Navigation in ein kompaktes Format — aber ein Hamburger-Menü ist nicht immer die einzige Lösung. Entscheidend ist, <strong>dass die wichtigsten Aktionen sichtbar bleiben</strong>.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <!-- Desktop nav squeezed into mobile -->
+            <div class="nav-demo" style="background: var(--bg-surface); border: 1px solid var(--bg-elevated);">
+              <div class="nav-demo-logo">App</div>
+              <div class="nav-demo-links">
+                <span class="nav-demo-link" style="font-size: 7px;">Dashboard</span>
+                <span class="nav-demo-link" style="font-size: 7px;">Projekte</span>
+                <span class="nav-demo-link" style="font-size: 7px;">Team</span>
+                <span class="nav-demo-link" style="font-size: 7px;">Einst...</span>
+                <span class="nav-demo-link" style="font-size: 7px;">Pro...</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 8px; text-align: center;">Links werden unleserlich klein oder abgeschnitten</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="nav-demo" style="background: var(--bg-surface); border: 1px solid var(--bg-elevated);">
+              <div class="nav-demo-logo">App</div>
+              <div class="nav-demo-burger">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-around; margin-top: 6px; padding: 6px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 6px;">
+              <div style="text-align: center;">
+                <div style="width: 20px; height: 20px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; margin: 0 auto 2px;"></div>
+                <span style="font-size: 7px; font-family: var(--font-mono); color: var(--text-tertiary);">Home</span>
+              </div>
+              <div style="text-align: center;">
+                <div style="width: 20px; height: 20px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; margin: 0 auto 2px;"></div>
+                <span style="font-size: 7px; font-family: var(--font-mono); color: var(--text-tertiary);">Projekte</span>
+              </div>
+              <div style="text-align: center;">
+                <div style="width: 20px; height: 20px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; margin: 0 auto 2px;"></div>
+                <span style="font-size: 7px; font-family: var(--font-mono); color: var(--text-tertiary);">Team</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Hamburger + Bottom-Tab-Bar für Kern-Aktionen</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Pattern</div>
+        <div class="annotation-value">Bottom Tab Bar</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Touch Target</div>
+        <div class="annotation-value">≥ 44 × 44px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Sichtbarkeit</div>
+        <div class="annotation-value">Kern-Links bleiben</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel wird die Desktop-Navigation einfach in die mobile Breite gequetscht. Die Links werden so klein, dass sie <strong>unleserlich und nicht tippbar</strong> sind. Im „Nachher"-Beispiel werden sekundäre Links in ein Hamburger-Menü verschoben, während die <strong>wichtigsten 3–4 Aktionen</strong> über eine Bottom-Tab-Bar dauerhaft erreichbar bleiben.</p>
+      <p>Die Bottom-Tab-Bar ist heute Standard in nativen Apps — und hat sich auch im mobilen Web bewährt, weil sie im <strong>Daumenbereich</strong> liegt.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Verstecke nicht alles hinter einem Hamburger-Menü. Identifiziere die 3–4 wichtigsten Aktionen und halte sie sichtbar — der Rest darf ins Menü.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 4 — BEISPIEL 2: Card Layout
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 02</div>
+    <h2 class="section-title">Card Layout: Starres Grid vs. Fluid Grid</h2>
+    <p class="body-text">Karten-Layouts sind auf fast jeder Website zu finden. Auf Desktop sehen 3–4 Spalten elegant aus — aber auf Mobile brauchen die Karten eine andere Anordnung. Entscheidend ist, <strong>dass sich die Grid-Spalten am Inhalt orientieren</strong>, nicht an einer festen Spaltenanzahl.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="card-grid-demo" style="grid-template-columns: 1fr 1fr 1fr;">
+              <div class="card-demo-item">
+                <div class="card-demo-img" style="background: var(--bad-bg); border: 1px solid var(--bad-border);"></div>
+                <div class="card-demo-title" style="font-size: 7px;">Proje...</div>
+                <div class="card-demo-desc" style="font-size: 6px;">Beschreib...</div>
+              </div>
+              <div class="card-demo-item">
+                <div class="card-demo-img" style="background: var(--bad-bg); border: 1px solid var(--bad-border);"></div>
+                <div class="card-demo-title" style="font-size: 7px;">Analy...</div>
+                <div class="card-demo-desc" style="font-size: 6px;">Dashboard...</div>
+              </div>
+              <div class="card-demo-item">
+                <div class="card-demo-img" style="background: var(--bad-bg); border: 1px solid var(--bad-border);"></div>
+                <div class="card-demo-title" style="font-size: 7px;">Repor...</div>
+                <div class="card-demo-desc" style="font-size: 6px;">Monatlic...</div>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">3 Spalten auf Mobile — Karten werden unlesbar</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="card-grid-demo" style="grid-template-columns: 1fr;">
+              <div class="card-demo-item" style="flex-direction: row; align-items: center;">
+                <div class="card-demo-img" style="background: var(--accent-dim); border: 1px solid var(--accent-border); width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px;"></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div class="card-demo-title" style="font-size: 10px;">Projektübersicht</div>
+                  <div class="card-demo-desc" style="font-size: 8px;">Alle laufenden Projekte im Überblick</div>
+                </div>
+              </div>
+              <div class="card-demo-item" style="flex-direction: row; align-items: center;">
+                <div class="card-demo-img" style="background: var(--accent-dim); border: 1px solid var(--accent-border); width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px;"></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div class="card-demo-title" style="font-size: 10px;">Analytics</div>
+                  <div class="card-demo-desc" style="font-size: 8px;">Dashboard mit aktuellen Zahlen</div>
+                </div>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Karten werden zu horizontalen Listenelementen</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">CSS</div>
+        <div class="annotation-value">auto-fill, minmax()</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Desktop</div>
+        <div class="annotation-value">3–4 col Grid</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Mobile</div>
+        <div class="annotation-value">1 col List-View</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel werden die 3 Desktop-Spalten einfach auf den kleinen Viewport gequetscht. Die Karten werden so schmal, dass <strong>Text abgeschnitten wird und Bilder unkenntlich werden</strong>. Im „Nachher"-Beispiel wechselt das Layout auf Mobile zu einer vertikalen Liste mit <strong>horizontalen Karten</strong>.</p>
+      <p>Tipp: <strong>CSS Grid mit <code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px;">repeat(auto-fill, minmax(280px, 1fr))</code></strong> lässt das Grid automatisch umbrechen — oft ohne einen einzigen Breakpoint.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Definiere Grid-Spalten über minmax() statt über feste Spaltenanzahl. Lass den Inhalt bestimmen, wann umgebrochen wird — nicht die Geräteklasse.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 5 — BEISPIEL 3: Typografie-Skalierung
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 03</div>
+    <h2 class="section-title">Typografie: Proportional schrumpfen vs. bewusst anpassen</h2>
+    <p class="body-text">Ein verbreiteter Fehler: Alle Schriftgrößen einfach proportional verkleinern. Das Ergebnis sind Headlines, die auf Mobile immer noch zu groß sind, und Body-Text, der zu klein wird. <strong>Große Elemente müssen schneller schrumpfen als kleine</strong> — das Verhältnis ändert sich.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="type-scale-demo">
+              <div class="type-scale-row">
+                <span class="type-scale-label">H1</span>
+                <span class="type-scale-sample" style="font-size: 24px;">Überschrift</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">H2</span>
+                <span class="type-scale-sample" style="font-size: 17px;">Kapitel</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">Body</span>
+                <span class="type-scale-sample" style="font-size: 8px; font-weight: 400;">Fließtext wird viel zu klein zum Lesen</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">Small</span>
+                <span class="type-scale-sample" style="font-size: 6px; font-weight: 400; color: var(--text-tertiary);">Meta-Info kaum sichtbar</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Alle Werte × 0.5 → Body unleserlich</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="type-scale-demo">
+              <div class="type-scale-row">
+                <span class="type-scale-label">H1</span>
+                <span class="type-scale-sample" style="font-size: 18px;">Überschrift</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">H2</span>
+                <span class="type-scale-sample" style="font-size: 14px;">Kapitel</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">Body</span>
+                <span class="type-scale-sample" style="font-size: 12px; font-weight: 400;">Fließtext bleibt gut lesbar</span>
+              </div>
+              <div class="type-scale-row">
+                <span class="type-scale-label">Small</span>
+                <span class="type-scale-sample" style="font-size: 10px; font-weight: 400; color: var(--text-tertiary);">Meta-Info noch erkennbar</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Jede Stufe individuell angepasst</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">H1 Desktop → Mobile</div>
+        <div class="annotation-value">48px → 28px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Body Desktop → Mobile</div>
+        <div class="annotation-value">16px → 15px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Methode</div>
+        <div class="annotation-value">clamp() / Breakpoints</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel wird alles mit demselben Faktor skaliert (× 0.5). Die Headline ist immer noch dominant, aber der <strong>Body-Text wird unlesbar klein</strong>. Im „Nachher"-Beispiel wird jede Schriftstufe einzeln angepasst: Die H1 schrumpft deutlich (48 → 28px), aber der Body-Text bleibt fast gleich (16 → 15px).</p>
+      <p>Tipp: <strong><code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px;">font-size: clamp(28px, 4vw, 48px)</code></strong> lässt die Schriftgröße flüssig zwischen Mobile und Desktop skalieren.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Skaliere große Elemente stärker als kleine. Der Unterschied zwischen Hierarchy-Stufen wird auf kleinen Bildschirmen geringer — nicht einfach proportional verkleinert.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 6 — BEISPIEL 4: Touch Targets + Spacing
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 04</div>
+    <h2 class="section-title">Touch Targets: Desktop-Buttons vs. Mobile-Buttons</h2>
+    <p class="body-text">Auf Desktop klickst du mit einem präzisen Cursor. Auf Mobile tippst du mit einem Finger, der <strong>ca. 44–48px Fläche</strong> abdeckt. Buttons und interaktive Elemente, die auf Desktop perfekt funktionieren, können auf Mobile frustrierend klein sein — besonders wenn sie zu nah beieinander liegen.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="touch-target-row" style="justify-content: center;">
+              <div class="touch-btn" style="width: 55px; height: 24px; font-size: 8px;">Speichern</div>
+              <div class="touch-btn" style="width: 55px; height: 24px; font-size: 8px; background: var(--text-tertiary);">Abbrechen</div>
+              <div class="touch-btn" style="width: 24px; height: 24px; font-size: 8px; background: var(--bad-color);">✕</div>
+            </div>
+            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 2px;">
+              <div style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 4px;">
+                <div style="width: 10px; height: 10px; border: 1.5px solid var(--text-tertiary); border-radius: 2px;"></div>
+                <span style="font-size: 8px; color: var(--text-secondary);">Option A</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 4px;">
+                <div style="width: 10px; height: 10px; border: 1.5px solid var(--text-tertiary); border-radius: 2px;"></div>
+                <span style="font-size: 8px; color: var(--text-secondary);">Option B</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Buttons zu klein, Checkboxen zu eng</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="touch-btn" style="height: 36px; font-size: 10px; border-radius: 8px; width: 100%;">Speichern</div>
+              <div class="touch-btn" style="height: 36px; font-size: 10px; border-radius: 8px; width: 100%; background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--bg-elevated);">Abbrechen</div>
+            </div>
+            <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px;">
+                <div style="width: 16px; height: 16px; border: 1.5px solid var(--accent); border-radius: 3px; background: var(--accent-dim);"></div>
+                <span style="font-size: 10px; color: var(--text-secondary);">Option A</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 8px;">
+                <div style="width: 16px; height: 16px; border: 1.5px solid var(--text-tertiary); border-radius: 3px;"></div>
+                <span style="font-size: 10px; color: var(--text-secondary);">Option B</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Full-width Buttons, großzügige Tap-Areas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Min. Touch Target</div>
+        <div class="annotation-value">44 × 44px</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Abstand</div>
+        <div class="annotation-value">≥ 8px zwischen Targets</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Button-Layout</div>
+        <div class="annotation-value">Full-width auf Mobile</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel liegen die Buttons nebeneinander mit nur 4px Abstand — der Nutzer tippt leicht auf das falsche Element. Checkboxen mit 10px-Targets sind auf Touch-Geräten fast <strong>unmöglich präzise zu treffen</strong>. Im „Nachher"-Beispiel sind Buttons <strong>full-width und gestapelt</strong>, Checkboxen haben großzügige Padding-Bereiche, die als erweiterte Touch-Fläche dienen.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Touch-Targets immer mindestens 44×44px groß machen. Interaktive Elemente brauchen auf Mobile ≥ 8px Abstand zueinander. Buttons dürfen auf kleinen Screens full-width sein.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 7 — BEISPIEL 5: Sidebar + Content
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Beispiel 05</div>
+    <h2 class="section-title">Sidebar-Layout: Feste Sidebar vs. Adaptives Layout</h2>
+    <p class="body-text">Sidebars sind auf Desktop ein bewährtes Muster für Navigation oder Filter. Auf kleineren Screens nehmen sie aber wertvollen Platz ein. Die Lösung: <strong>Gib der Sidebar eine feste Breite, dem Content den Rest</strong> — und auf Mobile wird die Sidebar zu einem Overlay oder Tab.</p>
+
+    <div class="comparison-grid">
+      <div class="panel bad">
+        <div class="panel-topline"></div>
+        <div class="panel-badge bad"><span class="dot"></span>Vorher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="fluid-demo-row">
+              <div class="fluid-demo-sidebar" style="width: 30%; background: var(--bad-bg); border: 1px solid var(--bad-border); color: var(--bad-color);">25%</div>
+              <div class="fluid-demo-main" style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); color: var(--text-tertiary);">75%</div>
+            </div>
+            <div class="fluid-demo-row">
+              <div class="fluid-demo-sidebar" style="width: 30%; background: var(--bad-bg); border: 1px solid var(--bad-border); color: var(--bad-color); font-size: 6px;">25%</div>
+              <div class="fluid-demo-main" style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); color: var(--text-tertiary); font-size: 6px;">75%</div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Beide Spalten %-basiert — Sidebar wird zu schmal</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel good">
+        <div class="panel-topline"></div>
+        <div class="panel-badge good"><span class="dot"></span>Nachher</div>
+        <div class="panel-body">
+          <div class="demo-area">
+            <div class="fluid-demo-row">
+              <div class="fluid-demo-sidebar" style="width: 70px; background: var(--accent-dim); border: 1px solid var(--accent-border); color: var(--accent);">240px</div>
+              <div class="fluid-demo-main" style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); color: var(--text-tertiary);">flex: 1</div>
+            </div>
+            <div style="margin-top: 6px; background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 4px; padding: 6px; text-align: center;">
+              <span style="font-family: var(--font-mono); font-size: 7px; color: var(--text-ghost);">MOBILE: SIDEBAR → SHEET / DRAWER</span>
+              <div style="margin-top: 4px; background: var(--accent-dim); border: 1px solid var(--accent-border); border-radius: 4px; padding: 4px;">
+                <span style="font-family: var(--font-mono); font-size: 7px; color: var(--accent);">Filter (Overlay)</span>
+              </div>
+            </div>
+            <p class="small-text" style="margin-top: 6px; text-align: center;">Sidebar fix, Content flexibel — auf Mobile: Overlay</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation-grid">
+      <div class="annotation-item">
+        <div class="annotation-label">Sidebar</div>
+        <div class="annotation-value">width: 240px (fix)</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Content</div>
+        <div class="annotation-value">flex: 1 (fluid)</div>
+      </div>
+      <div class="annotation-item">
+        <div class="annotation-label">Mobile</div>
+        <div class="annotation-value">Drawer / Bottom Sheet</div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <div class="explanation-title">Analyse</div>
+      <p>Im „Vorher"-Beispiel sind sowohl Sidebar als auch Content %-basiert. Wenn der Viewport schrumpft, wird die Sidebar so schmal, dass ihre Inhalte <strong>abgeschnitten oder unleserlich</strong> werden. Im „Nachher"-Beispiel hat die Sidebar eine <strong>feste Breite (z.B. 240px)</strong>, und der Content füllt den Rest mit <code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-elevated); padding: 1px 5px; border-radius: 3px;">flex: 1</code>.</p>
+      <p>Auf Mobile verschwindet die Sidebar und wird zu einem <strong>Drawer oder Bottom Sheet</strong>, das bei Bedarf eingeblendet wird.</p>
+    </div>
+
+    <div class="rule-box">
+      <div class="rule-box-title">Regel</div>
+      <p>Nicht alles muss fluid sein. Gib Sidebars, Icons und Controls eine feste Breite — und lass den Hauptinhalt den verfügbaren Rest füllen.</p>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 8 — PRAXISAUFGABE
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Praxisaufgabe</div>
+    <h2 class="section-title">Dashboard-Karte responsiv gestalten</h2>
+    <p class="body-text">Der folgende Code zeigt eine Dashboard-Karte, die nur für Desktop gestaltet ist. Deine Aufgabe: Mache sie mit CSS Media Queries responsiv — ohne die HTML-Struktur zu verändern.</p>
+
+    <div class="exercise-intro">
+      <h3>Aufgabenstellung</h3>
+      <p>Du bekommst eine Dashboard-Karte mit Header, Statistik-Grid und Aktions-Buttons. Aktuell funktioniert sie nur auf breiten Screens. Verbessere das CSS, sodass das Layout auf allen Bildschirmgrößen gut funktioniert.</p>
+      <ul class="task-list">
+        <li>Erstelle mindestens zwei Breakpoints: einen für Tablets (~768px) und einen für Smartphones (~480px)</li>
+        <li>Auf Tablets: Ändere das 4-spaltige Statistik-Grid zu 2 Spalten</li>
+        <li>Auf Smartphones: Ändere das Grid zu 1 Spalte und mache Buttons full-width</li>
+        <li>Passe die Headline-Größe an: Desktop 28px → Tablet 22px → Mobile 18px</li>
+        <li>Stelle sicher, dass alle Buttons mindestens 44px hoch sind auf Mobile</li>
+        <li>Bonus: Nutze clamp() für eine fluid Schriftgröße statt fester Breakpoints</li>
+      </ul>
+    </div>
+
+    <!-- Visual preview of the exercise UI -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md);">
+      <div style="font-family: var(--font-mono); font-size: 9px; color: var(--text-ghost); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: var(--space-sm);">Vorschau — Ausgangszustand (Desktop)</div>
+      <div style="background: var(--bg-base); border: 1px solid var(--bg-elevated); border-radius: var(--radius-sm); padding: var(--space-md);">
+        <!-- Mini dashboard preview -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary);">Projekt-Dashboard</div>
+            <div style="font-size: 9px; color: var(--text-tertiary);">Letzte 30 Tage</div>
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <div style="padding: 4px 8px; border-radius: 4px; font-size: 8px; font-weight: 600; background: var(--accent); color: white;">Export</div>
+            <div style="padding: 4px 8px; border-radius: 4px; font-size: 8px; font-weight: 600; background: var(--bg-surface); border: 1px solid var(--bg-elevated); color: var(--text-secondary);">Filter</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+          <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 6px; padding: 8px;">
+            <div style="font-size: 7px; color: var(--text-tertiary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">Umsatz</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 2px;">€48.2K</div>
+            <div style="font-size: 7px; color: var(--accent);">+12.5%</div>
+          </div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 6px; padding: 8px;">
+            <div style="font-size: 7px; color: var(--text-tertiary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">Kunden</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 2px;">1,284</div>
+            <div style="font-size: 7px; color: var(--accent);">+8.3%</div>
+          </div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 6px; padding: 8px;">
+            <div style="font-size: 7px; color: var(--text-tertiary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">Tickets</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 2px;">342</div>
+            <div style="font-size: 7px; color: var(--bad-color);">-3.1%</div>
+          </div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--bg-elevated); border-radius: 6px; padding: 8px;">
+            <div style="font-size: 7px; color: var(--text-tertiary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px;">NPS</div>
+            <div style="font-size: 14px; font-weight: 800; color: var(--text-primary); margin-top: 2px;">72</div>
+            <div style="font-size: 7px; color: var(--accent);">+5 Pkt.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SEITE 9 — CODE BLOCK
+═══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-content">
+    <div class="section-label">Startcode</div>
+    <h2 class="section-title">Code zum Kopieren und Verbessern</h2>
+
+    <div class="code-block-wrapper">
+      <div class="code-block-header">
+        <span class="code-block-lang">HTML + CSS — Aufgabe Modul 12</span>
+        <button class="copy-btn" id="copyBtn">
+          <i data-lucide="copy"></i>
+          <span class="copy-label">Code kopieren</span>
+        </button>
+      </div>
+      <pre class="code-block"><code><span class="tok-comment">&lt;!-- Dashboard-Karte — mache sie responsiv! --&gt;</span>
+<span class="tok-tag">&lt;style&gt;</span>
+  <span class="tok-sel">.dashboard-card</span> {
+    <span class="tok-prop">max-width</span>: <span class="tok-num">900px</span>;
+    <span class="tok-prop">margin</span>: <span class="tok-num">40px</span> <span class="tok-val">auto</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#ffffff</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">16px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">32px</span>;
+    <span class="tok-prop">box-shadow</span>: <span class="tok-num">0 4px 12px</span> <span class="tok-val">rgba(0,0,0,0.08)</span>;
+    <span class="tok-prop">font-family</span>: <span class="tok-val">'Plus Jakarta Sans', sans-serif</span>;
+  }
+  <span class="tok-sel">.card-header</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">justify-content</span>: <span class="tok-val">space-between</span>;
+    <span class="tok-prop">align-items</span>: <span class="tok-val">center</span>;
+    <span class="tok-prop">margin-bottom</span>: <span class="tok-num">24px</span>;
+  }
+  <span class="tok-sel">.card-title</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">28px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">800</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#12121e</span>;
+  }
+  <span class="tok-sel">.card-subtitle</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">13px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#9090aa</span>;
+    <span class="tok-prop">margin-top</span>: <span class="tok-num">4px</span>;
+  }
+  <span class="tok-sel">.card-actions</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">flex</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">8px</span>;
+  }
+  <span class="tok-sel">.btn-primary</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">8px 20px</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#0ea5a0</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">white</span>;
+    <span class="tok-prop">border</span>: <span class="tok-val">none</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+  }
+  <span class="tok-sel">.btn-secondary</span> {
+    <span class="tok-prop">padding</span>: <span class="tok-num">8px 20px</span>;
+    <span class="tok-prop">background</span>: <span class="tok-val">#f4f4f8</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#52526e</span>;
+    <span class="tok-prop">border</span>: <span class="tok-num">1px</span> <span class="tok-val">solid #eeeef4</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">8px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">font-size</span>: <span class="tok-num">14px</span>;
+    <span class="tok-prop">cursor</span>: <span class="tok-val">pointer</span>;
+  }
+  <span class="tok-sel">.stats-grid</span> {
+    <span class="tok-prop">display</span>: <span class="tok-val">grid</span>;
+    <span class="tok-prop">grid-template-columns</span>: <span class="tok-val">repeat(<span class="tok-num">4</span>, <span class="tok-num">1fr</span>)</span>;
+    <span class="tok-prop">gap</span>: <span class="tok-num">16px</span>;
+  }
+  <span class="tok-sel">.stat-item</span> {
+    <span class="tok-prop">background</span>: <span class="tok-val">#f4f4f8</span>;
+    <span class="tok-prop">border-radius</span>: <span class="tok-num">12px</span>;
+    <span class="tok-prop">padding</span>: <span class="tok-num">20px</span>;
+  }
+  <span class="tok-sel">.stat-label</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">11px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">text-transform</span>: <span class="tok-val">uppercase</span>;
+    <span class="tok-prop">letter-spacing</span>: <span class="tok-num">1.5px</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#9090aa</span>;
+  }
+  <span class="tok-sel">.stat-value</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">32px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">800</span>;
+    <span class="tok-prop">color</span>: <span class="tok-val">#12121e</span>;
+    <span class="tok-prop">margin-top</span>: <span class="tok-num">8px</span>;
+  }
+  <span class="tok-sel">.stat-change</span> {
+    <span class="tok-prop">font-size</span>: <span class="tok-num">12px</span>;
+    <span class="tok-prop">font-weight</span>: <span class="tok-num">600</span>;
+    <span class="tok-prop">margin-top</span>: <span class="tok-num">4px</span>;
+  }
+  <span class="tok-sel">.stat-change.positive</span> { <span class="tok-prop">color</span>: <span class="tok-val">#0ea5a0</span>; }
+  <span class="tok-sel">.stat-change.negative</span> { <span class="tok-prop">color</span>: <span class="tok-val">#d94f4f</span>; }
+
+  <span class="tok-comment">/* ── AUFGABE: Ergänze Media Queries hier ── */</span>
+
+<span class="tok-tag">&lt;/style&gt;</span>
+
+<span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"dashboard-card"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-header"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-title"</span><span class="tok-tag">&gt;</span>Projekt-Dashboard<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-subtitle"</span><span class="tok-tag">&gt;</span>Letzte 30 Tage<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"card-actions"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-primary"</span><span class="tok-tag">&gt;</span>Export<span class="tok-tag">&lt;/button&gt;</span>
+      <span class="tok-tag">&lt;button</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn-secondary"</span><span class="tok-tag">&gt;</span>Filter<span class="tok-tag">&lt;/button&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stats-grid"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-item"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-label"</span><span class="tok-tag">&gt;</span>Umsatz<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-value"</span><span class="tok-tag">&gt;</span>&euro;48.2K<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-change positive"</span><span class="tok-tag">&gt;</span>+12.5%<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-item"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-label"</span><span class="tok-tag">&gt;</span>Kunden<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-value"</span><span class="tok-tag">&gt;</span>1,284<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-change positive"</span><span class="tok-tag">&gt;</span>+8.3%<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-item"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-label"</span><span class="tok-tag">&gt;</span>Tickets<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-value"</span><span class="tok-tag">&gt;</span>342<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-change negative"</span><span class="tok-tag">&gt;</span>-3.1%<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-item"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-label"</span><span class="tok-tag">&gt;</span>NPS<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-value"</span><span class="tok-tag">&gt;</span>72<span class="tok-tag">&lt;/div&gt;</span>
+      <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"stat-change positive"</span><span class="tok-tag">&gt;</span>+5 Pkt.<span class="tok-tag">&lt;/div&gt;</span>
+    <span class="tok-tag">&lt;/div&gt;</span>
+  <span class="tok-tag">&lt;/div&gt;</span>
+<span class="tok-tag">&lt;/div&gt;</span></code></pre>
+    </div>
+  </div>
+  <div class="page-footer">
+    <span class="page-footer-module">Modul 12 — Responsive Design</span>
+    <span class="page-footer-num">Seite <span class="pnum"></span></span>
+  </div>
+</div>
+
+</div><!-- /web-container -->
+
+<script>
+lucide.createIcons();
+
+/* ── Theme Toggle ─────────────────────────────── */
+const themeBtn = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeBtn.innerHTML = '<i data-lucide="moon"></i>';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeBtn.innerHTML = '<i data-lucide="sun"></i>';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-theme', theme);
+}
+
+applyTheme(localStorage.getItem('workshop-theme') || 'light');
+themeBtn.addEventListener('click', () => {
+  applyTheme(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+      ? 'light' : 'dark'
+  );
+});
+
+/* ── View Mode Toggle ─────────────────────────── */
+const viewBtn = document.getElementById('viewToggle');
+
+function applyView(mode) {
+  const body = document.body;
+  if (mode === 'web') {
+    body.classList.remove('view-pdf');
+    body.classList.add('view-web');
+    viewBtn.innerHTML = '<i data-lucide="file-text"></i>';
+    viewBtn.title = 'Zur PDF-Ansicht wechseln';
+  } else {
+    body.classList.remove('view-web');
+    body.classList.add('view-pdf');
+    viewBtn.innerHTML = '<i data-lucide="monitor"></i>';
+    viewBtn.title = 'Zur Web-Ansicht wechseln';
+  }
+  lucide.createIcons();
+  localStorage.setItem('workshop-view', mode);
+}
+
+applyView(localStorage.getItem('workshop-view') || 'pdf');
+viewBtn.addEventListener('click', () => {
+  applyView(document.body.classList.contains('view-pdf') ? 'web' : 'pdf');
+});
+
+/* ── Seitennummern ────────────────────────────── */
+document.querySelectorAll('.pnum').forEach((el, i) => {
+  el.textContent = i + 1;
+});
+
+/* ── Copy Button ──────────────────────────────── */
+const rawCode = `<!-- Dashboard-Karte — mache sie responsiv! -->
+<style>
+  .dashboard-card {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #12121e;
+  }
+  .card-subtitle {
+    font-size: 13px;
+    color: #9090aa;
+    margin-top: 4px;
+  }
+  .card-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-primary {
+    padding: 8px 20px;
+    background: #0ea5a0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    padding: 8px 20px;
+    background: #f4f4f8;
+    color: #52526e;
+    border: 1px solid #eeeef4;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .stat-item {
+    background: #f4f4f8;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #9090aa;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #12121e;
+    margin-top: 8px;
+  }
+  .stat-change {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .stat-change.positive { color: #0ea5a0; }
+  .stat-change.negative { color: #d94f4f; }
+
+  /* ── AUFGABE: Ergänze Media Queries hier ── */
+
+</style>
+
+<div class="dashboard-card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Projekt-Dashboard</div>
+      <div class="card-subtitle">Letzte 30 Tage</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-primary">Export</button>
+      <button class="btn-secondary">Filter</button>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-label">Umsatz</div>
+      <div class="stat-value">€48.2K</div>
+      <div class="stat-change positive">+12.5%</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Kunden</div>
+      <div class="stat-value">1,284</div>
+      <div class="stat-change positive">+8.3%</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Tickets</div>
+      <div class="stat-value">342</div>
+      <div class="stat-change negative">-3.1%</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">NPS</div>
+      <div class="stat-value">72</div>
+      <div class="stat-change positive">+5 Pkt.</div>
+    </div>
+  </div>
+</div>`;
+
+const copyBtn   = document.getElementById('copyBtn');
+const copyLabel = copyBtn.querySelector('.copy-label');
+
+copyBtn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(rawCode); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = rawCode; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  copyBtn.classList.add('copied');
+  copyLabel.textContent = '✓ Kopiert!';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyLabel.textContent = 'Code kopieren';
+  }, 2500);
+});
+</script>
+</body>
+</html>

@@ -5,11 +5,9 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -436,36 +434,7 @@ export default function ResearchMethodsModule() {
           Forschung kombiniert Methoden.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Forschungs-Dashboard: Methoden visuell unterscheidbar machen
-        </h2>
 
-        <ExerciseBlock
-          title="Methoden-Karten: Typ durch Farbe kommunizieren"
-          tasks={[
-            "Gib den Tags eine Farbe, die den Methodentyp kommuniziert – qualitative Methoden anders als quantitative",
-            "Füge den Karten einen leichten Schatten hinzu, damit sie sich vom Hintergrund abheben",
-            "Erhöhe das Karten-Padding auf mindestens 20px für mehr Lesbarkeit",
-            "Mache den Typ-Label farblich deutlicher – er soll den Kontext sofort setzen",
-            "BONUS: Erhöhe den Grid-Abstand auf 20px für mehr Luft zwischen den Karten",
-          ]}
-        >
-          Ein Forschungs-Dashboard listet vier Methoden – aber optisch sind sie
-          alle identisch. Nutzer können qualitative und quantitative Methoden
-          nicht unterscheiden. Deine Aufgabe: Mache den Typ durch gezielten
-          Farbeinsatz sofort erkennbar.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

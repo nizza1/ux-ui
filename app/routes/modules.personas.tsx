@@ -5,11 +5,9 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -539,36 +537,7 @@ export default function PersonasModule() {
           Antwort erhältst. Das ist der Test.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Persona-Karte: Visuell polieren
-        </h2>
 
-        <ExerciseBlock
-          title="Persona-Karte: Lesbarkeit und visuelle Struktur verbessern"
-          tasks={[
-            'Füge der Karte einen sichtbaren Schatten hinzu – mindestens der „Subtil"-Wert',
-            "Vergrößere den Avatar auf mindestens 56px und gib ihm einen farbigen Hintergrund",
-            "Füge dem Zitat einen linken Akzent-Rand (3px) in der Akzentfarbe hinzu",
-            'Gib dem „Ziele"-Label eine grüne und dem „Frustrationen"-Label eine rote Farbe',
-            "BONUS: Erhöhe das Karten-Padding auf 36px für mehr Luft",
-          ]}
-        >
-          Die Persona-Karte unten hat alle Informationen – aber keine visuelle
-          Hierarchie. Avatar, Zitat und Abschnittslabels sind optisch gleichwertig.
-          Deine Aufgabe: Schärfe die visuelle Struktur, damit Nutzer sofort
-          sehen, was wichtig ist.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

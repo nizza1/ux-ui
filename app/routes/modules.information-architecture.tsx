@@ -6,10 +6,8 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -81,11 +79,10 @@ function SitemapNodeComp({
     <div className={`flex flex-col items-center ${depth > 0 ? "mt-3" : ""}`}>
       <button
         onClick={() => onSelect(node)}
-        className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold border-2 transition-all cursor-pointer whitespace-nowrap ${
-          selected === node.id
+        className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold border-2 transition-all cursor-pointer whitespace-nowrap ${selected === node.id
             ? "bg-(--accent) border-(--accent) text-white"
             : "bg-(--bg-surface) border-(--bg-elevated) text-(--text-primary) hover:border-(--accent-border)"
-        }`}
+          }`}
       >
         {node.label}
       </button>
@@ -495,36 +492,7 @@ export default function InformationArchitectureModule() {
           müssen, ist das kein Nutzer-Problem. Es ist ein IA-Problem.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Navigation: Aktiven Zustand und Orientierung kommunizieren
-        </h2>
 
-        <ExerciseBlock
-          title="Navigation verbessern: Nutzer wissen lassen, wo sie sind"
-          tasks={[
-            "Füge der Navigation einen subtilen Schatten oder eine Unterlinie hinzu, damit sie sich vom Content abhebt",
-            "Gib dem aktiven Nav-Link eine klare Hintergrundfarbe und Textfarbe – er muss sofort erkennbar sein",
-            "Erhöhe das Schriftgewicht des aktiven Links auf Bold (700)",
-            "Blende die Breadcrumb ein und gib ihr eine lesbare Farbe",
-            "BONUS: Erhöhe das Navigation-Padding auf 16px für mehr Luft",
-          ]}
-        >
-          Die Navigation unten hat vier Links – aber es ist kaum erkennbar,
-          welcher aktiv ist. Nutzer wissen nicht, wo sie sich befinden.
-          Außerdem gibt es eine versteckte Breadcrumb, die eingeblendet werden
-          sollte. Wende die vier Navigationsprinzipien an.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

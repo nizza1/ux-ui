@@ -4,11 +4,9 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -381,7 +379,7 @@ export default function WhyDesignModule() {
           gesehen hast. Das Ergebnis sind Oberflächen, die technisch funktional,
           aber{" "}
           <strong>visuell inkonsistent, schwer zu bedienen und schwer zu
-          warten</strong>{" "}
+            warten</strong>{" "}
           sind.
         </p>
 
@@ -480,36 +478,6 @@ export default function WhyDesignModule() {
           kein Talent. Das ist ein Framework. Diesen Workshop lernst du das Framework.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Dashboard: Bewusste Designentscheidungen treffen
-        </h2>
-
-        <ExerciseBlock
-          title="KPI-Dashboard: Visuelle Hierarchie und primäre Aktion etablieren"
-          tasks={[
-            "Gib dem primären Button eine klare Hintergrundfarbe – er ist die wichtigste Aktion",
-            "Erhöhe die KPI-Wert-Schriftgröße auf mindestens 28px – sie müssen auf Anhieb lesbar sein",
-            "Füge den KPI-Karten einen subtilen Schatten hinzu, damit sie sich vom Hintergrund abheben",
-            "Erhöhe das KPI-Karten-Padding auf mindestens 20px für mehr Luft",
-            "BONUS: Gib dem Hauptwert eine Akzentfarbe, damit er die Aufmerksamkeit anzieht",
-          ]}
-        >
-          Das Dashboard unten zeigt drei KPI-Karten und zwei Aktions-Buttons.
-          Aber: Der primäre Button ist kaum erkennbar, die KPI-Werte zu klein,
-          und die Karten verschmelzen mit dem Hintergrund. Triff drei bewusste
-          Designentscheidungen, um die visuelle Hierarchie zu verbessern.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

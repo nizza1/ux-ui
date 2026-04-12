@@ -4,11 +4,9 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -175,11 +173,10 @@ function MidFiWireframe() {
               {["←", "1", "2", "3", "→"].map((p) => (
                 <div
                   key={p}
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] ${
-                    p === "1"
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] ${p === "1"
                       ? "bg-(--text-secondary) text-white"
                       : "bg-(--bg-elevated) text-(--text-secondary)"
-                  }`}
+                    }`}
                 >
                   {p}
                 </div>
@@ -631,36 +628,7 @@ export default function WireframingModule() {
           die Struktur stimmt.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Mid-Fi Wireframe: Kontrast und Struktur verbessern
-        </h2>
 
-        <ExerciseBlock
-          title="E-Commerce-Wireframe: Visuellen Kontrast und Hierarchie verbessern"
-          tasks={[
-            "Füge dem Wireframe-Container einen sichtbaren Schatten hinzu, damit er sich vom Seitenhintergrund abhebt",
-            "Erhöhe den Kontrast zwischen Kartenhintergrund und Seitenhintergrund durch eine andere Kartenfarbe",
-            "Markiere die aktive Paginierungsseite mit einer deutlich anderen Farbe und Textfarbe",
-            "Gib der Filter-Sidebar eine klar abgegrenzte Hintergrundfarbe",
-            "BONUS: Erhöhe den Kartenabstand auf 14px für mehr Luft im Grid",
-          ]}
-        >
-          Unten siehst du einen Mid-Fi-Wireframe für eine Suchergebnisseite.
-          Die Struktur ist korrekt, aber der visuelle Kontrast ist zu gering –
-          Karten, Sidebar und Paginierung verschwimmen optisch. Verbessere den
-          Kontrast, ohne Farben einzuführen.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

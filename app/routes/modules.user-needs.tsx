@@ -5,10 +5,8 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -131,10 +129,10 @@ function StoryToUI() {
           <div
             key={i}
             className={`rounded-lg p-3 text-[13px] leading-snug transition-all duration-300 ${s.type === "story"
-                ? "bg-(--accent-dim) border border-(--accent-border) text-(--text-primary) font-medium italic"
-                : s.type === "result"
-                  ? "bg-(--success-bg) border border-(--success-border) text-(--success-color) font-semibold"
-                  : "bg-(--bg-elevated) text-(--text-secondary)"
+              ? "bg-(--accent-dim) border border-(--accent-border) text-(--text-primary) font-medium italic"
+              : s.type === "result"
+                ? "bg-(--success-bg) border border-(--success-border) text-(--success-color) font-semibold"
+                : "bg-(--bg-elevated) text-(--text-secondary)"
               }`}
           >
             <span
@@ -556,37 +554,7 @@ export default function UserNeedsModule() {
           Reihenfolge – nie umgekehrt.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Bestellbestätigung: User Story umsetzen
-        </h2>
 
-        <ExerciseBlock
-          title="Erfolgs-Screen: Das Nutzerbedürfnis nach Sicherheit erfüllen"
-          tasks={[
-            "Gib dem Icon eine grüne Hintergrundfarbe – Erfolg muss sofort erkennbar sein",
-            "Vergrößere das Icon auf mindestens 64px – es ist das erste Element, das Nutzer sehen",
-            "Gib dem primären Button eine klare Farbe und ausreichend Padding (min. 14px)",
-            "Passe die Detailbox-Hintergrundfarbe an – sie soll sich subtil vom Kartenhintergrund abheben",
-            "BONUS: Erhöhe das Karten-Padding für mehr Luft im Layout",
-          ]}
-        >
-          Die User Story lautet: „Als Nutzer möchte ich wissen, wann meine
-          Bestellung bestätigt wurde, damit ich sicher bin, dass ich nicht
-          erneut bestellen muss." Der aktuelle Screen erfüllt das Bedürfnis
-          nach Sicherheit nicht – das Icon ist unauffällig, der Button kaum
-          erkennbar. Löse das UI-Problem.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

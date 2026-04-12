@@ -241,11 +241,10 @@ function PaperPrototypeSimulator() {
           <button
             key={s}
             onClick={() => setScreen(s)}
-            className={`px-3 py-1 text-[12px] font-medium rounded-lg border cursor-pointer transition-colors ${
-              screen === s
+            className={`px-3 py-1 text-[12px] font-medium rounded-lg border cursor-pointer transition-colors ${screen === s
                 ? "bg-(--accent) border-(--accent) text-white"
                 : "bg-(--bg-elevated) border-(--bg-hover) text-(--text-secondary) hover:border-(--accent-border)"
-            }`}
+              }`}
           >
             {s === "list" ? "Liste" : s === "add" ? "Neu" : "Detail"}
           </button>
@@ -600,7 +599,7 @@ export default function SketchingPrototypesModule() {
           Das Ziel des frühen Skizzierens ist nicht, schöne Arbeit zu
           produzieren. Es geht darum,{" "}
           <strong>Ideen schnell zu externalisieren, damit du sie beurteilen
-          und verwerfen kannst</strong>. Wenn eine Idee nur in deinem Kopf
+            und verwerfen kannst</strong>. Wenn eine Idee nur in deinem Kopf
           existiert, neigst du dazu, sie zu verteidigen. Wenn sie auf Papier
           ist, kannst du sie kritisch betrachten.
         </p>
@@ -676,36 +675,7 @@ export default function SketchingPrototypesModule() {
           Idee zu testen – und Papier ist der günstigste.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Lo-Fi Prototyp: Primäre Aktion sichtbar machen
-        </h2>
 
-        <ExerciseBlock
-          title="Aufgabenliste: Add-Button als primäre Aktion etablieren"
-          tasks={[
-            "Gib dem Add-Button eine klare Primärfarbe – er ist die wichtigste Aktion auf dem Screen",
-            "Erhöhe das Button-Padding auf mindestens 14px oben/unten",
-            "Füge dem Header einen subtilen Schatten hinzu, damit App-Shell und Inhalt getrennt wirken",
-            "Passe die Task-Item-Hintergrundfarbe an – ein leicht gefärbter Hintergrund schafft Tiefe",
-            "BONUS: Erhöhe das Screen-Padding auf 28px für mehr Luft",
-          ]}
-        >
-          Auch Lo-Fi-Prototypen müssen Prioritäten kommunizieren. Der Screen
-          unten zeigt eine Aufgabenliste, aber der Add-Button – die wichtigste
-          Aktion – ist kaum erkennbar. Deine Aufgabe: Mache die Hierarchie klar,
-          ohne das Lo-Fi-Niveau zu verlassen.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

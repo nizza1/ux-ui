@@ -5,11 +5,9 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
-import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import { LiveEditor } from "~/components/live-editor/LiveEditor";
 import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
@@ -76,9 +74,8 @@ function UsabilityRating() {
               {[1, 2, 3, 4, 5].map((v) => (
                 <div
                   key={v}
-                  className={`h-1.5 w-1/5 rounded-full transition-all duration-200 ${
-                    v <= ratings[dim.id] ? "bg-(--accent) opacity-80" : "bg-(--bg-elevated)"
-                  }`}
+                  className={`h-1.5 w-1/5 rounded-full transition-all duration-200 ${v <= ratings[dim.id] ? "bg-(--accent) opacity-80" : "bg-(--bg-elevated)"
+                    }`}
                   style={{ maxWidth: "calc(20% - 2px)" }}
                 />
               ))}
@@ -93,18 +90,16 @@ function UsabilityRating() {
             {[1, 2, 3, 4, 5].map((v) => (
               <div
                 key={v}
-                className={`w-5 h-5 rounded transition-all duration-200 ${
-                  v <= Math.round(avg)
-                    ? avg >= 4 ? "bg-(--success-color)" : avg >= 3 ? "bg-(--accent)" : "bg-(--bad-color)"
-                    : "bg-(--bg-elevated)"
-                }`}
+                className={`w-5 h-5 rounded transition-all duration-200 ${v <= Math.round(avg)
+                  ? avg >= 4 ? "bg-(--success-color)" : avg >= 3 ? "bg-(--accent)" : "bg-(--bad-color)"
+                  : "bg-(--bg-elevated)"
+                  }`}
               />
             ))}
           </div>
           <span
-            className={`font-mono text-[15px] font-bold ${
-              avg >= 4 ? "text-(--success-color)" : avg >= 3 ? "text-(--accent)" : "text-(--bad-color)"
-            }`}
+            className={`font-mono text-[15px] font-bold ${avg >= 4 ? "text-(--success-color)" : avg >= 3 ? "text-(--accent)" : "text-(--bad-color)"
+              }`}
           >
             {avg.toFixed(1)}
           </span>
@@ -569,36 +564,7 @@ export default function UsabilityModule() {
           wen, wo, wann und womit: Das ist die Grundlage jeder Designentscheidung.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Onboarding-Flow: Usability verbessern
-        </h2>
 
-        <ExerciseBlock
-          title="Onboarding-Schritt mit schlechter Usability reparieren"
-          tasks={[
-            "Gib dem CTA-Button eine klare Primärfarbe – er muss sofort als Handlungsaufforderung erkennbar sein",
-            "Erhöhe die Zeilenhöhe der Überschrift auf mindestens 1.3 für bessere Lesbarkeit",
-            "Mache die Schrittnummer visuell prominenter – dunklere Farbe, etwas größer",
-            "Passe den Abstand zwischen den Optionen an, damit sie nicht zusammengequetscht wirken",
-            "BONUS: Erhöhe das CTA-Padding auf 14px oben/unten für eine besser bedienbare Klickfläche",
-          ]}
-        >
-          Unten siehst du einen Onboarding-Schritt mit mehreren Usability-Problemen:
-          Der CTA-Button ist kaum erkennbar, die Schrittnummer kaum lesbar, und die
-          Typografie der Überschrift ist zu eng. Analysiere die Probleme anhand der
-          fünf Usability-Dimensionen und behebe sie.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

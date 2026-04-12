@@ -43,8 +43,8 @@ function UserJourneyFlow() {
             <div className="flex flex-col items-center shrink-0">
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-base font-bold border-2 ${step.friction
-                    ? "bg-(--bad-bg) border-(--bad-border) text-(--bad-color)"
-                    : "bg-(--success-bg) border-(--success-border) text-(--success-color)"
+                  ? "bg-(--bad-bg) border-(--bad-border) text-(--bad-color)"
+                  : "bg-(--success-bg) border-(--success-border) text-(--success-color)"
                   }`}
               >
                 {step.icon}
@@ -533,36 +533,6 @@ export default function UxUiBasicsModule() {
           Beides braucht das andere – und als Entwickler triffst du täglich Entscheidungen in beiden Bereichen.
         </RuleBox>
 
-        {/* ── Practice ── */}
-        <hr className="border-0 border-t border-(--bg-elevated) my-8" />
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">
-          Praxisaufgabe
-        </p>
-        <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Ein Login-Formular mit besserer UI ausstatten
-        </h2>
-
-        <ExerciseBlock
-          title="Login-Formular: Vom unsichtbaren Button zum klaren CTA"
-          tasks={[
-            "Gib dem primären Button eine klare Hintergrundfarbe – er muss sofort als klickbar erkennbar sein",
-            "Erhöhe das Padding des Buttons – Minimum 12px oben/unten für ausreichend Klickfläche",
-            'Setze die Linkfarbe des „Passwort vergessen"-Links auf eine erkennbare Farbe und füge eine Unterstreichung hinzu',
-            "Passe den Karten-Schatten an – finde einen Wert, der die Karte vom Hintergrund abhebt",
-            "BONUS: Erhöhe das Karten-Padding auf mindestens 40px für mehr Luft",
-          ]}
-        >
-          Unten siehst du ein Login-Formular im „Vorher"-Zustand: Der primäre
-          Button ist fast unsichtbar, der Link kaum erkennbar. Deine Aufgabe ist
-          es, die UI-Qualität durch gezielte Änderungen zu verbessern – ohne den
-          UX-Flow zu ändern.
-        </ExerciseBlock>
-
-        <LiveEditor
-          html={EXERCISE_HTML}
-          controls={EXERCISE_CONTROLS}
-          defaultMode="controller"
-        />
       </div>
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

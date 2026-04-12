@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
@@ -31,25 +31,27 @@ export default function ImagesIconsModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="19" />
+        <Badge variant="module" dot>Modul 19</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Bilder & Icons
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Icons und Bilder sind keine Dekoration — sie sind Kommunikationswerkzeuge. Ein konsistentes Icon-Set und richtig eingebundene Bilder machen den Unterschied zwischen „zusammengeklickt" und „durchdacht designed".
         </p>
-        <ModuleMeta duration="60 Min." exerciseTime="~25 Min." />
+        <ModuleMeta duration="60 Min." practiceTime="~25 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Vektor (SVG) vs. Pixel (PNG/JPG/WebP) — wann du welches Format einsetzt</li>
-          <li>Stroke- vs. Fill-Icons: Stil wählen, konsistent bleiben, Stroke-Width richtig skalieren</li>
-          <li>Icons korrekt mit Text pairen: Größe, Farbe und Gewichtung ausbalancieren</li>
-          <li>Bilder layoutsicher einbinden: object-fit, aspect-ratio, Background-Bleed-Schutz</li>
-          <li>Text auf Bildern lesbar machen: Gradient-Overlays und alternative Techniken</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Vektor (SVG) vs. Pixel (PNG/JPG/WebP) — wann du welches Format einsetzt",
+            "Stroke- vs. Fill-Icons: Stil wählen, konsistent bleiben, Stroke-Width richtig skalieren",
+            "Icons korrekt mit Text pairen: Größe, Farbe und Gewichtung ausbalancieren",
+            "Bilder layoutsicher einbinden: object-fit, aspect-ratio, Background-Bleed-Schutz",
+            "Text auf Bildern lesbar machen: Gradient-Overlays und alternative Techniken",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -65,7 +67,7 @@ export default function ImagesIconsModule() {
         <p className="text-(--text-secondary) mb-6">
           SVG für alles Gezeichnete: Icons, Logos, Illustrationen — skaliert verlustfrei. WebP/JPG für Fotos (beste Kompression), PNG nur bei Transparenz-Bedarf.
         </p>
-        <TheoryCard title="Die 6 Grundregeln">
+        <TheoryCard label="Die 6 Grundregeln">
           <ConceptItem title="SVG für Icons & Logos">
             Skaliert verlustfrei auf jede Größe, kleinste Dateigrößen
           </ConceptItem>
@@ -94,9 +96,9 @@ export default function ImagesIconsModule() {
           Im selben UI-Bereich einen Stil wählen und durchhalten. Der einzige akzeptable Mix: aktiv/inaktiv-Zustände.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Stroke Icons (Modern, Leicht)",
-            jsx: (
+          bad={{
+            label: "Stroke Icons (Modern, Leicht)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface) gap-6">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
@@ -107,9 +109,9 @@ export default function ImagesIconsModule() {
               </div>
             ),
           }}
-          right={{
-            title: "Fill Icons (Solid, Auffällig)",
-            jsx: (
+          good={{
+            label: "Fill Icons (Solid, Auffällig)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface) gap-6">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="12" r="10" />
@@ -152,9 +154,9 @@ export default function ImagesIconsModule() {
           Feste Container + object-fit: cover verhindert Layout-Brüche. aspect-ratio sichert Proportionen auch bei unterschiedlichen Bildformaten.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Ohne object-fit (Layout bricht)",
-            jsx: (
+          bad={{
+            label: "Ohne object-fit (Layout bricht)",
+            children: (
               <div className="h-48 bg-(--bg-surface) flex items-center justify-center">
                 <div className="w-full h-32 bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center text-white text-sm">
                   Bild verzerrtes Seitenverhältnis
@@ -162,9 +164,9 @@ export default function ImagesIconsModule() {
               </div>
             ),
           }}
-          right={{
-            title: "Mit object-fit: cover (sicher)",
-            jsx: (
+          good={{
+            label: "Mit object-fit: cover (sicher)",
+            children: (
               <div className="h-48 bg-(--bg-surface) flex items-center justify-center">
                 <div className="w-full h-32 bg-gradient-to-r from-blue-400 to-purple-400 object-cover flex items-center justify-center text-white text-sm">
                   Bild perfekt ausgefüllt
@@ -182,17 +184,17 @@ export default function ImagesIconsModule() {
           Bilder sind dynamisch — weißer Text auf hellem Bereich verschwindet. Gradient-Overlays sichern konsistenten Kontrast.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Ohne Overlay (unleserlich)",
-            jsx: (
+          bad={{
+            label: "Ohne Overlay (unleserlich)",
+            children: (
               <div className="relative h-48 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg flex items-end justify-start p-4">
                 <h3 className="text-white font-bold">Headline über hellem Bild</h3>
               </div>
             ),
           }}
-          right={{
-            title: "Mit Gradient-Overlay (lesbar)",
-            jsx: (
+          good={{
+            label: "Mit Gradient-Overlay (lesbar)",
+            children: (
               <div
                 className="relative h-48 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg flex items-end justify-start p-4"
                 style={{
@@ -238,7 +240,7 @@ export default function ImagesIconsModule() {
         <h2 className="text-2xl font-bold text-(--text-primary) mb-6">Images mit object-fit</h2>
         <CodeBlock
           language="html"
-          startCode={`<!-- Bild mit fester Größe & object-fit -->
+          code={`<!-- Bild mit fester Größe & object-fit -->
 <img
   src="image.jpg"
   alt="Description"

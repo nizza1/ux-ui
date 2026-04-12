@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
@@ -31,25 +31,27 @@ export default function UIComponentsModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="18" />
+        <Badge variant="module" dot>Modul 18</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           UI-Komponenten
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Gute Komponenten entstehen nicht durch Zufall. Jeder Button, jede Card und jedes Formular-Feld folgt Regeln — zu Hierarchie, Proportionen und States. Wer diese Regeln kennt, baut konsistente UIs, ohne jede Entscheidung neu treffen zu müssen.
         </p>
-        <ModuleMeta duration="70 Min." exerciseTime="~30 Min." />
+        <ModuleMeta duration="70 Min." practiceTime="~30 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Die drei Hierarchie-Stufen von Buttons verstehen und visuell korrekt umsetzen (Primary, Secondary, Tertiary)</li>
-          <li>Card-Anatomie kennen: Header, Body, Footer, Eyebrow — und wissen, wann welches Element zum Einsatz kommt</li>
-          <li>Form-Felder mit klaren visuellen States gestalten (Default, Focus, Error, Disabled, Success)</li>
-          <li>Konsistente Komponenten-Proportionen aufbauen: Padding, Border-Radius und Font-Size als System</li>
-          <li>Interaktive States (Hover, Active, Focus) als integralen Teil des Designs begreifen, nicht als Nachgedanke</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Die drei Hierarchie-Stufen von Buttons verstehen und visuell korrekt umsetzen (Primary, Secondary, Tertiary)",
+            "Card-Anatomie kennen: Header, Body, Footer, Eyebrow — und wissen, wann welches Element zum Einsatz kommt",
+            "Form-Felder mit klaren visuellen States gestalten (Default, Focus, Error, Disabled, Success)",
+            "Konsistente Komponenten-Proportionen aufbauen: Padding, Border-Radius und Font-Size als System",
+            "Interaktive States (Hover, Active, Focus) als integralen Teil des Designs begreifen, nicht als Nachgedanke",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -65,7 +67,7 @@ export default function UIComponentsModule() {
         <p className="text-(--text-secondary) mb-6">
           Grundbausteine: Container (äußerer Rahmen), Content (Text, Icons, Bilder), States (Interaktion). Alle guten Komponenten folgen den gleichen Säulen.
         </p>
-        <TheoryCard title="Die drei Säulen">
+        <TheoryCard label="Die drei Säulen">
           <ConceptItem title="Hierarchie">
             Primary, Secondary, Tertiary Buttons. Nur eine Primary Action pro Bereich — damit weiß der Nutzer, was am wichtigsten ist.
           </ConceptItem>
@@ -112,7 +114,7 @@ export default function UIComponentsModule() {
         <p className="text-(--text-secondary) mb-6">
           Default, Focus, Error, Disabled, Success — alle visuell unterscheidbar. States kommunizieren Status und Feedback dem Nutzer.
         </p>
-        <TheoryCard title="Die fünf Form-Field-States">
+        <TheoryCard label="Die fünf Form-Field-States">
           <ConceptItem title="Default">
             Normales Aussehen, keine Aktion vom Nutzer erwartet
           </ConceptItem>
@@ -166,7 +168,7 @@ export default function UIComponentsModule() {
         <h2 className="text-2xl font-bold text-(--text-primary) mb-6">Component Beispiel: Button</h2>
         <CodeBlock
           language="jsx"
-          startCode={`export function Button({ variant = "primary", ...props }) {
+          code={`export function Button({ variant = "primary", ...props }) {
   const variants = {
     primary: "bg-(--color-primary) text-white",
     secondary: "border-2 border-(--text-secondary) text-(--text-secondary)",

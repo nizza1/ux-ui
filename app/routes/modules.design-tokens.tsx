@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
@@ -31,25 +31,27 @@ export default function DesignTokensModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="21" />
+        <Badge variant="module" dot>Modul 21</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Design Systems & Tokens
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Ein Design System ist kein starres Regelwerk — es ist eine gemeinsame Sprache zwischen Design und Entwicklung. Tokens sind die Vokabeln dieser Sprache: benannte, wiederverwendbare Werte, die Entscheidungen kodifizieren statt sie jedes Mal neu zu treffen.
         </p>
-        <ModuleMeta duration="80 Min." exerciseTime="~35 Min." />
+        <ModuleMeta duration="80 Min." practiceTime="~35 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Verstehen, was ein Design System ist und warum es Konsistenz und Geschwindigkeit gleichzeitig verbessert</li>
-          <li>Die drei Ebenen von Design Tokens unterscheiden: Global, Alias und Component Tokens</li>
-          <li>Eine Farbpalette, Spacing-Skala und Typografie-Skala als Token-System definieren</li>
-          <li>Erkennen, wann Ad-hoc-Werte ein Zeichen für ein fehlendes System sind</li>
-          <li>Ein eigenes Mini-Design-System mit CSS Custom Properties aufbauen</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Verstehen, was ein Design System ist und warum es Konsistenz und Geschwindigkeit gleichzeitig verbessert",
+            "Die drei Ebenen von Design Tokens unterscheiden: Global, Alias und Component Tokens",
+            "Eine Farbpalette, Spacing-Skala und Typografie-Skala als Token-System definieren",
+            "Erkennen, wann Ad-hoc-Werte ein Zeichen für ein fehlendes System sind",
+            "Ein eigenes Mini-Design-System mit CSS Custom Properties aufbauen",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -65,7 +67,7 @@ export default function DesignTokensModule() {
         <p className="text-(--text-secondary) mb-6">
           Sammlung von wiederverwendbaren Komponenten, Gestaltungsregeln und dokumentierten Entscheidungen. Stellt sicher, dass Produkt konsistent aussieht — unabhängig wer daran arbeitet.
         </p>
-        <TheoryCard title="Die drei Säulen eines Design Systems">
+        <TheoryCard label="Die drei Säulen eines Design Systems">
           <ConceptItem title="Design Tokens">
             Atomare Bausteine: Farben, Abstände, Schriftgrößen, Schatten, Border-Radien als benannte Variablen
           </ConceptItem>
@@ -84,7 +86,7 @@ export default function DesignTokensModule() {
         <p className="text-(--text-secondary) mb-6">
           Global Tokens (Was) → Alias Tokens (Wofür) → Component Tokens (Wo). Jede Ebene baut auf der vorherigen auf.
         </p>
-        <TheoryCard title="Ebene 1 — Global Tokens">
+        <TheoryCard label="Ebene 1 — Global Tokens">
           <ConceptItem title="Das WAS: Rohe Werte ohne Kontext">
             <code className="bg-(--bg-hover) px-2 py-1 rounded text-sm">--blue-500: #3b82f6</code> — Die pure Farbe
           </ConceptItem>
@@ -92,7 +94,7 @@ export default function DesignTokensModule() {
             Single Source of Truth für Roharben
           </ConceptItem>
         </TheoryCard>
-        <TheoryCard title="Ebene 2 — Alias Tokens">
+        <TheoryCard label="Ebene 2 — Alias Tokens">
           <ConceptItem title="Das WOFÜR: Semantische Bedeutung">
             <code className="bg-(--bg-hover) px-2 py-1 rounded text-sm">--color-primary: var(--blue-500)</code> — Was ist die Rolle dieser Farbe?
           </ConceptItem>
@@ -100,7 +102,7 @@ export default function DesignTokensModule() {
             Bei Markenfarb-Wechsel nur ein Token ändern; Dark Mode funktioniert durch Umschaltung
           </ConceptItem>
         </TheoryCard>
-        <TheoryCard title="Ebene 3 — Component Tokens">
+        <TheoryCard label="Ebene 3 — Component Tokens">
           <ConceptItem title="Das WO: Komponentenspezifisch">
             <code className="bg-(--bg-hover) px-2 py-1 rounded text-sm">--btn-bg: var(--color-primary)</code> — Wo wird das Token verwendet?
           </ConceptItem>
@@ -147,9 +149,9 @@ export default function DesignTokensModule() {
           Token-basiertes Theming ermöglicht Dark Mode ohne Komponenten-CSS-Änderung. Nur Alias-Tokens müssen umgeschaltet werden.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Light Theme",
-            jsx: (
+          bad={{
+            label: "Light Theme",
+            children: (
               <div className="h-48 bg-white p-6 rounded-lg space-y-4">
                 <div className="w-16 h-16 bg-blue-500 rounded" />
                 <h3 className="text-xl font-bold text-gray-900">Light Theme</h3>
@@ -157,9 +159,9 @@ export default function DesignTokensModule() {
               </div>
             ),
           }}
-          right={{
-            title: "Dark Theme (Gleiche Komponenten!)",
-            jsx: (
+          good={{
+            label: "Dark Theme (Gleiche Komponenten!)",
+            children: (
               <div className="h-48 bg-gray-900 p-6 rounded-lg space-y-4">
                 <div className="w-16 h-16 bg-blue-400 rounded" />
                 <h3 className="text-xl font-bold text-white">Dark Theme</h3>
@@ -198,7 +200,7 @@ export default function DesignTokensModule() {
         <h2 className="text-2xl font-bold text-(--text-primary) mb-6">Design Token System in CSS</h2>
         <CodeBlock
           language="css"
-          startCode={`:root {
+          code={`:root {
   /* LAYER 1: Global Tokens — Rohe Werte */
   --blue-50: #eff6ff;
   --blue-500: #3b82f6;

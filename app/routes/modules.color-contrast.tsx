@@ -1,6 +1,5 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import type { ReactNode } from "react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
@@ -33,25 +32,27 @@ export default function ColorContrastModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="14" />
+        <Badge variant="module" dot>Modul 14</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Farbe II: Kontrast, Accessibility & WCAG
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Schöne Farben allein reichen nicht — wenn sie niemand lesen kann, sind sie wertlos. Lerne, wie du Farben zugänglich einsetzt und die WCAG-Richtlinien gezielt anwendest.
         </p>
-        <ModuleMeta duration="45 Min." exerciseTime="~15 Min." />
+        <ModuleMeta duration="45 Min." practiceTime="~15 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Das Contrast Ratio verstehen und selbst berechnen können</li>
-          <li>WCAG-Stufen kennen: AA vs. AAA, Normal Text vs. Large Text</li>
-          <li>Das Problem von weißem Text auf farbigem Hintergrund erkennen und lösen</li>
-          <li>Farbblindheit berücksichtigen — warum Farbe nie der einzige Informationsträger sein darf</li>
-          <li>Accessible Design umsetzen, ohne Kompromisse bei der Ästhetik zu machen</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Das Contrast Ratio verstehen und selbst berechnen können",
+            "WCAG-Stufen kennen: AA vs. AAA, Normal Text vs. Large Text",
+            "Das Problem von weißem Text auf farbigem Hintergrund erkennen und lösen",
+            "Farbblindheit berücksichtigen — warum Farbe nie der einzige Informationsträger sein darf",
+            "Accessible Design umsetzen, ohne Kompromisse bei der Ästhetik zu machen",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -67,7 +68,7 @@ export default function ColorContrastModule() {
         <p className="text-(--text-secondary) mb-8">
           Das Contrast Ratio beschreibt das Helligkeitsverhältnis zwischen Vordergrund- und Hintergrundfarbe. Es reicht von <strong>1:1</strong> (kein Kontrast — identische Farben) bis <strong>21:1</strong> (maximaler Kontrast — Schwarz auf Weiß). Die WCAG (Web Content Accessibility Guidelines) definieren Mindestanforderungen für Lesbarkeit.
         </p>
-        <TheoryCard title="WCAG 2.1 — Kontraststufen">
+        <TheoryCard label="WCAG 2.1 — Kontraststufen">
           <ConceptItem title="AA Normal Text — mindestens 4.5:1">
             Gilt für Text unter ~18px (oder unter 14px bold). Das ist die Mindestanforderung, die du für jeden Fließtext in deiner UI einhalten solltest — ohne Ausnahme.
           </ConceptItem>
@@ -115,42 +116,48 @@ export default function ColorContrastModule() {
         <p className="text-(--text-secondary) mb-8">
           Weißer Text auf farbigem Hintergrund braucht oft einen <strong>überraschend dunklen</strong> Hintergrund, um 4.5:1 zu erreichen. Das kann zum Problem werden, wenn diese Elemente nicht das Hauptelement der Seite sein sollen — dunkle Flächen ziehen starke Aufmerksamkeit auf sich.
         </p>
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <ComparisonPanel label="Vorher">
-            <div className="space-y-2">
-              <div className="text-xs font-mono text-(--text-tertiary) mb-3">Weißer Text auf farbigem Background</div>
-              <div className="flex gap-2">
-                <div className="flex-1 bg-[#0ea5a0] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
-                  Info<br/><span className="text-xs opacity-70">3.0:1 ✗</span>
+        <ComparisonPanel
+          bad={{
+            label: "Vorher",
+            children: (
+              <div className="space-y-2">
+                <div className="text-xs font-mono text-(--text-tertiary) mb-3">Weißer Text auf farbigem Background</div>
+                <div className="flex gap-2">
+                  <div className="flex-1 bg-[#0ea5a0] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
+                    Info<br/><span className="text-xs opacity-70">3.0:1 ✗</span>
+                  </div>
+                  <div className="flex-1 bg-[#d94f4f] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
+                    Fehler<br/><span className="text-xs opacity-70">3.9:1 ✗</span>
+                  </div>
+                  <div className="flex-1 bg-[#d97706] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
+                    Warnung<br/><span className="text-xs opacity-70">2.5:1 ✗</span>
+                  </div>
                 </div>
-                <div className="flex-1 bg-[#d94f4f] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
-                  Fehler<br/><span className="text-xs opacity-70">3.9:1 ✗</span>
-                </div>
-                <div className="flex-1 bg-[#d97706] text-white font-semibold text-sm rounded flex items-center justify-center p-3 text-center">
-                  Warnung<br/><span className="text-xs opacity-70">2.5:1 ✗</span>
-                </div>
+                <div className="text-[10px] text-(--text-tertiary) italic">Keines erfüllt AA für normalen Text</div>
               </div>
-              <div className="text-[10px] text-(--text-tertiary) italic">Keines erfüllt AA für normalen Text</div>
-            </div>
-          </ComparisonPanel>
-          <ComparisonPanel label="Nachher">
-            <div className="space-y-2">
-              <div className="text-xs font-mono text-(--text-tertiary) mb-3">Dunkler Text auf hellem Background</div>
-              <div className="flex gap-2">
-                <div className="flex-1 bg-[#ccfbf1] text-[#0a6e6a] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(14,165,160,0.2)]">
-                  Info<br/><span className="text-xs opacity-70">5.2:1 ✓</span>
+            ),
+          }}
+          good={{
+            label: "Nachher",
+            children: (
+              <div className="space-y-2">
+                <div className="text-xs font-mono text-(--text-tertiary) mb-3">Dunkler Text auf hellem Background</div>
+                <div className="flex gap-2">
+                  <div className="flex-1 bg-[#ccfbf1] text-[#0a6e6a] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(14,165,160,0.2)]">
+                    Info<br/><span className="text-xs opacity-70">5.2:1 ✓</span>
+                  </div>
+                  <div className="flex-1 bg-[#fecaca] text-[#7a2020] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(217,79,79,0.2)]">
+                    Fehler<br/><span className="text-xs opacity-70">7.8:1 ✓</span>
+                  </div>
+                  <div className="flex-1 bg-[#fef3c7] text-[#92400e] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(217,119,6,0.2)]">
+                    Warnung<br/><span className="text-xs opacity-70">6.3:1 ✓</span>
+                  </div>
                 </div>
-                <div className="flex-1 bg-[#fecaca] text-[#7a2020] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(217,79,79,0.2)]">
-                  Fehler<br/><span className="text-xs opacity-70">7.8:1 ✓</span>
-                </div>
-                <div className="flex-1 bg-[#fef3c7] text-[#92400e] font-semibold text-sm rounded flex items-center justify-center p-3 text-center border border-[rgba(217,119,6,0.2)]">
-                  Warnung<br/><span className="text-xs opacity-70">6.3:1 ✓</span>
-                </div>
+                <div className="text-[10px] text-(--text-tertiary) italic">Alle bestehen AA — und wirken dezenter</div>
               </div>
-              <div className="text-[10px] text-(--text-tertiary) italic">Alle bestehen AA — und wirken dezenter</div>
-            </div>
-          </ComparisonPanel>
-        </div>
+            ),
+          }}
+        />
         <div className="bg-(--bg-elevated) rounded-lg p-6 mb-6">
           <p className="text-(--text-secondary) mb-4">
             Der „Flip"-Trick: Statt den Hintergrund dunkler zu machen (was das Element visuell dominant macht), <strong>drehst du den Kontrast um</strong>. Dunkler Text auf hellem Hintergrund erreicht oft mühelos 5:1+ und wirkt gleichzeitig subtiler im Gesamtlayout. Die Farbe unterstützt den Text, ohne das Layout zu dominieren.
@@ -174,22 +181,32 @@ export default function ColorContrastModule() {
         <p className="text-(--text-secondary) mb-8">
           De-Emphasis durch hellgrauen Text funktioniert hervorragend auf weißem Hintergrund. Auf farbigen Hintergründen sieht es aber <strong>ausgewaschen und unscharf</strong> aus. Der Grund: Du reduzierst nicht den Kontrast, sondern fügst eine fremde Farbe hinzu.
         </p>
-        <div className="grid grid-cols-2 gap-4">
-          <ComparisonPanel label="Vorher">
-            <div style={{ background: "#1e3a5f", borderRadius: "8px", padding: "14px" }}>
-              <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff", marginBottom: "6px" }}>Dashboard</div>
-              <div style={{ fontSize: "11px", color: "#a0a0a0", lineHeight: "1.5" }}>Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
-            </div>
-            <div className="text-[10px] text-(--text-tertiary) mt-2">Grauer Text (#a0a0a0) auf Blau — matt, disconnected</div>
-          </ComparisonPanel>
-          <ComparisonPanel label="Nachher">
-            <div style={{ background: "#1e3a5f", borderRadius: "8px", padding: "14px" }}>
-              <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff", marginBottom: "6px" }}>Dashboard</div>
-              <div style={{ fontSize: "11px", color: "#8bb8d9", lineHeight: "1.5" }}>Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
-            </div>
-            <div className="text-[10px] text-(--text-tertiary) mt-2">Heller Blauton (#8bb8d9) — gleicher Hue, harmonisch</div>
-          </ComparisonPanel>
-        </div>
+        <ComparisonPanel
+          bad={{
+            label: "Vorher",
+            children: (
+              <>
+                <div style={{ background: "#1e3a5f", borderRadius: "8px", padding: "14px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff", marginBottom: "6px" }}>Dashboard</div>
+                  <div style={{ fontSize: "11px", color: "#a0a0a0", lineHeight: "1.5" }}>Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
+                </div>
+                <div className="text-[10px] text-(--text-tertiary) mt-2">Grauer Text (#a0a0a0) auf Blau — matt, disconnected</div>
+              </>
+            ),
+          }}
+          good={{
+            label: "Nachher",
+            children: (
+              <>
+                <div style={{ background: "#1e3a5f", borderRadius: "8px", padding: "14px" }}>
+                  <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff", marginBottom: "6px" }}>Dashboard</div>
+                  <div style={{ fontSize: "11px", color: "#8bb8d9", lineHeight: "1.5" }}>Letzte Aktualisierung: vor 5 Minuten. Alle Systeme laufen normal.</div>
+                </div>
+                <div className="text-[10px] text-(--text-tertiary) mt-2">Heller Blauton (#8bb8d9) — gleicher Hue, harmonisch</div>
+              </>
+            ),
+          }}
+        />
         <div className="bg-(--bg-elevated) rounded-lg p-6 mt-8">
           <p className="text-(--text-secondary)">
             Links wird grauer Text (#a0a0a0) auf blauem Hintergrund verwendet. Das Grau hat <strong>keinen Bezug zum Hintergrund</strong> — es wirkt wie ein Fremdkörper. Rechts wird ein heller Blauton gewählt, der <strong>den gleichen Hue wie der Hintergrund</strong> hat, nur mit höherer Lightness. Das Ergebnis: harmonisch, lesbar und visuell zusammengehörig.
@@ -235,8 +252,7 @@ export default function ColorContrastModule() {
       {/* Code Block */}
       <section className="max-w-2xl mx-auto px-4 pb-12 sm:px-6">
         <CodeBlock
-          language="html"
-          title="HTML + CSS — Aufgabe Modul 14"
+          language="HTML + CSS — Aufgabe Modul 14"
           code={`<!-- Modul 14 — Praxisaufgabe: Accessibility-Audit -->
 <!-- Verbessere Kontrast, Farbkodierung und Lesbarkeit -->
 

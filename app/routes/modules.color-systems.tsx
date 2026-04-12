@@ -1,6 +1,5 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import type { ReactNode } from "react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
@@ -11,7 +10,7 @@ import { ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { CodeBlock } from "~/components/ui/CodeBlock";
 import { ModuleNav } from "~/routes/modules.$slug";
-import { LiveEditor, type PropertyControl } from "~/components/live-editor/LiveEditor";
+import { LiveEditor } from "~/components/live-editor/LiveEditor";
 
 export const meta: MetaFunction = () => [
   { title: "Farbe I: Farbsysteme aufbauen — UX/UI Workshop" },
@@ -32,25 +31,27 @@ export default function ColorSystemsModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="13" />
+        <Badge variant="module" dot>Modul 13</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Farbe I: Farbsysteme aufbauen
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Warum fünf „perfekte" Farben nicht reichen — und wie du ein systematisches, praxistaugliches Farbsystem für deine Projekte erstellst.
         </p>
-        <ModuleMeta duration="60 Min." exerciseTime="~20 Min." />
+        <ModuleMeta duration="60 Min." practiceTime="~20 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Farbformate verstehen: HEX, RGB, HSL, HSB — wann nutzt du welches?</li>
-          <li>HSL als bevorzugtes Format für systematische Farbarbeit einsetzen</li>
-          <li>Eine vollständige Farbpalette mit Grautönen, Primärfarbe und Akzentfarben aufbauen</li>
-          <li>Abstufungen (Shades) für jede Farbe definieren — von 100 bis 900</li>
-          <li>Die Rolle von Sättigung und Helligkeit beim Erstellen konsistenter Farbskalen verstehen</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Farbformate verstehen: HEX, RGB, HSL, HSB — wann nutzt du welches?",
+            "HSL als bevorzugtes Format für systematische Farbarbeit einsetzen",
+            "Eine vollständige Farbpalette mit Grautönen, Primärfarbe und Akzentfarben aufbauen",
+            "Abstufungen (Shades) für jede Farbe definieren — von 100 bis 900",
+            "Die Rolle von Sättigung und Helligkeit beim Erstellen konsistenter Farbskalen verstehen",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -66,7 +67,7 @@ export default function ColorSystemsModule() {
         <p className="text-(--text-secondary) mb-6">
           Als Entwickler begegnest du Farben in verschiedenen Formaten. Jedes hat seinen Zweck — aber <strong>nicht jedes ist gleich gut geeignet</strong>, wenn du systematisch mit Farbe arbeiten willst. Hier ein kurzer Überblick über die wichtigsten Formate.
         </p>
-        <TheoryCard title="Fünf gängige Farbformate">
+        <TheoryCard label="Fünf gängige Farbformate">
           <ConceptItem title="HEX (#0ea5a0)">
             6 Hexadezimalstellen für Rot, Grün, Blau. Am häufigsten in CSS, aber schwer zu lesen — du siehst den Werten nicht an, ob die Farbe hell oder dunkel ist.
           </ConceptItem>
@@ -91,42 +92,48 @@ export default function ColorSystemsModule() {
         <p className="text-(--text-secondary) mb-8">
           HEX und RGB beschreiben Farben aus der Perspektive eines Bildschirms — wie viel Rot, Grün und Blau leuchtet. <strong>HSL beschreibt Farben so, wie Menschen sie wahrnehmen</strong>: Welcher Farbton? Wie satt? Wie hell? Dadurch erkennst du Verwandtschaften auf einen Blick.
         </p>
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <ComparisonPanel label="Vorher (HEX)">
-            <div className="space-y-3">
-              <div className="text-xs font-mono text-(--text-ghost) tracking-wide">Drei „verwandte" Blautöne in HEX:</div>
-              <div className="flex gap-2">
-                <div className="flex-1 h-10 rounded bg-[#1e40af] flex items-center justify-center">
-                  <span className="text-[9px] font-mono text-white">#1e40af</span>
+        <ComparisonPanel
+          bad={{
+            label: "Vorher (HEX)",
+            children: (
+              <div className="space-y-3">
+                <div className="text-xs font-mono text-(--text-ghost) tracking-wide">Drei „verwandte" Blautöne in HEX:</div>
+                <div className="flex gap-2">
+                  <div className="flex-1 h-10 rounded bg-[#1e40af] flex items-center justify-center">
+                    <span className="text-[9px] font-mono text-white">#1e40af</span>
+                  </div>
+                  <div className="flex-1 h-10 rounded bg-[#3b82f6] flex items-center justify-center">
+                    <span className="text-[9px] font-mono text-white">#3b82f6</span>
+                  </div>
+                  <div className="flex-1 h-10 rounded bg-[#93c5fd] flex items-center justify-center">
+                    <span className="text-[9px] font-mono">#93c5fd</span>
+                  </div>
                 </div>
-                <div className="flex-1 h-10 rounded bg-[#3b82f6] flex items-center justify-center">
-                  <span className="text-[9px] font-mono text-white">#3b82f6</span>
-                </div>
-                <div className="flex-1 h-10 rounded bg-[#93c5fd] flex items-center justify-center">
-                  <span className="text-[9px] font-mono">#93c5fd</span>
-                </div>
+                <div className="text-[10px] text-(--text-tertiary) italic">Verwandtschaft kaum erkennbar</div>
               </div>
-              <div className="text-[10px] text-(--text-tertiary) italic">Verwandtschaft kaum erkennbar</div>
-            </div>
-          </ComparisonPanel>
-          <ComparisonPanel label="Nachher (HSL)">
-            <div className="space-y-3">
-              <div className="text-xs font-mono text-(--text-ghost) tracking-wide">Dieselben Blautöne in HSL:</div>
-              <div className="flex gap-2">
-                <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(224, 66%, 40%)" }}>
-                  <span className="text-[9px] font-mono text-white">224, 66%, 40%</span>
+            ),
+          }}
+          good={{
+            label: "Nachher (HSL)",
+            children: (
+              <div className="space-y-3">
+                <div className="text-xs font-mono text-(--text-ghost) tracking-wide">Dieselben Blautöne in HSL:</div>
+                <div className="flex gap-2">
+                  <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(224, 66%, 40%)" }}>
+                    <span className="text-[9px] font-mono text-white">224, 66%, 40%</span>
+                  </div>
+                  <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(217, 91%, 60%)" }}>
+                    <span className="text-[9px] font-mono text-white">217, 91%, 60%</span>
+                  </div>
+                  <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(213, 93%, 78%)" }}>
+                    <span className="text-[9px] font-mono text-[#1e40af]">213, 93%, 78%</span>
+                  </div>
                 </div>
-                <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(217, 91%, 60%)" }}>
-                  <span className="text-[9px] font-mono text-white">217, 91%, 60%</span>
-                </div>
-                <div className="flex-1 h-10 rounded flex items-center justify-center" style={{ background: "hsl(213, 93%, 78%)" }}>
-                  <span className="text-[9px] font-mono text-[#1e40af]">213, 93%, 78%</span>
-                </div>
+                <div className="text-[10px] text-(--text-tertiary) italic">Gleicher Hue-Bereich → System erkennbar</div>
               </div>
-              <div className="text-[10px] text-(--text-tertiary) italic">Gleicher Hue-Bereich → System erkennbar</div>
-            </div>
-          </ComparisonPanel>
-        </div>
+            ),
+          }}
+        />
         <RuleBox>
           <strong>Praxis-Empfehlung:</strong> Verwende HSL als Arbeitsformat. Du kannst damit Abstufungen intuitiv erstellen — einfach Lightness anpassen, fertig. HEX bleibt dein Export-Format für Code.
         </RuleBox>
@@ -160,48 +167,54 @@ export default function ColorSystemsModule() {
         <p className="text-(--text-secondary) mb-8">
           Farbpaletten-Generatoren geben dir fünf Farben — das reicht vielleicht für ein Logo, aber nicht für eine echte UI. In der Praxis brauchst du <strong>drei Farbgruppen</strong>, jede mit mehreren Abstufungen.
         </p>
-        <div className="grid grid-cols-2 gap-4">
-          <ComparisonPanel label="Vorher">
-            <div className="space-y-3">
-              <div className="text-xs font-mono text-(--text-ghost) mb-2">5-Farben-Palette vom Generator</div>
-              <div className="flex gap-1">
-                <div className="flex-1 h-12 rounded bg-[#264653]"></div>
-                <div className="flex-1 h-12 rounded bg-[#2a9d8f]"></div>
-                <div className="flex-1 h-12 rounded bg-[#e9c46a]"></div>
-                <div className="flex-1 h-12 rounded bg-[#f4a261]"></div>
-                <div className="flex-1 h-12 rounded bg-[#e76f51]"></div>
-              </div>
-              <div className="text-[10px] text-(--text-tertiary)">Welcher Grauton für Text? Welche Farbe für Hover? Disabled?</div>
-            </div>
-          </ComparisonPanel>
-          <ComparisonPanel label="Nachher">
-            <div className="space-y-3">
-              <div className="text-xs font-mono text-(--text-ghost) mb-2">Systematische Palette mit Abstufungen</div>
-              <div className="flex gap-1">
-                <div className="w-1/4">
-                  <div className="text-[9px] font-mono font-semibold text-(--text-ghost) mb-1">Greys</div>
-                  <div className="space-y-1">
-                    <div className="h-3 rounded bg-[#f4f4f8]"></div>
-                    <div className="h-3 rounded bg-[#d4d4de]"></div>
-                    <div className="h-3 rounded bg-[#9090aa]"></div>
-                    <div className="h-3 rounded bg-[#52526e]"></div>
-                  </div>
+        <ComparisonPanel
+          bad={{
+            label: "Vorher",
+            children: (
+              <div className="space-y-3">
+                <div className="text-xs font-mono text-(--text-ghost) mb-2">5-Farben-Palette vom Generator</div>
+                <div className="flex gap-1">
+                  <div className="flex-1 h-12 rounded bg-[#264653]"></div>
+                  <div className="flex-1 h-12 rounded bg-[#2a9d8f]"></div>
+                  <div className="flex-1 h-12 rounded bg-[#e9c46a]"></div>
+                  <div className="flex-1 h-12 rounded bg-[#f4a261]"></div>
+                  <div className="flex-1 h-12 rounded bg-[#e76f51]"></div>
                 </div>
-                <div className="w-1/4">
-                  <div className="text-[9px] font-mono font-semibold text-(--text-ghost) mb-1">Primary</div>
-                  <div className="space-y-1">
-                    <div className="h-3 rounded bg-[#ccfbf1]"></div>
-                    <div className="h-3 rounded bg-[#2dd4bf]"></div>
-                    <div className="h-3 rounded bg-[#0ea5a0]"></div>
-                    <div className="h-3 rounded bg-[#0a6e6a]"></div>
-                  </div>
-                </div>
-                <div className="w-1/2"></div>
+                <div className="text-[10px] text-(--text-tertiary)">Welcher Grauton für Text? Welche Farbe für Hover? Disabled?</div>
               </div>
-              <div className="text-[10px] text-(--text-tertiary)">Jede Farbe hat 4–10 Abstufungen</div>
-            </div>
-          </ComparisonPanel>
-        </div>
+            ),
+          }}
+          good={{
+            label: "Nachher",
+            children: (
+              <div className="space-y-3">
+                <div className="text-xs font-mono text-(--text-ghost) mb-2">Systematische Palette mit Abstufungen</div>
+                <div className="flex gap-1">
+                  <div className="w-1/4">
+                    <div className="text-[9px] font-mono font-semibold text-(--text-ghost) mb-1">Greys</div>
+                    <div className="space-y-1">
+                      <div className="h-3 rounded bg-[#f4f4f8]"></div>
+                      <div className="h-3 rounded bg-[#d4d4de]"></div>
+                      <div className="h-3 rounded bg-[#9090aa]"></div>
+                      <div className="h-3 rounded bg-[#52526e]"></div>
+                    </div>
+                  </div>
+                  <div className="w-1/4">
+                    <div className="text-[9px] font-mono font-semibold text-(--text-ghost) mb-1">Primary</div>
+                    <div className="space-y-1">
+                      <div className="h-3 rounded bg-[#ccfbf1]"></div>
+                      <div className="h-3 rounded bg-[#2dd4bf]"></div>
+                      <div className="h-3 rounded bg-[#0ea5a0]"></div>
+                      <div className="h-3 rounded bg-[#0a6e6a]"></div>
+                    </div>
+                  </div>
+                  <div className="w-1/2"></div>
+                </div>
+                <div className="text-[10px] text-(--text-tertiary)">Jede Farbe hat 4–10 Abstufungen</div>
+              </div>
+            ),
+          }}
+        />
       </section>
 
       {/* Practice Exercise */}
@@ -223,25 +236,23 @@ export default function ColorSystemsModule() {
   <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; background: #ffaa00; color: white;">⚡ API Rate Limit bei 80%</div>
   <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: #eeeeee; color: #666666;">ℹ Nächstes Deployment: Morgen 06:00</div>
 </div>`}
-        >
-          <div className="space-y-3">
-            <h3 className="font-semibold text-(--text-primary)">Aufgabenstellung</h3>
-            <ul className="list-disc list-inside space-y-2 text-(--text-secondary) text-sm">
-              <li>Definiere CSS Custom Properties mit HSL-Werten für mindestens eine Farbfamilie (z.B. <code className="bg-(--bg-elevated) px-1 rounded text-[12px]">--blue-100</code> bis <code className="bg-(--bg-elevated) px-1 rounded text-[12px]">--blue-900</code>)</li>
-              <li>Ersetze die festen HEX-Farbwerte durch deine Custom Properties</li>
-              <li>Verwende verschiedene Abstufungen für Background, Border und Text der Alerts</li>
-              <li>Gib den Grautönen einen leichten Farbstich (kühl oder warm — deine Wahl)</li>
-              <li><strong>Bonus:</strong> Passe die Sättigung an — hellere und dunklere Töne etwas stärker sättigen</li>
-            </ul>
-          </div>
-        </LiveEditor>
+        />
+        <div className="space-y-3 mt-6">
+          <h3 className="font-semibold text-(--text-primary)">Aufgabenstellung</h3>
+          <ul className="list-disc list-inside space-y-2 text-(--text-secondary) text-sm">
+            <li>Definiere CSS Custom Properties mit HSL-Werten für mindestens eine Farbfamilie (z.B. <code className="bg-(--bg-elevated) px-1 rounded text-[12px]">--blue-100</code> bis <code className="bg-(--bg-elevated) px-1 rounded text-[12px]">--blue-900</code>)</li>
+            <li>Ersetze die festen HEX-Farbwerte durch deine Custom Properties</li>
+            <li>Verwende verschiedene Abstufungen für Background, Border und Text der Alerts</li>
+            <li>Gib den Grautönen einen leichten Farbstich (kühl oder warm — deine Wahl)</li>
+            <li><strong>Bonus:</strong> Passe die Sättigung an — hellere und dunklere Töne etwas stärker sättigen</li>
+          </ul>
+        </div>
       </section>
 
       {/* Code Block */}
       <section className="max-w-2xl mx-auto px-4 pb-12 sm:px-6">
         <CodeBlock
-          language="html"
-          title="HTML + CSS — Aufgabe Modul 13"
+          language="HTML + CSS — Aufgabe Modul 13"
           code={`<!-- Modul 13 — Praxisaufgabe: Farbsystem aufbauen -->
 <!-- Ersetze die festen HEX-Farben durch ein HSL-basiertes System -->
 

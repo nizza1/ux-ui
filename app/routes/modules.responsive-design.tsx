@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
@@ -31,25 +31,27 @@ export default function ResponsiveDesignModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="20" />
+        <Badge variant="module" dot>Modul 20</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Responsive Design
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Responsive Design bedeutet nicht, das gleiche Layout einfach zu schrumpfen. Es bedeutet, jede Bildschirmgröße als eigenständigen Kontext zu behandeln — mit angepasster Hierarchie, Proportionen und Interaktion.
         </p>
-        <ModuleMeta duration="75 Min." exerciseTime="~30 Min." />
+        <ModuleMeta duration="75 Min." practiceTime="~30 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Mobile-First als Designstrategie verstehen und anwenden</li>
-          <li>Sinnvolle Breakpoints wählen — basierend auf Inhalten, nicht auf Geräten</li>
-          <li>Fluid vs. Fixed Layouts unterscheiden und gezielt einsetzen</li>
-          <li>Touch-Targets und Typografie für mobile Kontexte optimieren</li>
-          <li>Content-Priorisierung: Was zeigst du wann und wo?</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Mobile-First als Designstrategie verstehen und anwenden",
+            "Sinnvolle Breakpoints wählen — basierend auf Inhalten, nicht auf Geräten",
+            "Fluid vs. Fixed Layouts unterscheiden und gezielt einsetzen",
+            "Touch-Targets und Typografie für mobile Kontexte optimieren",
+            "Content-Priorisierung: Was zeigst du wann und wo?",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -65,7 +67,7 @@ export default function ResponsiveDesignModule() {
         <p className="text-(--text-secondary) mb-6">
           Responsive Design ist eine Denkweise, nicht nur Media Queries. Nicht nur Breite ändert sich — auch Proportionen, Abstände, Schriftgrößen, Informationshierarchie.
         </p>
-        <TheoryCard title="Die 5 Säulen">
+        <TheoryCard label="Die 5 Säulen">
           <ConceptItem title="Mobile First">
             Beginne mit kleinster Viewport und erweitere. Mobile zwingt zu Priorisierung — was ist wirklich wichtig?
           </ConceptItem>
@@ -91,12 +93,12 @@ export default function ResponsiveDesignModule() {
           Desktop: Platz für horizontale Links. Mobile: Kompaktes Format mit wichtigsten Aktionen sichtbar.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Desktop (Horizontal Links)",
-            jsx: (
+          bad={{
+            label: "Desktop (Horizontal Links)",
+            children: (
               <div className="h-48 bg-(--bg-surface) rounded-lg p-4">
                 <div className="flex gap-4 items-center border-b border-(--bg-hover) pb-4 mb-4">
-                  <div className="w-8 h-8 bg-(--color-primary) rounded" />
+                  <div className="w-8 h-8 bg-(--accent) rounded" />
                   <div className="flex gap-3 flex-1">
                     <span className="text-sm text-(--text-secondary)">Home</span>
                     <span className="text-sm text-(--text-secondary)">Features</span>
@@ -107,12 +109,12 @@ export default function ResponsiveDesignModule() {
               </div>
             ),
           }}
-          right={{
-            title: "Mobile (Hamburger + Essential)",
-            jsx: (
+          good={{
+            label: "Mobile (Hamburger + Essential)",
+            children: (
               <div className="h-48 bg-(--bg-surface) rounded-lg p-4">
                 <div className="flex gap-4 items-center border-b border-(--bg-hover) pb-4 mb-4">
-                  <div className="w-8 h-8 bg-(--color-primary) rounded" />
+                  <div className="w-8 h-8 bg-(--accent) rounded" />
                   <span className="text-sm text-(--text-secondary) flex-1">Home</span>
                   <span className="text-sm text-(--text-secondary)">☰</span>
                 </div>
@@ -196,7 +198,7 @@ export default function ResponsiveDesignModule() {
         <h2 className="text-2xl font-bold text-(--text-primary) mb-6">Responsive Grid mit clamp()</h2>
         <CodeBlock
           language="css"
-          startCode={`/* Mobile-First Approach */
+          code={`/* Mobile-First Approach */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;

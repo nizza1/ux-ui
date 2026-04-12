@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
@@ -31,25 +31,27 @@ export default function ShadowsElevationModule() {
     <div className="min-h-screen bg-(--bg-primary)">
       {/* Title & Meta */}
       <div className="max-w-2xl mx-auto px-4 py-12 sm:px-6">
-        <Badge number="17" />
+        <Badge variant="module" dot>Modul 17</Badge>
         <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
           Schatten, Tiefe & Elevation
         </h1>
         <p className="text-lg text-(--text-secondary) mb-8">
           Schatten sind keine Dekoration — sie sind ein Kommunikationswerkzeug. Ein gut gewählter Schatten sagt dem Nutzer: „Dieses Element ist interaktiv", „Diese Karte schwebt über dem Hintergrund" oder „Dieser Dialog braucht deine volle Aufmerksamkeit."
         </p>
-        <ModuleMeta duration="50 Min." exerciseTime="~25 Min." />
+        <ModuleMeta duration="50 Min." practiceTime="~25 Min." />
       </div>
 
       {/* Learning Goals */}
       <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6">
-        <LearningGoals>
-          <li>Verstehen, warum Schatten mehr als Dekoration sind — sie kommunizieren Elevation und Hierarchie</li>
-          <li>Die Lichtquellen-Metapher als Grundprinzip für glaubwürdige Schatten verinnerlichen</li>
-          <li>Ein Elevation-System mit 5 Stufen aufbauen und gezielt einsetzen</li>
-          <li>Zwei-Schatten-Technik (Ambient + Direct Light) anwenden</li>
-          <li>Tiefe auch ohne Schatten erzeugen — mit Farbe, Overlap und Solid Shadows</li>
-        </LearningGoals>
+        <LearningGoals
+          goals={[
+            "Verstehen, warum Schatten mehr als Dekoration sind — sie kommunizieren Elevation und Hierarchie",
+            "Die Lichtquellen-Metapher als Grundprinzip für glaubwürdige Schatten verinnerlichen",
+            "Ein Elevation-System mit 5 Stufen aufbauen und gezielt einsetzen",
+            "Zwei-Schatten-Technik (Ambient + Direct Light) anwenden",
+            "Tiefe auch ohne Schatten erzeugen — mit Farbe, Overlap und Solid Shadows",
+          ]}
+        />
       </div>
 
       {/* Core Concept */}
@@ -65,7 +67,7 @@ export default function ShadowsElevationModule() {
         <p className="text-(--text-secondary) mb-6">
           Im echten Leben erzeugen Objekte Schatten, weil eine Lichtquelle von oben scheint. Erhabene Elemente haben helle Oberkanten und werfen Schatten nach unten. Ein vertikaler Offset nach unten wirkt natürlicher als symmetrischer Schatten.
         </p>
-        <TheoryCard title="Die Elevation-Pyramide (5-Level System)">
+        <TheoryCard label="Die Elevation-Pyramide (5-Level System)">
           <ConceptItem title="Level 1: Subtle Raise">
             Sehr kleiner Schatten für Buttons und Karten im Ruhezustand (1–2px Offset)
           </ConceptItem>
@@ -91,20 +93,20 @@ export default function ShadowsElevationModule() {
           Professionelle Schatten bestehen aus zwei Layern: großer weicher Schatten (direktes Licht) + kleiner scharferer Schatten (Ambient Occlusion). Die Zwei-Schatten-Variante erzeugt realistischeren Eindruck.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Ein Schatten (unrealistisch)",
-            jsx: (
+          bad={{
+            label: "Ein Schatten (unrealistisch)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface)">
-                <div className="w-32 h-32 bg-(--color-primary) rounded-lg shadow-lg"></div>
+                <div className="w-32 h-32 bg-(--accent) rounded-lg shadow-lg"></div>
               </div>
             ),
           }}
-          right={{
-            title: "Zwei-Schatten-Technik (professionell)",
-            jsx: (
+          good={{
+            label: "Zwei-Schatten-Technik (professionell)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface)">
                 <div
-                  className="w-32 h-32 bg-(--color-primary) rounded-lg"
+                  className="w-32 h-32 bg-(--accent) rounded-lg"
                   style={{
                     boxShadow:
                       "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.2)",
@@ -123,22 +125,22 @@ export default function ShadowsElevationModule() {
           Standard-Schatten mit rgba(0,0,0,...) sind universell, wirken aber manchmal stumpf. Farbige Schatten basierend auf Hintergrund- oder Akzentfarbe erzeugen lebendigeres, harmonischeres Gesamtbild.
         </p>
         <ComparisonPanel
-          left={{
-            title: "Schwarzer Schatten (Standard)",
-            jsx: (
+          bad={{
+            label: "Schwarzer Schatten (Standard)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface)">
-                <button className="px-6 py-3 bg-(--color-primary) text-white rounded-lg shadow-md">
+                <button className="px-6 py-3 bg-(--accent) text-white rounded-lg shadow-md">
                   Click Me
                 </button>
               </div>
             ),
           }}
-          right={{
-            title: "Farbiger Schatten (Harmonisch)",
-            jsx: (
+          good={{
+            label: "Farbiger Schatten (Harmonisch)",
+            children: (
               <div className="flex items-center justify-center h-48 bg-(--bg-surface)">
                 <button
-                  className="px-6 py-3 bg-(--color-primary) text-white rounded-lg"
+                  className="px-6 py-3 bg-(--accent) text-white rounded-lg"
                   style={{
                     boxShadow: "0 10px 20px rgba(59, 130, 246, 0.3)",
                   }}
@@ -157,7 +159,7 @@ export default function ShadowsElevationModule() {
         <p className="text-(--text-secondary) mb-6">
           Flat Design bedeutet nicht „keine Tiefe". Du kannst Tiefe mit Farbe, Solid Shadows und Overlap erzeugen. Regel: Heller als Hintergrund = erhaben. Dunkler als Hintergrund = eingelassen.
         </p>
-        <TheoryCard title="Techniken für Tiefe ohne Weichschatten">
+        <TheoryCard label="Techniken für Tiefe ohne Weichschatten">
           <ConceptItem title="Farbe (Heller = Erhaben)">
             Heller als BG erhabene Elemente, dunkler = eingelassen
           </ConceptItem>
@@ -187,7 +189,7 @@ export default function ShadowsElevationModule() {
         <h2 className="text-2xl font-bold text-(--text-primary) mb-6">CSS Elevation System</h2>
         <CodeBlock
           language="css"
-          startCode={`:root {
+          code={`:root {
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);

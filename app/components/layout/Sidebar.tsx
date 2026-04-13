@@ -1,5 +1,7 @@
 import { NavLink } from "@remix-run/react";
+import { House } from "lucide-react";
 import { modules } from "~/data/modules";
+import { IconWrapper } from "../ui/icon";
 
 // Slugs that have full content routes
 const CONTENT_SLUGS = new Set([
@@ -41,11 +43,10 @@ const navItemActive = "bg-(--accent-dim) text-(--accent-text)";
 export function Sidebar({ collapsed }: SidebarProps) {
   return (
     <aside
-      className={`w-(--sidebar-width) shrink-0 h-[calc(100vh-var(--header-height))] overflow-y-auto bg-(--bg-surface) border-r border-(--bg-hover) p-4 flex flex-col gap-0.5 sticky top-(--header-height) transition-[width,opacity,transform] duration-250 ease overflow-hidden ${
-        collapsed
-          ? "w-0! p-0! opacity-0 -translate-x-2.5 border-0!"
-          : "opacity-100 translate-x-0"
-      }`}
+      className={`w-(--sidebar-width) shrink-0 h-[calc(100vh-var(--header-height))] overflow-y-auto bg-(--bg-surface) border-r border-(--bg-hover) p-4 flex flex-col gap-0.5 sticky top-(--header-height) transition-[width,opacity,transform] duration-250 ease overflow-hidden ${collapsed
+        ? "w-0! p-0! opacity-0 -translate-x-2.5 border-0!"
+        : "opacity-100 translate-x-0"
+        }`}
     >
       <div className="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--text-ghost) px-3 pt-1.5 pb-2">
         Modules
@@ -58,9 +59,13 @@ export function Sidebar({ collapsed }: SidebarProps) {
           `${navItemBase} ${isActive ? navItemActive : navItemDefault}`
         }
       >
-        <span className="w-5 h-5 rounded-[5px] bg-(--bg-elevated) flex items-center justify-center font-mono text-[9px] font-bold text-(--text-tertiary) shrink-0">
+        {/* <span className="w-5 h-5 rounded-[5px] bg-(--bg-elevated) flex items-center justify-center font-mono text-[9px] font-bold text-(--text-tertiary) shrink-0">
           {"\u2302"}
-        </span>
+        </span> */}
+
+        <IconWrapper m>
+          <House />
+        </IconWrapper>
         <span>Overview</span>
       </NavLink>
 
@@ -77,11 +82,10 @@ export function Sidebar({ collapsed }: SidebarProps) {
             }
           >
             <span
-              className={`w-5 h-5 rounded-[5px] flex items-center justify-center font-mono text-[9px] font-bold shrink-0 border ${
-                hasContent
-                  ? "bg-(--accent-dim) border-(--accent-border) text-(--accent-text)"
-                  : "bg-(--bg-elevated) border-(--bg-hover) text-(--text-tertiary)"
-              }`}
+              className={`w-5 h-5 rounded-[5px] flex items-center justify-center font-mono text-[9px] font-bold shrink-0 border ${hasContent
+                ? "bg-(--accent-dim) border-(--accent-border) text-(--accent-text)"
+                : "bg-(--bg-elevated) border-(--bg-hover) text-(--text-tertiary)"
+                }`}
             >
               {module.number}
             </span>

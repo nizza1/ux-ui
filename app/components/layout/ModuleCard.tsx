@@ -41,7 +41,7 @@ export function ModuleCard({
 
       {/* Arrow link */}
       <div className="flex items-center gap-1.25 text-[13px] font-semibold text-(--accent-text) mt-auto">
-        {hasContent ? "View module" : "Coming soon"}
+        {hasContent ? "Zum Modul" : "Demnächst verfügbar"}
         <ArrowRight size={12} />
       </div>
     </Link>

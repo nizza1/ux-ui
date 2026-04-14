@@ -7,17 +7,20 @@ const CONTENT_SLUGS = new Set([
   "ux-ui-basics", "usability", "user-needs", "research-methods",
   "personas", "information-architecture", "sketching-prototypes",
   "wireframing", "gestalt-principles",
-  // Visual/Technical Design (modules 09–)
-  "visual-hierarchy", "typography-selection", "spacing-layout", "color-systems",
+  // Visual/Technical Design (modules 09–20)
+  "visual-hierarchy", "typography-selection", "typography-systems",
+  "color-systems", "color-contrast", "color-hierarchy",
+  "spacing-layout", "shadows-elevation", "ui-components",
+  "images-icons", "responsive-design", "design-tokens",
 ]);
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "UX/UI Workshop — For Developers" },
+    { title: "UX/UI Workshop — Für Entwickler" },
     {
       name: "description",
       content:
-        "A comprehensive design workshop covering visual hierarchy, typography, color, spacing, and more.",
+        "Ein praxisnaher Workshop zu UX/UI-Design: visuelle Hierarchie, Typografie, Farbsysteme, Spacing und mehr — speziell für Entwickler.",
     },
   ];
 };
@@ -25,18 +28,18 @@ export const meta: MetaFunction = () => {
 const highlights = [
   {
     icon: Palette,
-    label: "Design Foundations",
-    description: "Color, typography, spacing",
+    label: "Design-Grundlagen",
+    description: "Farbe, Typografie, Abstände & Layout",
   },
   {
     icon: Code2,
-    label: "Developer-Focused",
-    description: "Practical, code-centric approach",
+    label: "Für Entwickler gemacht",
+    description: "Praxisnah, direkt im Code umsetzbar",
   },
   {
     icon: BookOpen,
-    label: `${modules.length} Modules`,
-    description: "From basics to advanced topics",
+    label: `${modules.length} Module`,
+    description: "Von den Basics bis zu Design-Systemen",
   },
 ];
 
@@ -56,14 +59,14 @@ export default function Index() {
         <h1
           className="text-[clamp(28px,4vw,42px)] font-extrabold leading-[1.15] tracking-[-0.8px] text-(--text-primary) mb-4 max-w-150"
         >
-          Design Fundamentals{" "}
-          <span className="text-(--accent-text)">for Developers</span>
+          UX &amp; UI Design{" "}
+          <span className="text-(--accent-text)">für Entwickler</span>
         </h1>
 
         <p className="text-base text-(--text-secondary) leading-[1.65] mb-8 max-w-130">
-          A hands-on workshop covering visual hierarchy, typography, color
-          systems, spacing, and everything in between — taught from a
-          developer&apos;s perspective.
+          Lerne, wie gutes UX/UI-Design funktioniert — von visueller Hierarchie
+          über Typografie und Farbsysteme bis hin zu Spacing und
+          Nutzerführung. Praxisnah erklärt, direkt im Code anwendbar.
         </p>
 
         {/* Highlights */}
@@ -95,15 +98,15 @@ export default function Index() {
           Warum das wichtig ist
         </div>
         <h2 className="text-[22px] font-extrabold leading-[1.2] tracking-[-0.3px] text-(--text-primary) mb-3 mt-0">
-          Entwickler treffen täglich Dutzende Designentscheidungen
+          Gutes Design ist kein Zufall — es ist eine Entscheidung
         </h2>
         <p className="text-[14px] leading-[1.7] text-(--text-secondary) mb-6 max-w-160">
-          Welche Textfarbe für ein deaktiviertes Eingabefeld? Wie zeigst du
-          einen Fehlerzustand an? Wie groß ist die Überschrift für ein
-          Dialog-Fenster? Ohne ein Design-Framework fallen diese
-          Entscheidungen auf das zurück, was am schnellsten fertig ist —
-          das Ergebnis sind Oberflächen, die technisch funktional, aber{" "}
-          <strong>visuell inkonsistent und schwer zu warten</strong> sind.
+          Welche Farbe bekommt ein deaktivierter Button? Wie viel Abstand
+          braucht eine Fehlermeldung? Wie führst du den Nutzer durch ein
+          komplexes Formular? All das sind Designentscheidungen, die
+          Entwickler jeden Tag treffen — oft ohne es zu merken. Ohne klare
+          Grundlagen entstehen Oberflächen, die zwar funktionieren, aber{" "}
+          <strong>unübersichtlich, inkonsistent und schwer wartbar</strong> sind.
         </p>
 
         {/* Business case cards */}
@@ -139,15 +142,15 @@ export default function Index() {
         <div className="flex items-center gap-4 mb-8">
           <div>
             <div className="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--accent-text) mb-1">
-              Workshop Content
+              Workshop-Inhalte
             </div>
             <h2 className="text-[19px] font-bold text-(--text-primary) m-0 tracking-tight">
-              All Modules
+              Alle Module
             </h2>
           </div>
           <div className="flex-1" />
           <span className="font-mono text-xs text-(--text-tertiary) bg-(--bg-elevated) border border-(--bg-hover) rounded-lg py-1 px-2.5">
-            {modules.length} modules
+            {modules.length} Module
           </span>
         </div>
 

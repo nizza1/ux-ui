@@ -27,7 +27,7 @@ export function ImagePlaceholder({
   children,
 }: ImagePlaceholderProps) {
   return (
-    <figure className={`my-6 ${className}`}>
+    <figure className={`my-6 ${className} hidden`}>
       <div
         className="w-full rounded-xl overflow-hidden border border-(--bg-elevated) bg-(--bg-surface)"
         style={{ aspectRatio }}

@@ -55,28 +55,19 @@ function UsabilityRating() {
                 {ratings[dim.id]}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] text-(--text-ghost)">1</span>
-              <input
-                type="range"
-                min={1}
-                max={5}
-                step={1}
-                value={ratings[dim.id]}
-                onChange={(e) =>
-                  setRatings((prev) => ({ ...prev, [dim.id]: Number(e.target.value) }))
-                }
-                className="flex-1 accent-[var(--accent)] h-1.5 cursor-pointer"
-              />
-              <span className="font-mono text-[10px] text-(--text-ghost)">5</span>
-            </div>
-            <div className="flex justify-between mt-1">
+            <div className="flex items-center gap-1.5">
               {[1, 2, 3, 4, 5].map((v) => (
-                <div
+                <button
                   key={v}
-                  className={`h-1.5 w-1/5 rounded-full transition-all duration-200 ${v <= ratings[dim.id] ? "bg-(--accent) opacity-80" : "bg-(--bg-elevated)"
-                    }`}
-                  style={{ maxWidth: "calc(20% - 2px)" }}
+                  type="button"
+                  onClick={() =>
+                    setRatings((prev) => ({ ...prev, [dim.id]: v }))
+                  }
+                  className={`flex-1 h-2 rounded-full transition-all duration-200 cursor-pointer ${
+                    v <= ratings[dim.id]
+                      ? "bg-(--accent) opacity-80"
+                      : "bg-(--bg-elevated) hover:bg-(--accent) hover:opacity-30"
+                  }`}
                 />
               ))}
             </div>

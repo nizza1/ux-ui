@@ -140,90 +140,150 @@ function FidelityComparison() {
 }
 
 // ── Paper Prototype Simulator ─────────────────────────────────────────────────
-type Screen = "list" | "add" | "detail";
+type Screen = "menu" | "product" | "cart";
 
 function PaperPrototypeSimulator() {
-  const [screen, setScreen] = useState<Screen>("list");
-  const [added, setAdded] = useState(false);
+  const [screen, setScreen] = useState<Screen>("menu");
+  const [cart, setCart] = useState<{ name: string; size: string; price: string }[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string>("M");
+
+  const addToCart = (name: string) => {
+    const prices: Record<string, string> = { S: "3,20", M: "3,90", L: "4,50" };
+    setCart((prev) => [...prev, { name, size: selectedSize, price: prices[selectedSize] }]);
+    setSelectedSize("M");
+    setScreen("cart");
+  };
+
+  const screenLabels: Record<Screen, { title: string; hint: string }> = {
+    menu: { title: "Speisekarte", hint: "Alle Produkte auf einen Blick" },
+    product: { title: "Produkt", hint: "Details und Optionen wählen" },
+    cart: { title: "Warenkorb", hint: "Bestellung prüfen" },
+  };
+
+  const menuItems = [
+    { name: "Cappuccino", desc: "Espresso + Milchschaum", emoji: "☕" },
+    { name: "Matcha Latte", desc: "Grüntee + Hafermilch", emoji: "🍵" },
+    { name: "Croissant", desc: "Frisch gebacken, Butter", emoji: "🥐" },
+  ];
 
   const screens: Record<Screen, React.ReactNode> = {
-    list: (
+    menu: (
       <div className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold text-[14px] text-(--text-primary)">Meine Aufgaben</h3>
-          <button
-            onClick={() => setScreen("add")}
-            className="px-2.5 py-1 bg-(--accent) text-white text-[12px] font-semibold rounded-lg cursor-pointer"
-          >
-            + Neu
-          </button>
+        <div className="border-b border-dashed border-(--text-ghost)/20 pb-2">
+          <h3 className="font-bold text-[14px] text-(--text-primary)">Guten Morgen!</h3>
+          <p className="text-[11px] text-(--text-tertiary)">Was darf es heute sein?</p>
         </div>
         <div className="space-y-2">
-          {["Design Review vorbereiten", "Wireframe fertigstellen", ...(added ? ["Neue Aufgabe (von dir!)"] : [])].map(
-            (task, i) => (
-              <button
-                key={task}
-                onClick={() => setScreen("detail")}
-                className="w-full flex items-center gap-2.5 p-2.5 bg-(--bg-surface) rounded-lg border border-(--bg-elevated) text-left cursor-pointer hover:border-(--accent-border) transition-colors"
-              >
-                <div className="w-4 h-4 rounded border border-(--bg-elevated) shrink-0 flex items-center justify-center">
-                  {i === 0 && <div className="w-2 h-2 rounded-sm bg-(--accent)" />}
-                </div>
-                <span className="text-[13px] text-(--text-primary)">{task}</span>
-              </button>
-            )
-          )}
+          {menuItems.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => setScreen("product")}
+              className="w-full flex items-center gap-3 p-2.5 rounded-md border-2 border-dashed border-(--text-ghost)/20 text-left cursor-pointer hover:border-(--accent)/40 transition-colors group"
+            >
+              <span className="text-xl shrink-0">{item.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-[13px] font-semibold text-(--text-primary) group-hover:text-(--accent) transition-colors block">{item.name}</span>
+                <span className="text-[11px] text-(--text-tertiary)">{item.desc}</span>
+              </div>
+              <span className="text-[12px] font-mono text-(--text-ghost) shrink-0">ab 3,20</span>
+            </button>
+          ))}
         </div>
-        <p className="text-[11px] text-(--text-ghost) text-center pt-1">
-          Tippe auf eine Aufgabe → Detail · „+" → Neu hinzufügen
-        </p>
+        {cart.length > 0 && (
+          <button
+            onClick={() => setScreen("cart")}
+            className="w-full py-2 border-2 border-(--accent) text-(--accent) text-[12px] font-bold rounded-md cursor-pointer hover:bg-(--accent) hover:text-white transition-colors"
+          >
+            Warenkorb ({cart.length})
+          </button>
+        )}
       </div>
     ),
-    add: (
+    product: (
       <div className="p-4 space-y-3">
-        <button onClick={() => setScreen("list")} className="text-[12px] text-(--accent) cursor-pointer">
+        <button onClick={() => setScreen("menu")} className="text-[12px] text-(--accent) font-semibold cursor-pointer hover:underline">
           ← Zurück
         </button>
-        <h3 className="font-bold text-[14px] text-(--text-primary)">Neue Aufgabe</h3>
-        <div className="border border-(--bg-elevated) rounded-lg p-2.5 text-[13px] text-(--text-ghost)">
-          Aufgabentitel eingeben…
+        <div className="text-center border-b border-dashed border-(--text-ghost)/20 pb-3">
+          <span className="text-3xl block mb-1">☕</span>
+          <h3 className="font-bold text-[15px] text-(--text-primary)">Cappuccino</h3>
+          <p className="text-[11px] text-(--text-tertiary)">Doppelter Espresso + cremiger Milchschaum</p>
         </div>
-        <div className="border border-(--bg-elevated) rounded-lg p-2.5 text-[13px] text-(--text-ghost) h-16">
-          Beschreibung (optional)…
+        {/* Size picker */}
+        <div>
+          <p className="text-[11px] font-semibold text-(--text-tertiary) mb-1.5 uppercase tracking-wide">Grösse wählen</p>
+          <div className="flex gap-2">
+            {(["S", "M", "L"] as const).map((size) => (
+              <button
+                key={size}
+                onClick={() => setSelectedSize(size)}
+                className={`flex-1 py-2 text-center rounded-md border-2 cursor-pointer transition-all ${
+                  selectedSize === size
+                    ? "border-(--accent) bg-(--accent)/10 text-(--accent) font-bold"
+                    : "border-dashed border-(--text-ghost)/20 text-(--text-secondary) hover:border-(--accent)/30"
+                }`}
+              >
+                <span className="text-[13px] block">{size}</span>
+                <span className="text-[10px] text-(--text-ghost)">
+                  {size === "S" ? "3,20" : size === "M" ? "3,90" : "4,50"} €
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
         <button
-          onClick={() => { setAdded(true); setScreen("list"); }}
-          className="w-full py-2 bg-(--accent) text-white text-[13px] font-semibold rounded-lg cursor-pointer"
+          onClick={() => addToCart("Cappuccino")}
+          className="w-full py-2.5 border-2 border-(--accent) bg-(--accent) text-white text-[13px] font-bold rounded-md cursor-pointer hover:opacity-90 transition-opacity"
         >
-          Aufgabe hinzufügen
+          In den Warenkorb
         </button>
-        <p className="text-[11px] text-(--text-ghost) text-center">
-          Klicke „Hinzufügen" → Aufgabe erscheint in der Liste
-        </p>
       </div>
     ),
-    detail: (
+    cart: (
       <div className="p-4 space-y-3">
-        <button onClick={() => setScreen("list")} className="text-[12px] text-(--accent) cursor-pointer">
-          ← Aufgabenliste
+        <button onClick={() => setScreen("menu")} className="text-[12px] text-(--accent) font-semibold cursor-pointer hover:underline">
+          ← Weiter bestellen
         </button>
-        <h3 className="font-bold text-[14px] text-(--text-primary)">Design Review vorbereiten</h3>
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 bg-(--accent-dim) border border-(--accent-border) text-(--accent) text-[11px] font-semibold rounded-full">In Bearbeitung</span>
-          <span className="text-[12px] text-(--text-tertiary)">Fällig: Heute</span>
-        </div>
-        <p className="text-[13px] text-(--text-secondary) leading-snug">
-          Alle Wireframes zusammenstellen und Feedback-Punkte dokumentieren.
-        </p>
-        <button
-          onClick={() => setScreen("list")}
-          className="w-full py-2 bg-(--success-bg) border border-(--success-border) text-(--success-color) text-[13px] font-semibold rounded-lg cursor-pointer"
-        >
-          Als erledigt markieren ✓
-        </button>
-        <p className="text-[11px] text-(--text-ghost) text-center">
-          „Erledigt" → zurück zur Liste
-        </p>
+        <h3 className="font-bold text-[14px] text-(--text-primary) border-b border-dashed border-(--text-ghost)/20 pb-2">
+          Deine Bestellung
+        </h3>
+        {cart.length === 0 ? (
+          <div className="text-center py-6">
+            <p className="text-[13px] text-(--text-ghost)">Noch nichts im Warenkorb.</p>
+            <button
+              onClick={() => setScreen("menu")}
+              className="mt-2 text-[12px] text-(--accent) font-semibold cursor-pointer hover:underline"
+            >
+              Zur Speisekarte
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2">
+              {cart.map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-2.5 rounded-md border-2 border-dashed border-(--text-ghost)/20">
+                  <div>
+                    <span className="text-[13px] font-semibold text-(--text-primary) block">{item.name}</span>
+                    <span className="text-[11px] text-(--text-tertiary)">Grösse {item.size}</span>
+                  </div>
+                  <span className="text-[13px] font-mono font-semibold text-(--text-primary)">{item.price} €</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-dashed border-(--text-ghost)/20">
+              <span className="text-[13px] font-semibold text-(--text-primary)">Gesamt</span>
+              <span className="text-[14px] font-mono font-bold text-(--accent)">
+                {cart.reduce((sum, item) => sum + parseFloat(item.price.replace(",", ".")), 0).toFixed(2).replace(".", ",")} €
+              </span>
+            </div>
+            <button
+              onClick={() => { setCart([]); setScreen("menu"); }}
+              className="w-full py-2.5 border-2 border-(--accent) bg-(--accent) text-white text-[13px] font-bold rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              Bestellen
+            </button>
+          </>
+        )}
       </div>
     ),
   };
@@ -231,27 +291,71 @@ function PaperPrototypeSimulator() {
   return (
     <div className="bg-(--bg-surface) border border-(--bg-elevated) rounded-xl p-5 mb-6">
       <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-1">
-        Paper-Prototyp-Simulator — To-do-Liste
+        Interaktive Demo
       </p>
-      <p className="text-[12px] text-(--text-tertiary) mb-4">
-        3 Bildschirme, klickbar verbunden – ohne visuelles Design:
+      <p className="text-[13px] text-(--text-secondary) mb-1">
+        So funktioniert ein klickbarer Paper-Prototyp: Einzelne Bildschirme werden
+        durch Aktionen (Klick, Tippen) miteinander verbunden — ganz ohne echten Code.
       </p>
-      <div className="flex gap-3 mb-4">
-        {(["list", "add", "detail"] as Screen[]).map((s) => (
+      <p className="text-[13px] text-(--text-tertiary) mb-4">
+        Klicke dich durch diese Café-Bestell-App und beobachte, wie drei einfache Screens
+        bereits ein testbares Erlebnis erzeugen:
+      </p>
+
+      {/* Screen tabs */}
+      <div className="flex gap-2 mb-4">
+        {(["menu", "product", "cart"] as Screen[]).map((s) => (
           <button
             key={s}
             onClick={() => setScreen(s)}
-            className={`px-3 py-1 text-[12px] font-medium rounded-lg border cursor-pointer transition-colors ${screen === s
-                ? "bg-(--accent) border-(--accent) text-white"
-                : "bg-(--bg-elevated) border-(--bg-hover) text-(--text-secondary) hover:border-(--accent-border)"
+            className={`px-3 py-1.5 text-[12px] font-semibold rounded-md border-2 cursor-pointer transition-all ${screen === s
+                ? "bg-(--accent) border-(--accent) text-white shadow-sm"
+                : "bg-transparent border-(--text-ghost)/20 text-(--text-secondary) hover:border-(--accent)/40 hover:text-(--accent)"
               }`}
           >
-            {s === "list" ? "Liste" : s === "add" ? "Neu" : "Detail"}
+            {screenLabels[s].title}
+            {s === "cart" && cart.length > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-white/20">
+                {cart.length}
+              </span>
+            )}
           </button>
         ))}
       </div>
-      <div className="max-w-[320px] bg-white dark:bg-(--bg-elevated) rounded-xl border border-(--bg-elevated) overflow-hidden min-h-[220px]">
-        {screens[screen]}
+
+      {/* Phone frame */}
+      <div className="max-w-85">
+        <div className="bg-(--bg-primary) rounded-2xl border-2 border-(--bg-elevated) overflow-hidden shadow-sm">
+          {/* Status bar */}
+          <div className="flex items-center justify-between px-4 py-1.5 border-b border-(--bg-elevated)">
+            <span className="text-[10px] font-mono text-(--text-ghost)">9:41</span>
+            <div className="w-16 h-1 rounded-full bg-(--bg-elevated)" />
+            <div className="flex gap-1">
+              <div className="w-3 h-2 rounded-sm bg-(--text-ghost)/30" />
+              <div className="w-3 h-2 rounded-sm bg-(--text-ghost)/30" />
+            </div>
+          </div>
+          {/* Screen content */}
+          <div className="min-h-70">
+            {screens[screen]}
+          </div>
+        </div>
+        {/* Screen label below phone */}
+        <p className="text-[11px] text-(--text-ghost) text-center mt-2 font-mono">
+          Screen: {screenLabels[screen].title} — {screenLabels[screen].hint}
+        </p>
+      </div>
+
+      {/* Flow diagram */}
+      <div className="mt-4 pt-4 border-t border-dashed border-(--text-ghost)/15">
+        <p className="text-[11px] font-semibold text-(--text-tertiary) mb-2 uppercase tracking-wide">Navigationsfluss</p>
+        <div className="flex items-center gap-2 text-[11px] font-mono text-(--text-ghost) flex-wrap">
+          <span className={`px-2 py-0.5 rounded border ${screen === "menu" ? "border-(--accent) text-(--accent) font-bold" : "border-(--text-ghost)/20"}`}>Speisekarte</span>
+          <span>→ Produkt wählen →</span>
+          <span className={`px-2 py-0.5 rounded border ${screen === "product" ? "border-(--accent) text-(--accent) font-bold" : "border-(--text-ghost)/20"}`}>Produkt</span>
+          <span>→ Hinzufügen →</span>
+          <span className={`px-2 py-0.5 rounded border ${screen === "cart" ? "border-(--accent) text-(--accent) font-bold" : "border-(--text-ghost)/20"}`}>Warenkorb</span>
+        </div>
       </div>
     </div>
   );
@@ -653,12 +757,12 @@ export default function SketchingPrototypesModule() {
           Interaktiv
         </p>
         <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
-          Paper-Prototyp-Simulator
+          Klickbarer Prototyp — Selbst ausprobieren
         </h2>
         <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
-          Ein interaktiver Prototyp simuliert, wie ein Produkt auf Nutzeraktionen
-          reagiert – ohne echten Code im Hintergrund. Erkunde diese Lo-Fi
-          To-do-App:
+          Ein Paper-Prototyp besteht aus einfachen Bildschirmen, die durch
+          Nutzeraktionen (Klick, Tippen) verbunden werden. So lässt sich ein
+          Ablauf testen, bevor eine einzige Zeile Code geschrieben wird.
         </p>
 
         <PaperPrototypeSimulator />

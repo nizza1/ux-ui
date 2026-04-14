@@ -16,7 +16,6 @@ const CONTENT_SLUGS = new Set([
   "wireframing",
   "gestalt-principles",
   // Visual/Technical Design (modules 09–)
-  "why-design",
   "visual-hierarchy",
   "typography-selection",
   "typography-systems",

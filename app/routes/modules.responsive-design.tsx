@@ -32,7 +32,7 @@ export default function ResponsiveDesignModule() {
       <div className="max-w-[1000px] mx-auto">
         {/* Title & Meta */}
         <div className=" px-4 py-12 sm:px-6">
-          <Badge variant="module" dot>Modul 20</Badge>
+          <Badge variant="module" dot>Modul 19</Badge>
           <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
             Responsive Design
           </h1>

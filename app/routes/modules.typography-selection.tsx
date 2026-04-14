@@ -212,7 +212,7 @@ const COPY_CODE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typografie I — Aufgabe Modul 11</title>
+<title>Typografie I — Aufgabe Modul 10</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Verfügbare Farb-Variablen:
@@ -321,7 +321,7 @@ export default function TypographySelectionModule() {
 
         {/* ── TITELSEITE ── */}
         <div className="mb-2">
-          <Badge variant="module" dot>Modul 11</Badge>
+          <Badge variant="module" dot>Modul 10</Badge>
         </div>
 
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">
@@ -674,15 +674,7 @@ export default function TypographySelectionModule() {
           controls={EXERCISE_CONTROLS}
         />
 
-        <hr className="border-0 border-t border-(--bg-elevated) my-4" />
 
-        {/* ── CODE BLOCK ── */}
-        <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-2 block">Startcode — Zum Kopieren und Verbessern</p>
-        <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
-          Kopiere diesen Code, öffne ihn in deinem Browser und verbessere die typografische Hierarchie der Profil-Card. Alle relevanten CSS-Variablen für Textfarben und Schriftgewichte sind bereits einsatzbereit.
-        </p>
-
-        <CodeBlock language="HTML + CSS — Aufgabe Modul 11" code={COPY_CODE} />
 
       </div>
 

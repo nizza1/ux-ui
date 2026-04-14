@@ -1,12 +1,12 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Sparkles, BookOpen, Code2, Palette } from "lucide-react";
+import { Sparkles, BookOpen, Code2, Palette, Phone, TrendingUp, RefreshCw, Rocket } from "lucide-react";
 import { ModuleCard } from "~/components/layout/ModuleCard";
 import { modules } from "~/data/modules";
 const CONTENT_SLUGS = new Set([
   // UX/UI Foundations (modules 00–08)
   "ux-ui-basics", "usability", "user-needs", "research-methods",
   "personas", "information-architecture", "sketching-prototypes",
-  "wireframing", "why-design",
+  "wireframing", "gestalt-principles",
   // Visual/Technical Design (modules 09–)
   "visual-hierarchy", "typography-selection", "spacing-layout", "color-systems",
 ]);
@@ -35,7 +35,7 @@ const highlights = [
   },
   {
     icon: BookOpen,
-    label: "15 Modules",
+    label: `${modules.length} Modules`,
     description: "From basics to advanced topics",
   },
 ];
@@ -89,6 +89,50 @@ export default function Index() {
         </div>
       </div>
 
+      {/* ── Why UI Design Matters ── */}
+      <div className="mb-16">
+        <div className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent-text) mb-2">
+          Warum das wichtig ist
+        </div>
+        <h2 className="text-[22px] font-extrabold leading-[1.2] tracking-[-0.3px] text-(--text-primary) mb-3 mt-0">
+          Entwickler treffen täglich Dutzende Designentscheidungen
+        </h2>
+        <p className="text-[14px] leading-[1.7] text-(--text-secondary) mb-6 max-w-160">
+          Welche Textfarbe für ein deaktiviertes Eingabefeld? Wie zeigst du
+          einen Fehlerzustand an? Wie groß ist die Überschrift für ein
+          Dialog-Fenster? Ohne ein Design-Framework fallen diese
+          Entscheidungen auf das zurück, was am schnellsten fertig ist —
+          das Ergebnis sind Oberflächen, die technisch funktional, aber{" "}
+          <strong>visuell inkonsistent und schwer zu warten</strong> sind.
+        </p>
+
+        {/* Business case cards */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          {[
+            { icon: Phone, title: "Weniger Support", desc: "Klare Oberflächen erzeugen weniger Support-Anfragen" },
+            { icon: TrendingUp, title: "Mehr Konversion", desc: "20–40 % Verbesserung durch bessere Layouts und Texte" },
+            { icon: RefreshCw, title: "Weniger Abwanderung", desc: "Nutzer, die sich kompetent fühlen, bleiben länger" },
+            { icon: Rocket, title: "Schnelleres Onboarding", desc: "Neue Nutzer verstehen das Interface ohne Training" },
+          ].map((item) => (
+            <div key={item.title} className="bg-(--bg-surface) border border-(--bg-hover) rounded-xl p-3.5">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="w-7 h-7 rounded-lg bg-(--accent-dim) border border-(--accent-border) flex items-center justify-center text-(--accent-text) shrink-0">
+                  <item.icon size={14} />
+                </div>
+                <p className="text-[13px] font-bold text-(--text-primary) m-0">{item.title}</p>
+              </div>
+              <p className="text-[13px] text-(--text-secondary) leading-snug m-0">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Cost of UX error diagram */}
+        <CostDiagram />
+
+        {/* Workshop scope */}
+        <WorkshopScope />
+      </div>
+
       {/* Modules section */}
       <div>
         {/* Section header */}
@@ -120,6 +164,86 @@ export default function Index() {
             />
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Cost of UX Error diagram ──────────────────────────────────────────────────
+function CostDiagram() {
+  const phases = [
+    { label: "Wireframe-Phase", cost: 1, color: "var(--success-color)", desc: "Fehler sofort sichtbar, schnell korrigiert" },
+    { label: "Entwicklungsphase", cost: 10, color: "var(--warning-color)", desc: "Refactoring nötig, bereits gebaut" },
+    { label: "Nach dem Launch", cost: 100, color: "var(--bad-color)", desc: "Nutzer betroffen, Support, Reputationsschaden" },
+  ];
+
+  return (
+    <div className="bg-(--bg-surface) border border-(--bg-elevated) rounded-xl p-5 mb-6">
+      <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent-text) mb-4 m-0">
+        Kosten eines UX-Fehlers: Je später, desto teurer
+      </p>
+      <div className="space-y-3">
+        {phases.map((phase) => (
+          <div key={phase.label}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[13px] font-semibold text-(--text-primary)">{phase.label}</span>
+              <span className="font-mono text-[13px] font-bold" style={{ color: phase.color }}>
+                {phase.cost}× teurer
+              </span>
+            </div>
+            <div className="h-5 bg-(--bg-elevated) rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full"
+                style={{ width: `${phase.cost}%`, background: phase.color, opacity: 0.8 }}
+              />
+            </div>
+            <p className="text-[12px] text-(--text-tertiary) mt-0.5 mb-0">{phase.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Workshop scope overview ───────────────────────────────────────────────────
+function WorkshopScope() {
+  const covered = [
+    "Visuelle Hierarchie", "Typografie-Systeme", "Farbe & Kontrast",
+    "Abstände & Layout", "UI-Komponenten", "Responsive Design",
+    "Design-Systeme & Tokens", "Gestalt-Prinzipien",
+  ];
+  const notCovered = [
+    "Markenidentität & Logo-Design", "Figma-Workflows",
+    "Vertiefende UX-Research-Methoden", "Animationen & Motion Design",
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <div className="bg-(--success-bg) border border-(--success-border) rounded-xl p-4">
+        <p className="font-mono text-[10px] font-semibold text-(--success-color) uppercase tracking-wider mb-3 m-0">
+          Was wir abdecken
+        </p>
+        <ul className="space-y-1.5 list-none m-0 p-0">
+          {covered.map((item) => (
+            <li key={item} className="flex items-start gap-2 text-[13px] text-(--text-secondary)">
+              <span className="text-(--success-color) shrink-0 mt-0.5">✓</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="bg-(--bg-elevated) border border-(--bg-hover) rounded-xl p-4">
+        <p className="font-mono text-[10px] font-semibold text-(--text-ghost) uppercase tracking-wider mb-3 m-0">
+          Was wir nicht abdecken
+        </p>
+        <ul className="space-y-1.5 list-none m-0 p-0">
+          {notCovered.map((item) => (
+            <li key={item} className="flex items-start gap-2 text-[13px] text-(--text-tertiary)">
+              <span className="text-(--text-ghost) shrink-0 mt-0.5">—</span>
+              {item}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

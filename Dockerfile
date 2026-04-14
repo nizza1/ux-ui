@@ -2,11 +2,11 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-COPY app-remix/package.json app-remix/package-lock.json app-remix/.npmrc ./
+COPY package.json package-lock.json .npmrc ./
 
 RUN npm ci
 
-COPY app-remix/ ./
+COPY . ./
 
 RUN npm run build
 

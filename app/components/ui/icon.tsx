@@ -8,6 +8,7 @@ interface IconWrapperProps {
     l?: boolean;
     size?: number;
     strokeWidth?: number;
+    className?: string;
 }
 
 export const IconWrapper = ({
@@ -18,10 +19,11 @@ export const IconWrapper = ({
     l,
     size = 22,
     strokeWidth = 1.5,
+    className = ''
 }: IconWrapperProps) => {
     s ? size = 14 :
         m ? size = 18 :
             l ? size = 18 :
                 size = size
-    return cloneElement(children, { size, strokeWidth });
+    return cloneElement(children, { size, strokeWidth, className });
 };

@@ -62,7 +62,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
           {"\u2302"}
         </span> */}
 
-        <IconWrapper m>
+        <IconWrapper m className="text-[--accent-text]">
           <House />
         </IconWrapper>
         <span>Overview</span>

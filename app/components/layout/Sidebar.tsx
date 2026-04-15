@@ -24,7 +24,6 @@ const CONTENT_SLUGS = new Set([
   "color-hierarchy",
   "spacing-layout",
   "shadows-elevation",
-  "ui-components",
   "images-icons",
   "responsive-design",
   "design-tokens",

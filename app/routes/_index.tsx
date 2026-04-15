@@ -10,7 +10,7 @@ const CONTENT_SLUGS = new Set([
   // Visual/Technical Design (modules 09–20)
   "visual-hierarchy", "typography-selection", "typography-systems",
   "color-systems", "color-contrast", "color-hierarchy",
-  "spacing-layout", "shadows-elevation", "ui-components",
+  "spacing-layout", "shadows-elevation",
   "images-icons", "responsive-design", "design-tokens",
 ]);
 

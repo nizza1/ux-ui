@@ -389,22 +389,24 @@ export default function UserNeedsModule() {
           Modul 02
         </div>
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">
-          Nutzererfordernisse, Anforderungen & User Stories
+          Nutzerbedürfnisse & User Stories
         </h1>
         <p className="text-[15px] font-medium leading-normal text-(--text-secondary) mb-8 mt-0 max-w-130">
-          Nutzerbedürfnisse identifizieren, in strukturierte Anforderungen
-          übersetzen und als User Stories formulieren, die echte Nutzerziele mit
-          UI-Entscheidungen verbinden.
+          Was Nutzer wirklich brauchen, deckt sich selten mit dem, was sie verlangen.
+          In diesem Modul lernst du, echte Nutzerbedürfnisse zu erkennen, sie in
+          klare Anforderungen zu übersetzen und als User Stories zu formulieren —
+          die direkte Brücke zwischen Research und UI-Entscheidung.
         </p>
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
         <LearningGoals
           goals={[
-            "Den Unterschied zwischen Nutzerwunsch und echtem Nutzerbedürfnis erklären",
+            "Den Unterschied zwischen einer Lösungs-Anfrage und einem echten Nutzerbedürfnis erklären können",
             "Nutzerbedürfnisse in funktionale und nicht-funktionale Anforderungen übersetzen",
-            "User Stories im Standardformat schreiben und bewerten",
-            "Den Weg von einer User Story zu einem konkreten UI-Element nachvollziehen",
+            "User Stories im Standardformat formulieren, bewerten und vergleichen",
+            "Den Weg von einer User Story zu einem konkreten UI-Element Schritt für Schritt nachvollziehen",
+            "Verstehen, warum User Stories auf Ergebnisse zielen — nicht auf Implementierungen",
           ]}
         />
 
@@ -417,7 +419,7 @@ export default function UserNeedsModule() {
         <h2 className="text-[19px] font-bold leading-[1.3] tracking-[-0.2px] text-(--text-primary) mb-4 mt-0">
           Nutzererfordernisse
         </h2>
-        <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
+        {/*  <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
           Nutzererfordernisse sind das, was Nutzer von einem System{" "}
           <strong>tatsächlich brauchen</strong>, um ihre realen Ziele zu
           erreichen. Sie sind <em>nicht</em> dasselbe wie das, was Nutzer
@@ -427,7 +429,11 @@ export default function UserNeedsModule() {
           Nutzer beschreiben <strong>Lösungen</strong>, keine Bedürfnisse. Die
           Aufgabe eines UX-Praktikers ist es, hinter der geforderten Funktion
           das eigentliche Bedürfnis zu finden.
-        </p>
+        </p> */}
+        <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">Nutzerbedürfnisse sind das, was Menschen von einem System wirklich brauchen,
+          um ihre Ziele zu erreichen — nicht das, was sie explizit verlangen.
+          Nutzer beschreiben <strong>Lösungen</strong>. Deine Aufgabe ist es, dahinter das eigentliche
+          Bedürfnis zu finden.</p>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-(--bad-bg) border border-(--bad-border) rounded-xl p-4">
@@ -438,8 +444,8 @@ export default function UserNeedsModule() {
               „Ich möchte einen Filter-Button auf diesem Bildschirm."
             </p>
             <p className="text-[12px] text-(--text-tertiary) mt-2">
-              ↳ Beschreibt eine Lösung, nicht ein Bedürfnis. Schränkt
-              Designmöglichkeiten ein.
+              ↳ Beschreibt eine Lösung, nicht ein Bedürfnis.
+              Schränkt den Designraum unnötig ein.
             </p>
           </div>
           <div className="bg-(--success-bg) border border-(--success-border) rounded-xl p-4">
@@ -447,11 +453,12 @@ export default function UserNeedsModule() {
               Nutzerbedürfnis
             </p>
             <p className="text-[13px] text-(--text-secondary) italic leading-snug">
-              „Ich muss das richtige Produkt schnell finden, wenn ich schon
-              ungefähr weiß, was ich suche."
+              „Ich muss das richtige Produkt schnell finden —
+              auch wenn ich nur ungefähr weiß, was ich suche."
             </p>
             <p className="text-[12px] text-(--text-tertiary) mt-2">
-              ↳ Offen für viele Lösungen: Filter, Suche, Shortcuts, Verlauf…
+              ↳ Offen für viele Lösungen: Suche, Filter,
+              Verlauf, Shortcuts, Empfehlungen…
             </p>
           </div>
         </div>
@@ -464,22 +471,23 @@ export default function UserNeedsModule() {
           Anforderungen
         </h2>
         <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
-          Sobald du die Nutzerbedürfnisse verstehst, übersetzt du sie in
-          Anforderungen – spezifische, messbare, testbare Aussagen darüber, was
-          das System tun oder wie es sein muss.
+          Wenn du das Nutzerbedürfnis verstanden hast, übersetzt du es in Anforderungen —
+          spezifische, messbare und testbare Aussagen darüber, was das System tun
+          oder wie es sich verhalten soll.
         </p>
 
         <TheoryCard label="Zwei Typen">
           <ConceptList>
             <ConceptItem title="Funktionale Anforderungen">
-              Beschreiben, <strong>was das System tut</strong>: „Nutzer können
-              Suchergebnisse nach Kategorie, Preisbereich und Bewertung
-              filtern." Direkt testbar: entweder vorhanden oder nicht.
+              Beschreiben, <strong>was das System tut</strong>: „Nutzer können Suchergebnisse nach
+              Kategorie, Preis und Bewertung filtern." Direkt testbar —
+              entweder vorhanden oder nicht.
             </ConceptItem>
             <ConceptItem title="Nicht-funktionale Anforderungen">
               Beschreiben, <strong>wie sich das System verhält</strong>:
-              Geschwindigkeit, Zuverlässigkeit, Zugänglichkeit (WCAG AA),
-              Verfügbarkeit. Oft ebenso wichtig, aber häufig vergessen.
+              Geschwindigkeit, Zuverlässigkeit,
+              Barrierefreiheit (WCAG AA), Stabilität. Oft genauso entscheidend —
+              aber häufig vergessen oder zu spät bedacht.
             </ConceptItem>
           </ConceptList>
         </TheoryCard>
@@ -494,9 +502,10 @@ export default function UserNeedsModule() {
           User Stories
         </h2>
         <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-4">
-          User Stories sind ein Format, um Anforderungen aus der Perspektive des
-          Nutzers auszudrücken. Sie stammen aus der agilen Entwicklung und sind
-          die Standardbrücke zwischen User Research und Entwicklungsarbeit.
+          User Stories sind ein Format aus der agilen Entwicklung, das Anforderungen
+          aus der Perspektive des Nutzers formuliert. Sie sind die Standardbrücke
+          zwischen User Research und Entwicklungsarbeit — und halten das Team
+          fokussiert auf echte Nutzerziele statt auf technische Details.
         </p>
 
         <div className="bg-(--bg-elevated) rounded-xl p-4 mb-4 font-mono text-[13px] text-(--text-primary)">
@@ -528,9 +537,10 @@ export default function UserNeedsModule() {
         </TheoryCard>
 
         <p className="text-[13px] leading-[1.7] text-(--text-secondary) mb-6">
-          Gute User Stories konzentrieren sich auf <strong>Ergebnisse</strong>,
-          nicht auf Implementierungen. Sie sagen nicht „füge ein Dropdown hinzu"
-          – sie sagen, was der Nutzer <em>tun können</em> muss.
+          Gute User Stories zielen auf <strong>Ergebnisse</strong>,
+          nicht auf Implementierungen. Sie beschreiben nicht „füge ein Dropdown hinzu"
+          – sondern was der Nutzer
+          tun können muss und warum. Die Lösung bleibt offen.
         </p>
 
         {/* ── Story → UI ── */}

@@ -12,6 +12,7 @@ const CONTENT_SLUGS = new Set([
   "color-systems", "color-contrast", "color-hierarchy",
   "spacing-layout", "shadows-elevation",
   "images-icons", "responsive-design", "design-tokens",
+  "praxis-project",
 ]);
 
 export const meta: MetaFunction = () => {

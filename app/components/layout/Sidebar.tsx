@@ -27,6 +27,7 @@ const CONTENT_SLUGS = new Set([
   "images-icons",
   "responsive-design",
   "design-tokens",
+  "praxis-project",
 ]);
 
 interface SidebarProps {

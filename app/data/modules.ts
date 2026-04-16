@@ -170,6 +170,14 @@ export const modules: Module[] = [
     titleDe: "Design Systems & Tokens",
     description: "Design Tokens als Vokabeln einer gemeinsamen Sprache — Global, Alias und Component Tokens für konsistente Systeme",
   },
+  {
+    id: "PX",
+    number: "PX",
+    slug: "praxis-project",
+    title: "Praxis Project: Dashboard",
+    titleDe: "Praxis-Projekt: Dashboard",
+    description: "Ein flaches Dashboard von Grund auf gestalten — eigenes Design-System bauen und per Inspector auf Elemente anwenden",
+  },
 ];
 
 export function getModuleBySlug(slug: string): Module | undefined {

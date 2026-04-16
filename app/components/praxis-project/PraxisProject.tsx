@@ -4,6 +4,7 @@ import { Dashboard } from "./Dashboard";
 import { ProjectInspector } from "./ProjectInspector";
 import type {
     DesignToken, SelectedElementInfo, StyleChangesMap, StyleOverride, TokenCategory,
+    IconOverride, IconOverrideMap, SelectedIconInfo,
 } from "./types";
 
 /* ── Starter tokens (users can add/edit/remove) ─────────── */
@@ -77,6 +78,8 @@ export function PraxisProject() {
     const [tokens, setTokens] = useState<DesignToken[]>(INITIAL_TOKENS);
     const [changes, setChanges] = useState<StyleChangesMap>({});
     const [selected, setSelected] = useState<SelectedElementInfo | null>(null);
+    const [iconOverrides, setIconOverrides] = useState<IconOverrideMap>({});
+    const [selectedIcon, setSelectedIcon] = useState<SelectedIconInfo | null>(null);
 
     const selectorDisplayMap = useRef(new Map<string, string>());
 
@@ -141,31 +144,70 @@ export function PraxisProject() {
         if (collapsed) return;
         const root = dashboardRef.current;
         if (!root) return;
-        const target = e.target as HTMLElement;
+        const target = e.target as Element | null;
         if (!target || !root.contains(target)) return;
 
-        // Ignore clicks on input/button default actions to avoid text editing
         e.preventDefault();
         e.stopPropagation();
 
-        const info = describeElement(target, root);
+        // Icon detection: walk up looking for data-pp-icon-id
+        const iconHost = (target as Element).closest("[data-pp-icon-id]") as SVGElement | HTMLElement | null;
+        if (iconHost) {
+            const id = iconHost.getAttribute("data-pp-icon-id")!;
+            const defaults = parseIconDefaults(iconHost);
+            if (defaults) {
+                setSelected(null);
+                setSelectedIcon({ id, defaults });
+                return;
+            }
+        }
+
+        const info = describeElement(target as HTMLElement, root);
         selectorDisplayMap.current.set(info.selector, info.displaySelector);
+        setSelectedIcon(null);
         setSelected(info);
     }, [collapsed]);
 
-    // Highlight the selected element in the DOM
+    // Highlight the selected element or icon in the DOM
     useEffect(() => {
         const root = dashboardRef.current;
         if (!root) return;
         root.querySelectorAll("[data-pp-selected]").forEach((el) => {
-            (el as HTMLElement).removeAttribute("data-pp-selected");
+            (el as Element).removeAttribute("data-pp-selected");
         });
-        if (!selected) return;
-        const el = findElementBySelector(root, selected.selector);
-        if (el) el.setAttribute("data-pp-selected", "true");
-    }, [selected]);
+        if (selected) {
+            const el = findElementBySelector(root, selected.selector);
+            if (el) el.setAttribute("data-pp-selected", "true");
+        } else if (selectedIcon) {
+            const el = root.querySelector(`[data-pp-icon-id="${selectedIcon.id}"]`);
+            if (el) el.setAttribute("data-pp-selected", "true");
+        }
+    }, [selected, selectedIcon]);
 
-    const handleDeselect = useCallback(() => setSelected(null), []);
+    const handleDeselect = useCallback(() => {
+        setSelected(null);
+        setSelectedIcon(null);
+    }, []);
+
+    /* ── Icon override handlers ───────────────────────── */
+
+    const handleUpdateIcon = useCallback((patch: Partial<IconOverride>) => {
+        if (!selectedIcon) return;
+        const id = selectedIcon.id;
+        setIconOverrides((prev) => ({
+            ...prev,
+            [id]: { ...(prev[id] ?? {}), ...patch },
+        }));
+    }, [selectedIcon]);
+
+    const handleResetIcon = useCallback(() => {
+        if (!selectedIcon) return;
+        const id = selectedIcon.id;
+        setIconOverrides((prev) => {
+            const { [id]: _gone, ...rest } = prev;
+            return rest;
+        });
+    }, [selectedIcon]);
 
     /* ── Property editing for the selected element ─────── */
 
@@ -205,7 +247,7 @@ export function PraxisProject() {
                 className={`pp-canvas ${!collapsed ? "pp-canvas--inspecting" : ""}`}
                 onClick={handleCanvasClick}
             >
-                <Dashboard ref={dashboardRef} />
+                <Dashboard ref={dashboardRef} iconOverrides={iconOverrides} />
             </div>
 
             <ProjectInspector
@@ -215,6 +257,10 @@ export function PraxisProject() {
                 onAddToken={handleAddToken}
                 onUpdateToken={handleUpdateToken}
                 onRemoveToken={handleRemoveToken}
+                selectedIcon={selectedIcon}
+                iconOverride={selectedIcon ? iconOverrides[selectedIcon.id] : undefined}
+                onUpdateIcon={handleUpdateIcon}
+                onResetIcon={handleResetIcon}
                 selectedElement={selected}
                 elementOverrides={elementOverrides}
                 onSetProperty={handleSetProperty}
@@ -254,6 +300,23 @@ function describeElement(el: HTMLElement, root: HTMLElement): SelectedElementInf
     if (role) display += `[data-pp-role="${role}"]`;
 
     return { selector, displaySelector: display, tag, classes, role, text };
+}
+
+function parseIconDefaults(el: Element): IconOverride | null {
+    const raw = el.getAttribute("data-pp-icon-defaults");
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.name === "string"
+            && typeof parsed?.size === "number"
+            && typeof parsed?.strokeWidth === "number"
+            && (parsed.variant === "stroke" || parsed.variant === "fill")) {
+            return parsed as IconOverride;
+        }
+    } catch {
+        // fall through
+    }
+    return null;
 }
 
 function findElementBySelector(root: HTMLElement, selector: string): HTMLElement | null {

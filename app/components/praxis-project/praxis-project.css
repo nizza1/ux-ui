@@ -972,3 +972,157 @@
   border-radius: var(--pp-radius-sm);
   border: 1px solid var(--pp-border);
 }
+
+/* ── Icon picker ─────────────────────────────── */
+
+.pp-icon-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-bg-surface);
+  color: var(--pp-text-tertiary);
+}
+
+.pp-icon-search:focus-within {
+  border-color: var(--pp-accent);
+}
+
+.pp-icon-search-input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: var(--pp-text-primary);
+  min-width: 0;
+}
+
+.pp-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 2px;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-bg-surface);
+}
+
+.pp-icon-tile {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--pp-radius-sm);
+  color: var(--pp-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+
+.pp-icon-tile:hover {
+  background: var(--pp-bg-hover);
+  color: var(--pp-text-primary);
+}
+
+.pp-icon-tile--selected {
+  background: var(--pp-accent-dim);
+  border-color: var(--pp-accent-border);
+  color: var(--pp-accent);
+}
+
+.pp-range {
+  width: 100%;
+  accent-color: var(--pp-accent);
+}
+
+.pp-range:disabled {
+  opacity: 0.4;
+}
+
+.pp-preset-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.pp-preset-btn {
+  flex: 1;
+  min-width: 38px;
+  padding: 5px 4px;
+  border: 1px solid var(--pp-border);
+  background: var(--pp-bg-surface);
+  color: var(--pp-text-secondary);
+  font-family: var(--pp-font-mono);
+  font-size: 11px;
+  border-radius: var(--pp-radius-sm);
+  cursor: pointer;
+}
+
+.pp-preset-btn:hover:not(:disabled) {
+  border-color: var(--pp-accent);
+  color: var(--pp-accent);
+}
+
+.pp-preset-btn--active {
+  background: var(--pp-accent-dim);
+  border-color: var(--pp-accent-border);
+  color: var(--pp-accent);
+}
+
+.pp-preset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pp-variant-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.pp-variant-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--pp-border);
+  background: var(--pp-bg-surface);
+  border-radius: var(--pp-radius-sm);
+  font: inherit;
+  font-size: 12px;
+  color: var(--pp-text-secondary);
+  cursor: pointer;
+}
+
+.pp-variant-btn:hover {
+  border-color: var(--pp-accent);
+  color: var(--pp-accent);
+}
+
+.pp-variant-btn--active {
+  background: var(--pp-accent-dim);
+  border-color: var(--pp-accent-border);
+  color: var(--pp-accent);
+}
+
+/* ── Icon hover in canvas ────────────────────── */
+
+.pp-canvas--inspecting .pp-dashboard [data-pp-icon-id]:hover {
+  outline-offset: 2px;
+  outline-color: var(--pp-accent) !important;
+}
+
+.pp-canvas--inspecting .pp-dashboard [data-pp-icon-id][data-pp-selected="true"] {
+  outline: 2px solid var(--pp-accent) !important;
+  outline-offset: 2px !important;
+}

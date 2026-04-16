@@ -1,10 +1,15 @@
 import { useState, useMemo } from "react";
 import {
     ChevronLeft, ChevronRight, Plus, Trash2, Palette, Ruler,
-    Layers, Type, Sparkles, Settings2, MousePointerClick,
+    Layers, Type, Sparkles, Settings2, MousePointerClick, Search as SearchIcon,
+    RotateCcw,
 } from "lucide-react";
-import type { DesignToken, SelectedElementInfo, StyleChangesMap, StyleOverride, TokenCategory } from "./types";
+import type {
+    DesignToken, SelectedElementInfo, StyleOverride, TokenCategory,
+    SelectedIconInfo, IconOverride, IconVariant,
+} from "./types";
 import { EDITABLE_PROPERTIES } from "./types";
+import { searchIcons, findIcon } from "./icon-catalog";
 
 interface ProjectInspectorProps {
     collapsed: boolean;
@@ -20,6 +25,12 @@ interface ProjectInspectorProps {
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
     onDeselect: () => void;
+
+    /** Icon-edit mode (mutually exclusive with element-edit) */
+    selectedIcon: SelectedIconInfo | null;
+    iconOverride: Partial<IconOverride> | undefined;
+    onUpdateIcon: (patch: Partial<IconOverride>) => void;
+    onResetIcon: () => void;
 }
 
 type TabId = "design-system" | "element";
@@ -43,6 +54,7 @@ export function ProjectInspector(props: ProjectInspectorProps) {
         collapsed, onToggleCollapsed,
         tokens, onAddToken, onUpdateToken, onRemoveToken,
         selectedElement, elementOverrides, onSetProperty, onClearProperty, onDeselect,
+        selectedIcon, iconOverride, onUpdateIcon, onResetIcon,
     } = props;
 
     const [activeTab, setActiveTab] = useState<TabId>("design-system");
@@ -56,8 +68,9 @@ export function ProjectInspector(props: ProjectInspectorProps) {
         "font-family": false,
     });
 
-    // Auto-switch to element tab when a selection is made
-    const effectiveTab: TabId = selectedElement && activeTab === "design-system" ? activeTab : activeTab;
+    // When an icon is selected, the element tab becomes the icon editor.
+    const effectiveTab: TabId = activeTab;
+    const anySelection = Boolean(selectedElement || selectedIcon);
 
     return (
         <>
@@ -79,8 +92,8 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                                 onClick={() => setActiveTab("element")}
                             >
                                 <Settings2 size={13} />
-                                Element
-                                {selectedElement && (
+                                {selectedIcon ? "Icon" : "Element"}
+                                {anySelection && (
                                     <span style={{
                                         width: 6, height: 6, borderRadius: "50%",
                                         background: "var(--pp-accent)", display: "inline-block",
@@ -98,6 +111,14 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                                     onAddToken={onAddToken}
                                     onUpdateToken={onUpdateToken}
                                     onRemoveToken={onRemoveToken}
+                                />
+                            ) : selectedIcon ? (
+                                <IconEditorTab
+                                    selectedIcon={selectedIcon}
+                                    override={iconOverride}
+                                    onUpdateIcon={onUpdateIcon}
+                                    onResetIcon={onResetIcon}
+                                    onDeselect={onDeselect}
                                 />
                             ) : (
                                 <ElementTab
@@ -496,5 +517,217 @@ function PropRow({
                 )}
             </div>
         </div>
+    );
+}
+
+/* ── Icon Editor Tab ────────────────────────────────────── */
+
+function IconEditorTab({
+    selectedIcon, override, onUpdateIcon, onResetIcon, onDeselect,
+}: {
+    selectedIcon: SelectedIconInfo;
+    override: Partial<IconOverride> | undefined;
+    onUpdateIcon: (patch: Partial<IconOverride>) => void;
+    onResetIcon: () => void;
+    onDeselect: () => void;
+}) {
+    const current: IconOverride = { ...selectedIcon.defaults, ...(override ?? {}) };
+    const [query, setQuery] = useState("");
+    const results = useMemo(() => searchIcons(query, 96), [query]);
+    const CurrentIcon = findIcon(current.name);
+
+    return (
+        <>
+            <div className="pp-element-head">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+                        <div style={{
+                            width: 44, height: 44, flexShrink: 0,
+                            border: "1px solid var(--pp-border)",
+                            borderRadius: "var(--pp-radius-sm)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: "var(--pp-bg-surface)",
+                            color: "var(--pp-text-primary)",
+                        }}>
+                            {CurrentIcon && (
+                                <CurrentIcon
+                                    size={Math.min(current.size, 26)}
+                                    strokeWidth={current.strokeWidth}
+                                    fill={current.variant === "fill" ? "currentColor" : "none"}
+                                    stroke={current.variant === "fill" ? "none" : "currentColor"}
+                                />
+                            )}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                            <div className="pp-element-tag">Icon</div>
+                            <div className="pp-element-path" style={{ marginTop: 3 }}>
+                                <strong style={{ color: "var(--pp-text-secondary)" }}>{current.name}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 4 }}>
+                        <button type="button" className="pp-icon-btn" onClick={onResetIcon} title="Reset to default">
+                            <RotateCcw size={12} />
+                        </button>
+                        <button type="button" className="pp-icon-btn" onClick={onDeselect} title="Deselect">
+                            ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search */}
+            <div className="pp-section">
+                <div className="pp-section-body" style={{ paddingTop: 12 }}>
+                    <div className="pp-icon-search">
+                        <SearchIcon size={13} />
+                        <input
+                            type="text"
+                            className="pp-icon-search-input"
+                            placeholder="Search icons…"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            spellCheck={false}
+                        />
+                        {query && (
+                            <button
+                                type="button"
+                                className="pp-icon-btn"
+                                onClick={() => setQuery("")}
+                                title="Clear"
+                                style={{ width: 20, height: 20 }}
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="pp-icon-grid">
+                        {results.map((entry) => {
+                            const Icon = entry.component;
+                            const isSelected = entry.name === current.name;
+                            return (
+                                <button
+                                    key={entry.name}
+                                    type="button"
+                                    className={`pp-icon-tile ${isSelected ? "pp-icon-tile--selected" : ""}`}
+                                    onClick={() => onUpdateIcon({ name: entry.name })}
+                                    title={entry.name}
+                                >
+                                    <Icon
+                                        size={18}
+                                        strokeWidth={current.strokeWidth}
+                                        fill={current.variant === "fill" ? "currentColor" : "none"}
+                                        stroke={current.variant === "fill" ? "none" : "currentColor"}
+                                    />
+                                </button>
+                            );
+                        })}
+                        {results.length === 0 && (
+                            <div style={{ gridColumn: "1 / -1", padding: "14px 4px", color: "var(--pp-text-tertiary)", fontSize: 12, textAlign: "center" }}>
+                                No icons match "{query}"
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Size */}
+            <div className="pp-section">
+                <div className="pp-section-header" style={{ cursor: "default" }}>
+                    <span>Size</span>
+                    <span style={{ fontFamily: "var(--pp-font-mono)", color: "var(--pp-text-tertiary)" }}>
+                        {current.size}px
+                    </span>
+                </div>
+                <div className="pp-section-body">
+                    <input
+                        type="range"
+                        min={8}
+                        max={64}
+                        step={1}
+                        value={current.size}
+                        onChange={(e) => onUpdateIcon({ size: parseInt(e.target.value, 10) })}
+                        className="pp-range"
+                    />
+                    <div className="pp-preset-row">
+                        {[12, 14, 16, 20, 24, 32].map((s) => (
+                            <button
+                                key={s}
+                                type="button"
+                                className={`pp-preset-btn ${current.size === s ? "pp-preset-btn--active" : ""}`}
+                                onClick={() => onUpdateIcon({ size: s })}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Stroke width */}
+            <div className="pp-section">
+                <div className="pp-section-header" style={{ cursor: "default" }}>
+                    <span>Stroke width</span>
+                    <span style={{ fontFamily: "var(--pp-font-mono)", color: "var(--pp-text-tertiary)" }}>
+                        {current.strokeWidth.toFixed(1)}
+                    </span>
+                </div>
+                <div className="pp-section-body">
+                    <input
+                        type="range"
+                        min={0.5}
+                        max={3}
+                        step={0.25}
+                        value={current.strokeWidth}
+                        onChange={(e) => onUpdateIcon({ strokeWidth: parseFloat(e.target.value) })}
+                        className="pp-range"
+                        disabled={current.variant === "fill"}
+                    />
+                    <div className="pp-preset-row">
+                        {[1, 1.5, 2, 2.5].map((s) => (
+                            <button
+                                key={s}
+                                type="button"
+                                className={`pp-preset-btn ${current.strokeWidth === s ? "pp-preset-btn--active" : ""}`}
+                                onClick={() => onUpdateIcon({ strokeWidth: s })}
+                                disabled={current.variant === "fill"}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Variant */}
+            <div className="pp-section">
+                <div className="pp-section-header" style={{ cursor: "default" }}>
+                    <span>Variant</span>
+                </div>
+                <div className="pp-section-body">
+                    <div className="pp-variant-row">
+                        {(["stroke", "fill"] as IconVariant[]).map((v) => (
+                            <button
+                                key={v}
+                                type="button"
+                                className={`pp-variant-btn ${current.variant === v ? "pp-variant-btn--active" : ""}`}
+                                onClick={() => onUpdateIcon({ variant: v })}
+                            >
+                                {CurrentIcon && (
+                                    <CurrentIcon
+                                        size={16}
+                                        strokeWidth={v === "stroke" ? current.strokeWidth : 0}
+                                        fill={v === "fill" ? "currentColor" : "none"}
+                                        stroke={v === "fill" ? "none" : "currentColor"}
+                                    />
+                                )}
+                                <span style={{ textTransform: "capitalize" }}>{v}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

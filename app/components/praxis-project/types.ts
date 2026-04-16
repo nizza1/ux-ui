@@ -25,6 +25,24 @@ export interface StyleOverride {
 /** Map: selector → { property → StyleOverride } */
 export type StyleChangesMap = Record<string, Record<string, StyleOverride>>;
 
+/* ── Icon overrides ───────────────────────────────────── */
+
+export type IconVariant = "stroke" | "fill";
+
+export interface IconOverride {
+    name: string;
+    size: number;
+    strokeWidth: number;
+    variant: IconVariant;
+}
+
+export type IconOverrideMap = Record<string, Partial<IconOverride>>;
+
+export interface SelectedIconInfo {
+    id: string;            // data-pp-icon-id
+    defaults: IconOverride; // what the dashboard renders by default
+}
+
 export const EDITABLE_PROPERTIES = [
   { key: "color", label: "Color", category: "color" as TokenCategory },
   { key: "background-color", label: "Background", category: "color" as TokenCategory },

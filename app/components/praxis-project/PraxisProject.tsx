@@ -68,6 +68,33 @@ const DEFAULT_VALUES: Record<TokenCategory, string> = {
     "font-family": "'Inter', sans-serif",
 };
 
+/* ── Local storage persistence ─────────────────────────── */
+
+const STORAGE_KEY = "praxis-project-state-v1";
+
+type PersistedState = {
+    tokens: DesignToken[];
+    changes: StyleChangesMap;
+    iconOverrides: IconOverrideMap;
+};
+
+function loadPersisted(): PersistedState | null {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as Partial<PersistedState>;
+        if (!parsed || typeof parsed !== "object") return null;
+        return {
+            tokens: Array.isArray(parsed.tokens) ? parsed.tokens : INITIAL_TOKENS,
+            changes: parsed.changes && typeof parsed.changes === "object" ? parsed.changes : {},
+            iconOverrides: parsed.iconOverrides && typeof parsed.iconOverrides === "object" ? parsed.iconOverrides : {},
+        };
+    } catch {
+        return null;
+    }
+}
+
 /* ── Component ─────────────────────────────────────────── */
 
 export function PraxisProject() {
@@ -75,12 +102,45 @@ export function PraxisProject() {
     const dashboardRef = useRef<HTMLDivElement>(null);
 
     const [collapsed, setCollapsed] = useState(false);
+    // Start with defaults so SSR and the first client render match; hydrate from
+    // localStorage in an effect once we're on the client.
     const [tokens, setTokens] = useState<DesignToken[]>(INITIAL_TOKENS);
     const [changes, setChanges] = useState<StyleChangesMap>({});
-    const [selectedList, setSelectedList] = useState<SelectedElementInfo[]>([]);
     const [iconOverrides, setIconOverrides] = useState<IconOverrideMap>({});
+    const [hydrated, setHydrated] = useState(false);
+    const [selectedList, setSelectedList] = useState<SelectedElementInfo[]>([]);
     const [selectedIcon, setSelectedIcon] = useState<SelectedIconInfo | null>(null);
     const [hoveredSelector, setHoveredSelector] = useState<string | null>(null);
+
+    // Hydrate persisted state on mount (client-only).
+    useEffect(() => {
+        const saved = loadPersisted();
+        if (saved) {
+            setTokens(saved.tokens);
+            setChanges(saved.changes);
+            setIconOverrides(saved.iconOverrides);
+            // Avoid id collisions with restored "t-new-N" tokens.
+            let maxId = 1000;
+            for (const t of saved.tokens) {
+                const m = t.id.match(/^t-new-(\d+)$/);
+                if (m) maxId = Math.max(maxId, parseInt(m[1], 10) + 1);
+            }
+            nextTokenId.current = maxId;
+        }
+        setHydrated(true);
+    }, []);
+
+    // Persist whenever the relevant slices change — but only after hydration,
+    // so we don't overwrite saved state with the initial defaults.
+    useEffect(() => {
+        if (!hydrated) return;
+        try {
+            const payload: PersistedState = { tokens, changes, iconOverrides };
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        } catch {
+            // Quota exceeded or storage unavailable — ignore.
+        }
+    }, [hydrated, tokens, changes, iconOverrides]);
     // Re-build the tree whenever the dashboard mounts; iconOverrides don't change DOM shape.
     const [treeVersion, setTreeVersion] = useState(0);
 

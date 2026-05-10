@@ -4,7 +4,7 @@ import { Dashboard } from "./Dashboard";
 import { ProjectInspector } from "./ProjectInspector";
 import type {
     DesignToken, SelectedElementInfo, StyleChangesMap, StyleOverride, TokenCategory,
-    IconOverride, IconOverrideMap, SelectedIconInfo,
+    IconOverride, IconOverrideMap, SelectedIconInfo, TreeNode, BreadcrumbCrumb,
 } from "./types";
 
 /* ── Starter tokens (users can add/edit/remove) ─────────── */
@@ -77,11 +77,18 @@ export function PraxisProject() {
     const [collapsed, setCollapsed] = useState(false);
     const [tokens, setTokens] = useState<DesignToken[]>(INITIAL_TOKENS);
     const [changes, setChanges] = useState<StyleChangesMap>({});
-    const [selected, setSelected] = useState<SelectedElementInfo | null>(null);
+    const [selectedList, setSelectedList] = useState<SelectedElementInfo[]>([]);
     const [iconOverrides, setIconOverrides] = useState<IconOverrideMap>({});
     const [selectedIcon, setSelectedIcon] = useState<SelectedIconInfo | null>(null);
+    const [hoveredSelector, setHoveredSelector] = useState<string | null>(null);
+    // Re-build the tree whenever the dashboard mounts; iconOverrides don't change DOM shape.
+    const [treeVersion, setTreeVersion] = useState(0);
 
     const selectorDisplayMap = useRef(new Map<string, string>());
+
+    // Primary selection — the inspector shows this element's existing overrides
+    // and writes propagate to all selected elements.
+    const primarySelected = selectedList[0] ?? null;
 
     /* ── Token operations ───────────────────────────────── */
 
@@ -151,41 +158,139 @@ export function PraxisProject() {
         e.stopPropagation();
 
         // Icon detection: walk up looking for data-pp-icon-id
+        // Skipped if Alt or Shift is held (those are element-level modifiers).
         const iconHost = (target as Element).closest("[data-pp-icon-id]") as SVGElement | HTMLElement | null;
-        if (iconHost) {
+        if (iconHost && !e.altKey && !e.shiftKey) {
             const id = iconHost.getAttribute("data-pp-icon-id")!;
             const defaults = parseIconDefaults(iconHost);
             if (defaults) {
-                setSelected(null);
+                setSelectedList([]);
                 setSelectedIcon({ id, defaults });
                 return;
             }
         }
 
-        const info = describeElement(target as HTMLElement, root);
+        // Alt+Click: walk up. If the user already has a selection that contains
+        // this exact element, walk up from that selection (so repeated Alt+Clicks
+        // climb the tree). Otherwise walk up from the click target.
+        let pickEl = target as HTMLElement;
+        if (e.altKey) {
+            const targetInfo = describeElement(pickEl, root);
+            const inSelection = selectedList.some((s) => s.selector === targetInfo.selector);
+            const climbFrom: HTMLElement = inSelection
+                ? (findElementBySelector(root, targetInfo.selector) ?? pickEl)
+                : pickEl;
+            if (climbFrom.parentElement && climbFrom !== root) {
+                pickEl = climbFrom.parentElement as HTMLElement;
+            }
+        }
+        if (pickEl === root || !root.contains(pickEl)) return;
+
+        const info = describeElement(pickEl, root);
         selectorDisplayMap.current.set(info.selector, info.displaySelector);
         setSelectedIcon(null);
-        setSelected(info);
-    }, [collapsed]);
 
-    // Highlight the selected element or icon in the DOM
+        if (e.shiftKey) {
+            // Toggle in the selection list.
+            setSelectedList((prev) => {
+                const idx = prev.findIndex((s) => s.selector === info.selector);
+                if (idx >= 0) {
+                    return prev.filter((_, i) => i !== idx);
+                }
+                return [...prev, info];
+            });
+        } else {
+            setSelectedList([info]);
+        }
+    }, [collapsed, selectedList]);
+
+    // Bump tree version on mount (Dashboard JSX is static, so once is enough).
+    useEffect(() => {
+        setTreeVersion((v) => v + 1);
+    }, []);
+
+    // Build the tree from the rendered dashboard DOM.
+    const tree = useMemo<TreeNode | null>(() => {
+        const root = dashboardRef.current;
+        if (!root) return null;
+        return buildTree(root);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [treeVersion]);
+
+    // Breadcrumb path for the *primary* selection only — multi-select hides it.
+    const breadcrumbs = useMemo<BreadcrumbCrumb[]>(() => {
+        if (!primarySelected || !tree || selectedList.length > 1) return [];
+        const targetSel = primarySelected.selector;
+        const path: BreadcrumbCrumb[] = [];
+        const walk = (node: TreeNode): boolean => {
+            if (node.selector === targetSel) {
+                path.push({ selector: node.selector, label: shortLabel(node) });
+                return true;
+            }
+            for (const c of node.children) {
+                if (walk(c)) {
+                    path.unshift({ selector: node.selector, label: shortLabel(node) });
+                    return true;
+                }
+            }
+            return false;
+        };
+        walk(tree);
+        return path;
+    }, [primarySelected, tree, selectedList.length]);
+
+    const handleSelectBySelector = useCallback((selector: string, additive = false) => {
+        const root = dashboardRef.current;
+        if (!root) return;
+        const el = findElementBySelector(root, selector);
+        if (!el) return;
+        const info = describeElement(el, root);
+        selectorDisplayMap.current.set(info.selector, info.displaySelector);
+        setSelectedIcon(null);
+        if (additive) {
+            setSelectedList((prev) => {
+                const idx = prev.findIndex((s) => s.selector === info.selector);
+                if (idx >= 0) return prev.filter((_, i) => i !== idx);
+                return [...prev, info];
+            });
+        } else {
+            setSelectedList([info]);
+        }
+    }, []);
+
+    // Apply hover highlight from the tree panel.
+    useEffect(() => {
+        const root = dashboardRef.current;
+        if (!root) return;
+        root.querySelectorAll("[data-pp-hovered]").forEach((el) => {
+            (el as Element).removeAttribute("data-pp-hovered");
+        });
+        if (hoveredSelector) {
+            const el = findElementBySelector(root, hoveredSelector);
+            if (el) el.setAttribute("data-pp-hovered", "true");
+        }
+    }, [hoveredSelector]);
+
+    // Highlight all selected elements (or icon) in the DOM.
     useEffect(() => {
         const root = dashboardRef.current;
         if (!root) return;
         root.querySelectorAll("[data-pp-selected]").forEach((el) => {
             (el as Element).removeAttribute("data-pp-selected");
         });
-        if (selected) {
-            const el = findElementBySelector(root, selected.selector);
-            if (el) el.setAttribute("data-pp-selected", "true");
+        if (selectedList.length > 0) {
+            for (const s of selectedList) {
+                const el = findElementBySelector(root, s.selector);
+                if (el) el.setAttribute("data-pp-selected", "true");
+            }
         } else if (selectedIcon) {
             const el = root.querySelector(`[data-pp-icon-id="${selectedIcon.id}"]`);
             if (el) el.setAttribute("data-pp-selected", "true");
         }
-    }, [selected, selectedIcon]);
+    }, [selectedList, selectedIcon]);
 
     const handleDeselect = useCallback(() => {
-        setSelected(null);
+        setSelectedList([]);
         setSelectedIcon(null);
     }, []);
 
@@ -209,32 +314,38 @@ export function PraxisProject() {
         });
     }, [selectedIcon]);
 
-    /* ── Property editing for the selected element ─────── */
+    /* ── Property editing — writes propagate to every selected element ─── */
 
-    const elementOverrides = selected ? (changes[selected.selector] ?? {}) : {};
+    // Inspector reads overrides from the *primary* (first) selection.
+    const elementOverrides = primarySelected ? (changes[primarySelected.selector] ?? {}) : {};
 
     const handleSetProperty = useCallback((property: string, value: string, tokenId?: string) => {
-        if (!selected) return;
-        const sel = selected.selector;
-        setChanges((prev) => ({
-            ...prev,
-            [sel]: { ...(prev[sel] ?? {}), [property]: { value, tokenId } },
-        }));
-    }, [selected]);
-
-    const handleClearProperty = useCallback((property: string) => {
-        if (!selected) return;
-        const sel = selected.selector;
+        if (selectedList.length === 0) return;
         setChanges((prev) => {
-            const cur = prev[sel];
-            if (!cur) return prev;
-            const { [property]: _gone, ...rest } = cur;
             const next = { ...prev };
-            if (Object.keys(rest).length === 0) delete next[sel];
-            else next[sel] = rest;
+            for (const s of selectedList) {
+                const sel = s.selector;
+                next[sel] = { ...(next[sel] ?? {}), [property]: { value, tokenId } };
+            }
             return next;
         });
-    }, [selected]);
+    }, [selectedList]);
+
+    const handleClearProperty = useCallback((property: string) => {
+        if (selectedList.length === 0) return;
+        setChanges((prev) => {
+            const next = { ...prev };
+            for (const s of selectedList) {
+                const sel = s.selector;
+                const cur = next[sel];
+                if (!cur) continue;
+                const { [property]: _gone, ...rest } = cur;
+                if (Object.keys(rest).length === 0) delete next[sel];
+                else next[sel] = rest;
+            }
+            return next;
+        });
+    }, [selectedList]);
 
     /* ── Render ─────────────────────────────────────────── */
 
@@ -261,11 +372,16 @@ export function PraxisProject() {
                 iconOverride={selectedIcon ? iconOverrides[selectedIcon.id] : undefined}
                 onUpdateIcon={handleUpdateIcon}
                 onResetIcon={handleResetIcon}
-                selectedElement={selected}
+                selectedElement={primarySelected}
+                selectedList={selectedList}
                 elementOverrides={elementOverrides}
                 onSetProperty={handleSetProperty}
                 onClearProperty={handleClearProperty}
                 onDeselect={handleDeselect}
+                tree={tree}
+                breadcrumbs={breadcrumbs}
+                onSelectBySelector={handleSelectBySelector}
+                onHoverSelector={setHoveredSelector}
             />
         </div>
     );
@@ -317,6 +433,74 @@ function parseIconDefaults(el: Element): IconOverride | null {
         // fall through
     }
     return null;
+}
+
+/* ── Tree builder ──────────────────────────────────────── */
+
+function buildTree(root: HTMLElement): TreeNode {
+    const build = (el: HTMLElement, depth: number, path: string[]): TreeNode => {
+        const tag = el.tagName.toLowerCase();
+        const classes = Array.from(el.classList).filter((c) => !c.startsWith("pp-") && c !== "");
+        const role = el.getAttribute("data-pp-role");
+        const iconId = el.getAttribute("data-pp-icon-id");
+
+        const childEls = Array.from(el.children).filter(
+            (c): c is HTMLElement => c instanceof HTMLElement,
+        );
+
+        // Build selector for this node (relative to root)
+        const selector = depth === 0 ? "" : "> " + path.join(" > ");
+
+        // Display selector
+        let display = tag;
+        if (classes.length > 0) display += "." + classes.join(".");
+        if (role) display += `[role=${role}]`;
+
+        // Build child nodes, computing each child's nth-of-type slice
+        const children: TreeNode[] = [];
+        const tagCounts = new Map<string, number>();
+        for (const child of childEls) {
+            // Skip SVG icon internals: the icon host (data-pp-icon-id) appears as a leaf;
+            // we don't recurse into its children.
+            if (el.hasAttribute("data-pp-icon-id")) break;
+
+            const childTag = child.tagName.toLowerCase();
+            const idx = (tagCounts.get(childTag) ?? 0) + 1;
+            tagCounts.set(childTag, idx);
+            const childPart = `${childTag}:nth-of-type(${idx})`;
+            children.push(build(child, depth + 1, [...path, childPart]));
+        }
+
+        // Text preview only when leaf (no element children)
+        let text = "";
+        if (children.length === 0 && !iconId) {
+            const raw = (el.textContent ?? "").trim().replace(/\s+/g, " ");
+            text = raw.length > 40 ? raw.slice(0, 37) + "…" : raw;
+        }
+
+        return {
+            selector,
+            displaySelector: display,
+            tag,
+            classes,
+            role,
+            iconId,
+            text,
+            depth,
+            children,
+        };
+    };
+
+    return build(root, 0, []);
+}
+
+function shortLabel(node: TreeNode): string {
+    if (node.role) return node.role;
+    if (node.classes.length > 0) {
+        const c = node.classes.find((x) => x.startsWith("d-")) ?? node.classes[0];
+        return "." + c;
+    }
+    return node.tag;
 }
 
 function findElementBySelector(root: HTMLElement, selector: string): HTMLElement | null {

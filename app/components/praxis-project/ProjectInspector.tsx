@@ -1,12 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
     ChevronLeft, ChevronRight, Plus, Trash2, Palette, Ruler,
     Layers, Type, Sparkles, Settings2, MousePointerClick, Search as SearchIcon,
-    RotateCcw,
+    RotateCcw, ChevronDown, ChevronRight as ChevronRightSm,
 } from "lucide-react";
 import type {
     DesignToken, SelectedElementInfo, StyleOverride, TokenCategory,
-    SelectedIconInfo, IconOverride, IconVariant,
+    SelectedIconInfo, IconOverride, IconVariant, TreeNode, BreadcrumbCrumb,
 } from "./types";
 import { EDITABLE_PROPERTIES } from "./types";
 import { searchIcons, findIcon } from "./icon-catalog";
@@ -21,6 +21,7 @@ interface ProjectInspectorProps {
     onRemoveToken: (id: string) => void;
 
     selectedElement: SelectedElementInfo | null;
+    selectedList: SelectedElementInfo[];
     elementOverrides: Record<string, StyleOverride>;
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
@@ -31,6 +32,12 @@ interface ProjectInspectorProps {
     iconOverride: Partial<IconOverride> | undefined;
     onUpdateIcon: (patch: Partial<IconOverride>) => void;
     onResetIcon: () => void;
+
+    /** Layers panel: live DOM tree + breadcrumb + hover preview */
+    tree: TreeNode | null;
+    breadcrumbs: BreadcrumbCrumb[];
+    onSelectBySelector: (selector: string, additive?: boolean) => void;
+    onHoverSelector: (selector: string | null) => void;
 }
 
 type TabId = "design-system" | "element";
@@ -53,8 +60,9 @@ export function ProjectInspector(props: ProjectInspectorProps) {
     const {
         collapsed, onToggleCollapsed,
         tokens, onAddToken, onUpdateToken, onRemoveToken,
-        selectedElement, elementOverrides, onSetProperty, onClearProperty, onDeselect,
+        selectedElement, selectedList, elementOverrides, onSetProperty, onClearProperty, onDeselect,
         selectedIcon, iconOverride, onUpdateIcon, onResetIcon,
+        tree, breadcrumbs, onSelectBySelector, onHoverSelector,
     } = props;
 
     const [activeTab, setActiveTab] = useState<TabId>("design-system");
@@ -70,7 +78,7 @@ export function ProjectInspector(props: ProjectInspectorProps) {
 
     // When an icon is selected, the element tab becomes the icon editor.
     const effectiveTab: TabId = activeTab;
-    const anySelection = Boolean(selectedElement || selectedIcon);
+    const anySelection = selectedList.length > 0 || Boolean(selectedIcon);
 
     return (
         <>
@@ -123,11 +131,16 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                             ) : (
                                 <ElementTab
                                     selectedElement={selectedElement}
+                                    selectedList={selectedList}
                                     tokens={tokens}
                                     overrides={elementOverrides}
                                     onSetProperty={onSetProperty}
                                     onClearProperty={onClearProperty}
                                     onDeselect={onDeselect}
+                                    tree={tree}
+                                    breadcrumbs={breadcrumbs}
+                                    onSelectBySelector={onSelectBySelector}
+                                    onHoverSelector={onHoverSelector}
                                 />
                             )}
                         </div>
@@ -291,57 +304,165 @@ function toHexSafe(v: string): string {
 /* ── Element Tab ────────────────────────────────────────── */
 
 function ElementTab({
-    selectedElement, tokens, overrides, onSetProperty, onClearProperty, onDeselect,
+    selectedElement, selectedList, tokens, overrides, onSetProperty, onClearProperty, onDeselect,
+    tree, breadcrumbs, onSelectBySelector, onHoverSelector,
 }: {
     selectedElement: SelectedElementInfo | null;
+    selectedList: SelectedElementInfo[];
     tokens: DesignToken[];
     overrides: Record<string, StyleOverride>;
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
     onDeselect: () => void;
+    tree: TreeNode | null;
+    breadcrumbs: BreadcrumbCrumb[];
+    onSelectBySelector: (selector: string, additive?: boolean) => void;
+    onHoverSelector: (selector: string | null) => void;
 }) {
-    if (!selectedElement) {
-        return (
-            <div className="pp-empty">
-                <div className="pp-empty-icon">
-                    <MousePointerClick size={20} />
-                </div>
-                <div className="pp-empty-title">No element selected</div>
-                <div className="pp-empty-text">
-                    Click any element in the dashboard to edit its styles, or assign a design token.
-                </div>
-            </div>
-        );
-    }
+    const selectedSet = useMemo(() => new Set(selectedList.map((s) => s.selector)), [selectedList]);
+    return (
+        <>
+            <LayersPanel
+                tree={tree}
+                selectedSelector={selectedElement?.selector ?? null}
+                selectedSet={selectedSet}
+                onSelectBySelector={onSelectBySelector}
+                onHoverSelector={onHoverSelector}
+            />
 
+            {!selectedElement ? (
+                <div className="pp-empty">
+                    <div className="pp-empty-icon">
+                        <MousePointerClick size={20} />
+                    </div>
+                    <div className="pp-empty-title">No element selected</div>
+                    <div className="pp-empty-text">
+                        Click an element in the dashboard or pick one from Layers above.
+                        Tip: Shift+Click to multi-select, Alt+Click selects the parent.
+                    </div>
+                </div>
+            ) : (
+                <ElementBody
+                    selectedElement={selectedElement}
+                    selectedList={selectedList}
+                    breadcrumbs={breadcrumbs}
+                    tokens={tokens}
+                    overrides={overrides}
+                    onSetProperty={onSetProperty}
+                    onClearProperty={onClearProperty}
+                    onDeselect={onDeselect}
+                    onSelectBySelector={onSelectBySelector}
+                />
+            )}
+        </>
+    );
+}
+
+function ElementBody({
+    selectedElement, selectedList, breadcrumbs, tokens, overrides,
+    onSetProperty, onClearProperty, onDeselect, onSelectBySelector,
+}: {
+    selectedElement: SelectedElementInfo;
+    selectedList: SelectedElementInfo[];
+    breadcrumbs: BreadcrumbCrumb[];
+    tokens: DesignToken[];
+    overrides: Record<string, StyleOverride>;
+    onSetProperty: (property: string, value: string, tokenId?: string) => void;
+    onClearProperty: (property: string) => void;
+    onDeselect: () => void;
+    onSelectBySelector: (selector: string, additive?: boolean) => void;
+}) {
+    const isMulti = selectedList.length > 1;
     return (
         <>
             <div className="pp-element-head">
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                        <div className="pp-element-tag">
-                            &lt;{selectedElement.tag}&gt;
-                            {selectedElement.classes.length > 0 && (
-                                <span style={{ color: "var(--pp-text-tertiary)", fontWeight: 400 }}>
-                                    {selectedElement.classes.map((c) => `.${c}`).join("")}
+                {isMulti && (
+                    <div className="pp-multi-head">
+                        <div className="pp-multi-count">
+                            <span className="pp-multi-badge">{selectedList.length}</span>
+                            <span>elements selected — edits apply to all</span>
+                            <button
+                                type="button"
+                                className="pp-icon-btn"
+                                onClick={onDeselect}
+                                title="Clear selection"
+                                style={{ marginLeft: "auto" }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="pp-multi-list">
+                            {selectedList.map((s) => (
+                                <button
+                                    key={s.selector}
+                                    type="button"
+                                    className="pp-multi-chip"
+                                    onClick={() => onSelectBySelector(s.selector, true)}
+                                    title="Remove from selection"
+                                >
+                                    {chipLabel(s)}
+                                    <span className="pp-multi-chip-x">×</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {!isMulti && breadcrumbs.length > 1 && (
+                    <div className="pp-breadcrumb" aria-label="Element path">
+                        {breadcrumbs.map((c, i) => {
+                            const isLast = i === breadcrumbs.length - 1;
+                            return (
+                                <span key={c.selector || "root"} className="pp-breadcrumb-row">
+                                    {i > 0 && <span className="pp-breadcrumb-sep">›</span>}
+                                    {isLast ? (
+                                        <span className="pp-breadcrumb-crumb pp-breadcrumb-crumb--current">
+                                            {c.label}
+                                        </span>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            className="pp-breadcrumb-crumb"
+                                            onClick={() => c.selector && onSelectBySelector(c.selector)}
+                                            disabled={!c.selector}
+                                            title={c.selector ? "Select this ancestor" : "Dashboard root"}
+                                        >
+                                            {c.label}
+                                        </button>
+                                    )}
                                 </span>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {!isMulti && (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                            <div className="pp-element-tag">
+                                &lt;{selectedElement.tag}&gt;
+                                {selectedElement.classes.length > 0 && (
+                                    <span style={{ color: "var(--pp-text-tertiary)", fontWeight: 400 }}>
+                                        {selectedElement.classes.map((c) => `.${c}`).join("")}
+                                    </span>
+                                )}
+                            </div>
+                            {selectedElement.role && (
+                                <div style={{ fontSize: 10.5, color: "var(--pp-text-tertiary)", marginTop: 2 }}>
+                                    role: <strong>{selectedElement.role}</strong>
+                                </div>
+                            )}
+                            {selectedElement.text && (
+                                <div className="pp-element-path" style={{ marginTop: 4 }}>
+                                    “{selectedElement.text}”
+                                </div>
                             )}
                         </div>
-                        {selectedElement.role && (
-                            <div style={{ fontSize: 10.5, color: "var(--pp-text-tertiary)", marginTop: 2 }}>
-                                role: <strong>{selectedElement.role}</strong>
-                            </div>
-                        )}
-                        {selectedElement.text && (
-                            <div className="pp-element-path" style={{ marginTop: 4 }}>
-                                “{selectedElement.text}”
-                            </div>
-                        )}
+                        <button type="button" className="pp-icon-btn" onClick={onDeselect} title="Deselect">
+                            ×
+                        </button>
                     </div>
-                    <button type="button" className="pp-icon-btn" onClick={onDeselect} title="Deselect">
-                        ×
-                    </button>
-                </div>
+                )}
             </div>
 
             <PropsGroup
@@ -359,6 +480,7 @@ function ElementTab({
                 overrides={overrides}
                 onSetProperty={onSetProperty}
                 onClearProperty={onClearProperty}
+                defaultOpen={false}
             />
             <PropsGroup
                 title="Spacing"
@@ -367,13 +489,204 @@ function ElementTab({
                 overrides={overrides}
                 onSetProperty={onSetProperty}
                 onClearProperty={onClearProperty}
+                defaultOpen={false}
             />
         </>
     );
 }
 
+/* ── Layers panel (live DOM tree) ──────────────────────── */
+
+function chipLabel(s: SelectedElementInfo): string {
+    if (s.role) return s.role;
+    if (s.classes.length > 0) {
+        const c = s.classes.find((x) => x.startsWith("d-")) ?? s.classes[0];
+        return "." + c;
+    }
+    return s.tag;
+}
+
+function LayersPanel({
+    tree, selectedSelector, selectedSet, onSelectBySelector, onHoverSelector,
+}: {
+    tree: TreeNode | null;
+    selectedSelector: string | null;
+    selectedSet: Set<string>;
+    onSelectBySelector: (selector: string, additive?: boolean) => void;
+    onHoverSelector: (selector: string | null) => void;
+}) {
+    const [open, setOpen] = useState(true);
+    const [expanded, setExpanded] = useState<Set<string>>(() => new Set([""])); // root expanded
+    const rowRefs = useRef(new Map<string, HTMLButtonElement>());
+
+    // Auto-expand ancestors of the selection so the row becomes visible.
+    useEffect(() => {
+        if (!selectedSelector || !tree) return;
+        const next = new Set(expanded);
+        const ancestors = collectAncestors(tree, selectedSelector);
+        let changed = false;
+        for (const a of ancestors) {
+            if (!next.has(a)) { next.add(a); changed = true; }
+        }
+        if (changed) setExpanded(next);
+        // Scroll selected row into view (after expansion paint).
+        const id = window.requestAnimationFrame(() => {
+            const row = rowRefs.current.get(selectedSelector);
+            if (row) row.scrollIntoView({ block: "nearest" });
+        });
+        return () => window.cancelAnimationFrame(id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedSelector, tree]);
+
+    const toggleNode = (sel: string) => {
+        setExpanded((prev) => {
+            const next = new Set(prev);
+            if (next.has(sel)) next.delete(sel); else next.add(sel);
+            return next;
+        });
+    };
+
+    return (
+        <div className="pp-section">
+            <button
+                type="button"
+                className="pp-section-header"
+                onClick={() => setOpen((o) => !o)}
+                aria-expanded={open}
+            >
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <Layers size={12} />
+                    Layers
+                </span>
+                <span className={`pp-chevron ${open ? "" : "pp-chevron--closed"}`}>▾</span>
+            </button>
+            {open && (
+                <div
+                    className="pp-tree"
+                    onMouseLeave={() => onHoverSelector(null)}
+                >
+                    {!tree ? (
+                        <div className="pp-tree-empty">Loading…</div>
+                    ) : (
+                        tree.children.map((c) => (
+                            <TreeRow
+                                key={c.selector}
+                                node={c}
+                                expanded={expanded}
+                                onToggle={toggleNode}
+                                selectedSelector={selectedSelector}
+                                selectedSet={selectedSet}
+                                onSelectBySelector={onSelectBySelector}
+                                onHoverSelector={onHoverSelector}
+                                rowRefs={rowRefs}
+                            />
+                        ))
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function TreeRow({
+    node, expanded, onToggle, selectedSelector, selectedSet,
+    onSelectBySelector, onHoverSelector, rowRefs,
+}: {
+    node: TreeNode;
+    expanded: Set<string>;
+    onToggle: (sel: string) => void;
+    selectedSelector: string | null;
+    selectedSet: Set<string>;
+    onSelectBySelector: (selector: string, additive?: boolean) => void;
+    onHoverSelector: (selector: string | null) => void;
+    rowRefs: React.MutableRefObject<Map<string, HTMLButtonElement>>;
+}) {
+    const isPrimary = selectedSelector === node.selector;
+    const isInSelection = selectedSet.has(node.selector);
+    const hasChildren = node.children.length > 0;
+    const isOpen = expanded.has(node.selector);
+    const indent = 6 + node.depth * 12;
+
+    return (
+        <>
+            <button
+                type="button"
+                ref={(el) => {
+                    if (el) rowRefs.current.set(node.selector, el);
+                    else rowRefs.current.delete(node.selector);
+                }}
+                className={`pp-tree-row ${isPrimary ? "pp-tree-row--selected" : ""} ${isInSelection && !isPrimary ? "pp-tree-row--selected-also" : ""}`}
+                style={{ paddingLeft: indent }}
+                onClick={(e) => onSelectBySelector(node.selector, e.shiftKey)}
+                onMouseEnter={() => onHoverSelector(node.selector)}
+                onFocus={() => onHoverSelector(node.selector)}
+                title={node.displaySelector}
+            >
+                <span
+                    className="pp-tree-twist"
+                    onClick={(e) => {
+                        if (!hasChildren) return;
+                        e.stopPropagation();
+                        onToggle(node.selector);
+                    }}
+                    role={hasChildren ? "button" : undefined}
+                    aria-label={hasChildren ? (isOpen ? "Collapse" : "Expand") : undefined}
+                >
+                    {hasChildren ? (
+                        isOpen ? <ChevronDown size={11} /> : <ChevronRightSm size={11} />
+                    ) : null}
+                </span>
+                <span className="pp-tree-tag">{node.tag}</span>
+                {node.iconId && (
+                    <span className="pp-tree-meta pp-tree-meta--icon">icon</span>
+                )}
+                {node.role && (
+                    <span className="pp-tree-meta">[{node.role}]</span>
+                )}
+                {node.classes.length > 0 && (
+                    <span className="pp-tree-class">
+                        .{node.classes[0]}{node.classes.length > 1 ? `+${node.classes.length - 1}` : ""}
+                    </span>
+                )}
+                {node.text && (
+                    <span className="pp-tree-text">“{node.text}”</span>
+                )}
+            </button>
+            {hasChildren && isOpen && node.children.map((c) => (
+                <TreeRow
+                    key={c.selector}
+                    node={c}
+                    expanded={expanded}
+                    onToggle={onToggle}
+                    selectedSelector={selectedSelector}
+                    selectedSet={selectedSet}
+                    onSelectBySelector={onSelectBySelector}
+                    onHoverSelector={onHoverSelector}
+                    rowRefs={rowRefs}
+                />
+            ))}
+        </>
+    );
+}
+
+function collectAncestors(root: TreeNode, target: string): string[] {
+    const found: string[] = [];
+    const walk = (n: TreeNode, path: string[]): boolean => {
+        if (n.selector === target) {
+            for (const p of path) found.push(p);
+            return true;
+        }
+        for (const c of n.children) {
+            if (walk(c, [...path, n.selector])) return true;
+        }
+        return false;
+    };
+    walk(root, []);
+    return found;
+}
+
 function PropsGroup({
-    title, keys, tokens, overrides, onSetProperty, onClearProperty,
+    title, keys, tokens, overrides, onSetProperty, onClearProperty, defaultOpen = true,
 }: {
     title: string;
     keys: string[];
@@ -381,8 +694,9 @@ function PropsGroup({
     overrides: Record<string, StyleOverride>;
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
+    defaultOpen?: boolean;
 }) {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(defaultOpen);
     const props = useMemo(
         () => keys.map((k) => EDITABLE_PROPERTIES.find((p) => p.key === k)).filter(Boolean) as typeof EDITABLE_PROPERTIES[number][],
         [keys],

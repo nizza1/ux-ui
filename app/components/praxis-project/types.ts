@@ -43,6 +43,25 @@ export interface SelectedIconInfo {
     defaults: IconOverride; // what the dashboard renders by default
 }
 
+/* ── DOM tree (Layers panel) ──────────────────────────── */
+
+export interface TreeNode {
+  selector: string;        // unique nth-of-type path (matches SelectedElementInfo.selector)
+  displaySelector: string; // human label e.g. "div.d-logo"
+  tag: string;
+  classes: string[];
+  role: string | null;     // data-pp-role
+  iconId: string | null;   // data-pp-icon-id (leaf icon)
+  text: string;            // short text preview (only set when no element children)
+  depth: number;
+  children: TreeNode[];
+}
+
+export interface BreadcrumbCrumb {
+  selector: string;
+  label: string;           // short label e.g. "header" or ".d-logo"
+}
+
 export const EDITABLE_PROPERTIES = [
   { key: "color", label: "Color", category: "color" as TokenCategory },
   { key: "background-color", label: "Background", category: "color" as TokenCategory },

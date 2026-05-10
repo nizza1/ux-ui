@@ -27,14 +27,6 @@
   --text-ghost: hsl(178, 10%, 40%);
 
 
-
-  /* Text */
-  /* --text-primary: hsl(240, 25%, 9%);
-  --text-secondary: hsl(240, 15%, 30%);
-  --text-tertiary: hsl(240, 13%, 50%);
-  --text-ghost: hsl(240, 16%, 60%); */
-
-
   /* Accent — Teal */
   --accent: hsl(178, 84%, 35%);
   --accent-dim: hsla(178, 84%, 35%, 0.08);

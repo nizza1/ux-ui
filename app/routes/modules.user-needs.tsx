@@ -6,8 +6,8 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "user-needs";
@@ -169,214 +169,6 @@ function StoryToUI() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bestellung bestätigt</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 40px 32px;
-    max-width: 440px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-  /* TODO: Mache das Icon visuell prominent – es soll Erfolg kommunizieren */
-  .icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 24px;
-  }
-  h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 8px;
-  }
-  .subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-  .order-details {
-    background: #f8f8f8;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 24px;
-    text-align: left;
-  }
-  .detail-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    padding: 4px 0;
-    color: #555;
-  }
-  .detail-row strong { color: #111; }
-  /* TODO: Mache den primären Button klar und auffällig */
-  .btn-primary {
-    width: 100%;
-    padding: 10px;
-    background: #eee;
-    color: #999;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  .btn-secondary {
-    width: 100%;
-    padding: 8px;
-    background: transparent;
-    color: #666;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  /* BONUS: Füge eine Animation für das Icon hinzu */
-</style>
-</head>
-<body>
-  <div class="card">
-    <div class="icon">✓</div>
-    <h1>Bestellung bestätigt!</h1>
-    <p class="subtitle">Deine Bestellung wurde erfolgreich aufgenommen.<br>Du erhältst in Kürze eine Bestätigungs-E-Mail.</p>
-    <div class="order-details">
-      <div class="detail-row"><span>Bestellnummer</span><strong>#2024-7821</strong></div>
-      <div class="detail-row"><span>Lieferdatum</span><strong>14.–16. April</strong></div>
-      <div class="detail-row"><span>Gesamtbetrag</span><strong>€ 84,90</strong></div>
-    </div>
-    <button class="btn-primary">Bestellung verfolgen →</button>
-    <button class="btn-secondary">Weiter einkaufen</button>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "icon-bg",
-    property: "backgroundColor",
-    label: "Icon Hintergrundfarbe",
-    type: "color",
-    target: ".icon",
-    group: "colors",
-    defaultValue: "#eeeeee",
-  },
-  {
-    id: "icon-color",
-    property: "color",
-    label: "Icon Farbe",
-    type: "color",
-    target: ".icon",
-    group: "colors",
-    defaultValue: "#111111",
-  },
-  {
-    id: "icon-size",
-    property: "width",
-    label: "Icon Größe",
-    type: "slider",
-    target: ".icon",
-    group: "layout",
-    defaultValue: 56,
-    min: 40,
-    max: 80,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "btn-primary-bg",
-    property: "backgroundColor",
-    label: "Primär-Button Farbe",
-    type: "color",
-    target: ".btn-primary",
-    group: "colors",
-    defaultValue: "#eeeeee",
-  },
-  {
-    id: "btn-primary-color",
-    property: "color",
-    label: "Primär-Button Text",
-    type: "color",
-    target: ".btn-primary",
-    group: "colors",
-    defaultValue: "#999999",
-  },
-  {
-    id: "btn-padding",
-    property: "paddingTop",
-    label: "Button Padding",
-    type: "slider",
-    target: ".btn-primary",
-    group: "spacing",
-    defaultValue: 10,
-    min: 8,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "btn-radius",
-    property: "borderRadius",
-    label: "Button Rundung",
-    type: "slider",
-    target: ".btn-primary",
-    group: "borders",
-    defaultValue: 8,
-    min: 0,
-    max: 28,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "card-padding",
-    property: "padding",
-    label: "Karten-Padding",
-    type: "slider",
-    target: ".card",
-    group: "spacing",
-    defaultValue: 40,
-    min: 24,
-    max: 56,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "details-bg",
-    property: "backgroundColor",
-    label: "Details-Hintergrund",
-    type: "color",
-    target: ".order-details",
-    group: "colors",
-    defaultValue: "#f8f8f8",
-  },
-];
-
 export default function UserNeedsModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -400,6 +192,7 @@ export default function UserNeedsModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"01"} />
         <LearningGoals
           goals={[
             "Den Unterschied zwischen einer Lösungs-Anfrage und einem echten Nutzerbedürfnis erklären können",

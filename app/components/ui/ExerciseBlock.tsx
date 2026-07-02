@@ -9,7 +9,7 @@ interface ExerciseBlockProps {
 
 export function ExerciseBlock({ title, children, tasks, className = "" }: ExerciseBlockProps) {
   return (
-    <div className={`bg-(--bg-surface) border border-(--bg-elevated) rounded-2xl p-6 mb-6 ${className}`}>
+    <div className={`bg-(--bg-surface) border border-(--bg-elevated) rounded-2xl p-6 mb-6 shadow-(--shadow-sm) ${className}`}>
       <h3 className="text-[15px] font-bold text-(--text-primary) mt-0 mb-2">{title}</h3>
       <p className="text-[13px] leading-[1.6] text-(--text-secondary) mt-0 mb-0">{children}</p>
       <ul className="list-none p-0 mt-4 flex flex-col gap-1.5">

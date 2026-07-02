@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -45,6 +46,7 @@ export default function DesignTokensModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
+          <BuildsOn modules={["12", "15"]} />
           <LearningGoals
             goals={[
               "Verstehen, was ein Design System ist und warum es Konsistenz und Geschwindigkeit gleichzeitig verbessert",
@@ -195,6 +197,22 @@ export default function DesignTokensModule() {
   </div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Token-Ebenen (Global → Alias → Component)</h3>
+        <CodeBlock language="CSS" code={`:root {
+  /* 1. Global: rohe Werte */
+  --blue-500: hsl(213, 90%, 58%);
+  --space-4: 16px;
+
+  /* 2. Alias: semantische Bedeutung */
+  --color-action: var(--blue-500);
+  --space-inset: var(--space-4);
+
+  /* 3. Component: konkrete Verwendung */
+  --button-bg: var(--color-action);
+  --button-padding: var(--space-inset);
+}
+.button { background: var(--button-bg); padding: var(--button-padding); }`} />
         </section>
 
       </div>

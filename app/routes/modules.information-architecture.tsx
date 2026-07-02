@@ -7,8 +7,8 @@ import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "information-architecture";
@@ -143,184 +143,6 @@ function InteractiveSitemap() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navigation</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: #f5f7fa; min-height: 100vh; }
-  /* TODO: Mache die Navigation klar erkennbar und vom Inhalt getrennt */
-  nav {
-    background: white;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .nav-logo {
-    font-size: 15px;
-    font-weight: 800;
-    color: #0ea5a0;
-    margin-right: 16px;
-  }
-  /* TODO: Mache die Nav-Links klar unterscheidbar: aktiv vs. inaktiv */
-  .nav-link {
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #666;
-    text-decoration: none;
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    font-family: inherit;
-  }
-  .nav-link:hover { background: #f5f5f5; }
-  .nav-link.active {
-    /* TODO: Hebe den aktiven Link deutlich hervor */
-    color: #666;
-    background: transparent;
-  }
-  .content {
-    max-width: 720px;
-    margin: 40px auto;
-    padding: 0 24px;
-  }
-  /* TODO: Füge eine Breadcrumb hinzu, damit Nutzer wissen, wo sie sind */
-  .breadcrumb {
-    font-size: 13px;
-    color: #aaa;
-    margin-bottom: 16px;
-    display: none; /* TODO: Einblenden */
-  }
-  h1 { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 8px; }
-  p { font-size: 14px; color: #555; line-height: 1.6; }
-</style>
-</head>
-<body>
-  <nav>
-    <span class="nav-logo">AppName</span>
-    <button class="nav-link active">Dashboard</button>
-    <button class="nav-link">Projekte</button>
-    <button class="nav-link">Team</button>
-    <button class="nav-link">Einstellungen</button>
-  </nav>
-  <div class="content">
-    <div class="breadcrumb">Dashboard → Projekte → Projektdetail</div>
-    <h1>Willkommen zurück, Markus</h1>
-    <p>Hier ist dein Aktivitäts-Feed. Du hast 3 offene Aufgaben und 1 überfällige Aufgabe.</p>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "nav-bg",
-    property: "backgroundColor",
-    label: "Nav Hintergrundfarbe",
-    type: "color",
-    target: "nav",
-    group: "colors",
-    defaultValue: "#ffffff",
-  },
-  {
-    id: "nav-shadow",
-    property: "boxShadow",
-    label: "Nav Schatten",
-    type: "select",
-    target: "nav",
-    group: "shadows",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Subtil", value: "0 1px 4px rgba(0,0,0,0.08)" },
-      { label: "Mittel", value: "0 2px 12px rgba(0,0,0,0.1)" },
-    ],
-  },
-  {
-    id: "nav-border",
-    property: "borderBottom",
-    label: "Nav Unterlinie",
-    type: "select",
-    target: "nav",
-    group: "borders",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Subtil", value: "1px solid #e5e7eb" },
-      { label: "Akzent", value: "2px solid #0ea5a0" },
-    ],
-  },
-  {
-    id: "active-bg",
-    property: "backgroundColor",
-    label: "Aktiver Link Hintergrund",
-    type: "color",
-    target: ".nav-link.active",
-    group: "colors",
-    defaultValue: "transparent",
-  },
-  {
-    id: "active-color",
-    property: "color",
-    label: "Aktiver Link Textfarbe",
-    type: "color",
-    target: ".nav-link.active",
-    group: "colors",
-    defaultValue: "#666666",
-  },
-  {
-    id: "active-font-weight",
-    property: "fontWeight",
-    label: "Aktiver Link Gewicht",
-    type: "select",
-    target: ".nav-link.active",
-    group: "typography",
-    defaultValue: "400",
-    options: [
-      { label: "Normal (400)", value: "400" },
-      { label: "Semibold (600)", value: "600" },
-      { label: "Bold (700)", value: "700" },
-    ],
-  },
-  {
-    id: "breadcrumb-display",
-    property: "display",
-    label: "Breadcrumb anzeigen",
-    type: "toggle",
-    target: ".breadcrumb",
-    group: "layout",
-    defaultValue: "none",
-    options: [{ label: "An", value: "block" }],
-  },
-  {
-    id: "breadcrumb-color",
-    property: "color",
-    label: "Breadcrumb Farbe",
-    type: "color",
-    target: ".breadcrumb",
-    group: "colors",
-    defaultValue: "#aaaaaa",
-  },
-  {
-    id: "nav-padding",
-    property: "padding",
-    label: "Nav Padding",
-    type: "slider",
-    target: "nav",
-    group: "spacing",
-    defaultValue: 12,
-    min: 8,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-];
-
 export default function InformationArchitectureModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -342,6 +164,7 @@ export default function InformationArchitectureModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"02"} />
         <LearningGoals
           goals={[
             "Informationsarchitektur (IA) definieren und ihre Bedeutung erklären",

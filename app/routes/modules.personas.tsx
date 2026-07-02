@@ -6,9 +6,9 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "personas";
@@ -168,219 +168,6 @@ function PersonaCard() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Persona-Karte</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f5f7fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  .persona-card {
-    background: white;
-    border-radius: 12px;
-    padding: 28px;
-    max-width: 480px;
-    width: 100%;
-    /* TODO: Füge einen sichtbaren Schatten hinzu */
-    box-shadow: none;
-  }
-  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-  /* TODO: Mache den Avatar visuell ansprechend – Hintergrund und Größe */
-  .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .name { font-size: 17px; font-weight: 700; color: #111; }
-  .role { font-size: 13px; color: #666; }
-  /* TODO: Mache das Zitat erkennbar als Zitat */
-  .quote {
-    font-size: 13px;
-    color: #555;
-    font-style: italic;
-    margin-bottom: 20px;
-    padding: 12px;
-    background: #f8f8f8;
-    border-radius: 8px;
-    /* TODO: Füge einen linken Akzent-Rand hinzu */
-  }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    /* TODO: Gib Ziele und Frustrationen unterschiedliche Farben */
-    color: #aaa;
-    margin-bottom: 8px;
-  }
-  .item {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 6px;
-    line-height: 1.4;
-  }
-  .bullet { flex-shrink: 0; margin-top: 2px; }
-  /* BONUS: Füge am unteren Rand einen Komfort-Indikator als farbige Leiste hinzu */
-</style>
-</head>
-<body>
-  <div class="persona-card">
-    <div class="header">
-      <div class="avatar">👤</div>
-      <div>
-        <div class="name">Markus Weber</div>
-        <div class="role">Full-Stack Entwickler, 4 Jahre Erfahrung</div>
-      </div>
-    </div>
-    <div class="quote">
-      "Ich will mir keine Gedanken über Design machen müssen – aber ich will auch nicht, dass meine UIs schlecht aussehen."
-    </div>
-    <div class="two-col">
-      <div>
-        <div class="section-label">Ziele</div>
-        <div class="item"><span class="bullet">▸</span>Schnell produktiven Code liefern</div>
-        <div class="item"><span class="bullet">▸</span>Design-Entscheidungen sicher treffen</div>
-        <div class="item"><span class="bullet">▸</span>Mit Designern effektiv zusammenarbeiten</div>
-      </div>
-      <div>
-        <div class="section-label">Frustrationen</div>
-        <div class="item"><span class="bullet">▸</span>Kein Design-System vorhanden</div>
-        <div class="item"><span class="bullet">▸</span>Feedback: "Sieht nicht gut aus"</div>
-        <div class="item"><span class="bullet">▸</span>Keine Zeit für Design-Recherche</div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "card-shadow",
-    property: "boxShadow",
-    label: "Karten-Schatten",
-    type: "select",
-    target: ".persona-card",
-    group: "shadows",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Subtil", value: "0 2px 12px rgba(0,0,0,0.08)" },
-      { label: "Mittel", value: "0 4px 24px rgba(0,0,0,0.12)" },
-      { label: "Stark", value: "0 8px 40px rgba(0,0,0,0.16)" },
-    ],
-  },
-  {
-    id: "card-radius",
-    property: "borderRadius",
-    label: "Karten-Rundung",
-    type: "slider",
-    target: ".persona-card",
-    group: "borders",
-    defaultValue: 12,
-    min: 0,
-    max: 24,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "avatar-size",
-    property: "width",
-    label: "Avatar Größe",
-    type: "slider",
-    target: ".avatar",
-    group: "layout",
-    defaultValue: 48,
-    min: 40,
-    max: 72,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "avatar-bg",
-    property: "backgroundColor",
-    label: "Avatar Hintergrundfarbe",
-    type: "color",
-    target: ".avatar",
-    group: "colors",
-    defaultValue: "#eeeeee",
-  },
-  {
-    id: "quote-bg",
-    property: "backgroundColor",
-    label: "Zitat Hintergrund",
-    type: "color",
-    target: ".quote",
-    group: "colors",
-    defaultValue: "#f8f8f8",
-  },
-  {
-    id: "quote-border",
-    property: "borderLeft",
-    label: "Zitat Akzent-Rand",
-    type: "select",
-    target: ".quote",
-    group: "borders",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Akzent (3px)", value: "3px solid #0ea5a0" },
-      { label: "Akzent (4px)", value: "4px solid #0ea5a0" },
-    ],
-  },
-  {
-    id: "goals-color",
-    property: "color",
-    label: "\"Ziele\" Label Farbe",
-    type: "color",
-    target: ".two-col > div:first-child .section-label",
-    group: "colors",
-    defaultValue: "#aaaaaa",
-  },
-  {
-    id: "frustrations-color",
-    property: "color",
-    label: "\"Frustrationen\" Label Farbe",
-    type: "color",
-    target: ".two-col > div:last-child .section-label",
-    group: "colors",
-    defaultValue: "#aaaaaa",
-  },
-  {
-    id: "card-padding",
-    property: "padding",
-    label: "Karten-Padding",
-    type: "slider",
-    target: ".persona-card",
-    group: "spacing",
-    defaultValue: 28,
-    min: 16,
-    max: 40,
-    step: 4,
-    unit: "px",
-  },
-];
-
 export default function PersonasModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -402,6 +189,7 @@ export default function PersonasModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={["02", "03"]} />
         <LearningGoals
           goals={[
             "Definieren, was eine Persona ist – und was sie nicht ist",

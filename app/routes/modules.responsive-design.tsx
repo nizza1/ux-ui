@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -44,6 +45,7 @@ export default function ResponsiveDesignModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
+          <BuildsOn modules={"05"} />
           <LearningGoals
             goals={[
               "Mobile-First als Designstrategie verstehen und anwenden",
@@ -192,6 +194,16 @@ export default function ResponsiveDesignModule() {
   </div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Mobile-First Breakpoints</h3>
+        <CodeBlock language="CSS" code={`/* Basis = Mobile. Dann nach oben erweitern. */
+.grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+@media (min-width: 640px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Fluid statt fix: skaliert zwischen min und max */
+h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }`} />
         </section>
 
       </div>

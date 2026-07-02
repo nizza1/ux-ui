@@ -17,6 +17,8 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { CodeBlock } from "~/components/ui/CodeBlock";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { InsightRow } from "~/components/ui/InsightRow";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
@@ -297,6 +299,7 @@ export default function VisualHierarchyModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"08"} />
         <LearningGoals
           goals={[
             "Erklären, was visuelle Hierarchie ist und warum sie die Grundlage jedes guten Interfaces bildet",
@@ -844,6 +847,16 @@ export default function VisualHierarchyModule() {
           previewHeight={380}
           title="Bringe Hierarchie in diese Benachrichtigungs-Card"
         />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Hierarchie mit Größe, Gewicht & Farbe</h3>
+        <CodeBlock language="CSS" code={`/* Drei Ebenen klar trennen */
+.card-title   { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.card-meta    { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+.card-caption { font-size: 11px; font-weight: 400; color: var(--text-tertiary); }
+
+/* Eine einzige Primary-Action hebt sich ab */
+.btn-primary  { background: var(--accent); color: #fff; font-weight: 600; }
+.btn-ghost    { background: transparent; color: var(--text-secondary); }`} />
 
       </div>
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />

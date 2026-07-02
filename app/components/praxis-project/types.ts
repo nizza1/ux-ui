@@ -43,6 +43,41 @@ export interface SelectedIconInfo {
     defaults: IconOverride; // what the dashboard renders by default
 }
 
+/* ── Chart overrides ──────────────────────────────────── */
+
+export type ChartType = "bar" | "donut" | "sparkline";
+
+/**
+ * Optional per-chart styling. Every field is optional — unset fields fall
+ * back to the neutral defaults baked into the chart CSS (`--ch-*` var
+ * fallbacks), so a chart with no override renders exactly as before.
+ * Colors reuse StyleOverride so they can link to design tokens.
+ */
+export interface ChartOverride {
+    accent?: StyleOverride;      // shared → --ch-accent
+    // bar
+    base?: StyleOverride;        // base bar color → --ch-base (+ --ch-base-op: 1)
+    barRadius?: number;          // px → --ch-bar-radius
+    barGap?: number;             // px → --ch-bar-gap
+    // donut (segment 1 = accent)
+    seg2?: StyleOverride;        // --ch-seg-2 (+ --ch-seg-2-op: 1)
+    seg3?: StyleOverride;
+    seg4?: StyleOverride;
+    ringWidth?: number;          // px → --ch-ring
+    // sparkline
+    strokeWidth?: number;        // → --ch-stroke
+    showDots?: boolean;          // → --ch-dots: visible | hidden
+    showArea?: boolean;          // → --ch-area: visible | hidden
+}
+
+export type ChartOverrideMap = Record<string, ChartOverride>;
+
+export interface SelectedChartInfo {
+    id: string;        // data-pp-chart-id
+    type: ChartType;   // data-pp-chart-type
+    label: string;     // data-pp-chart-label
+}
+
 /* ── DOM tree (Layers panel) ──────────────────────────── */
 
 export interface TreeNode {
@@ -52,6 +87,7 @@ export interface TreeNode {
   classes: string[];
   role: string | null;     // data-pp-role
   iconId: string | null;   // data-pp-icon-id (leaf icon)
+  chartId: string | null;  // data-pp-chart-id (leaf chart)
   text: string;            // short text preview (only set when no element children)
   depth: number;
   children: TreeNode[];

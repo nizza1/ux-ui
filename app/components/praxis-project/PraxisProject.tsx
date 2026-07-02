@@ -1,10 +1,12 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { Scan } from "lucide-react";
 import "./praxis-project.css";
 import { Dashboard } from "./Dashboard";
 import { ProjectInspector } from "./ProjectInspector";
 import type {
     DesignToken, SelectedElementInfo, StyleChangesMap, StyleOverride, TokenCategory,
     IconOverride, IconOverrideMap, SelectedIconInfo, TreeNode, BreadcrumbCrumb,
+    ChartOverride, ChartOverrideMap, ChartType, SelectedChartInfo,
 } from "./types";
 
 /* ── Starter tokens (users can add/edit/remove) ─────────── */
@@ -76,6 +78,7 @@ type PersistedState = {
     tokens: DesignToken[];
     changes: StyleChangesMap;
     iconOverrides: IconOverrideMap;
+    chartOverrides: ChartOverrideMap;
 };
 
 function loadPersisted(): PersistedState | null {
@@ -89,6 +92,7 @@ function loadPersisted(): PersistedState | null {
             tokens: Array.isArray(parsed.tokens) ? parsed.tokens : INITIAL_TOKENS,
             changes: parsed.changes && typeof parsed.changes === "object" ? parsed.changes : {},
             iconOverrides: parsed.iconOverrides && typeof parsed.iconOverrides === "object" ? parsed.iconOverrides : {},
+            chartOverrides: parsed.chartOverrides && typeof parsed.chartOverrides === "object" ? parsed.chartOverrides : {},
         };
     } catch {
         return null;
@@ -107,10 +111,15 @@ export function PraxisProject() {
     const [tokens, setTokens] = useState<DesignToken[]>(INITIAL_TOKENS);
     const [changes, setChanges] = useState<StyleChangesMap>({});
     const [iconOverrides, setIconOverrides] = useState<IconOverrideMap>({});
+    const [chartOverrides, setChartOverrides] = useState<ChartOverrideMap>({});
     const [hydrated, setHydrated] = useState(false);
     const [selectedList, setSelectedList] = useState<SelectedElementInfo[]>([]);
     const [selectedIcon, setSelectedIcon] = useState<SelectedIconInfo | null>(null);
+    const [selectedChart, setSelectedChart] = useState<SelectedChartInfo | null>(null);
     const [hoveredSelector, setHoveredSelector] = useState<string | null>(null);
+    const [showGuides, setShowGuides] = useState(false);
+    const [deepHover, setDeepHover] = useState(false);
+    const [hoverStatus, setHoverStatus] = useState<string | null>(null);
 
     // Hydrate persisted state on mount (client-only).
     useEffect(() => {
@@ -119,6 +128,7 @@ export function PraxisProject() {
             setTokens(saved.tokens);
             setChanges(saved.changes);
             setIconOverrides(saved.iconOverrides);
+            setChartOverrides(saved.chartOverrides);
             // Avoid id collisions with restored "t-new-N" tokens.
             let maxId = 1000;
             for (const t of saved.tokens) {
@@ -135,12 +145,12 @@ export function PraxisProject() {
     useEffect(() => {
         if (!hydrated) return;
         try {
-            const payload: PersistedState = { tokens, changes, iconOverrides };
+            const payload: PersistedState = { tokens, changes, iconOverrides, chartOverrides };
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
         } catch {
             // Quota exceeded or storage unavailable — ignore.
         }
-    }, [hydrated, tokens, changes, iconOverrides]);
+    }, [hydrated, tokens, changes, iconOverrides, chartOverrides]);
     // Re-build the tree whenever the dashboard mounts; iconOverrides don't change DOM shape.
     const [treeVersion, setTreeVersion] = useState(0);
 
@@ -181,6 +191,18 @@ export function PraxisProject() {
             }
             return next;
         });
+        // Also unlink chart options that referenced this token
+        setChartOverrides((prev) => {
+            const next: ChartOverrideMap = {};
+            for (const [chartId, ov] of Object.entries(prev)) {
+                const clean: ChartOverride = { ...ov };
+                for (const key of ["accent", "base", "seg2", "seg3", "seg4"] as const) {
+                    if (clean[key]?.tokenId === id) delete clean[key];
+                }
+                if (Object.values(clean).some((v) => v !== undefined)) next[chartId] = clean;
+            }
+            return next;
+        });
     }, []);
 
     /* ── Token CSS injection (custom properties on dashboard root) ── */
@@ -189,6 +211,32 @@ export function PraxisProject() {
         const lines = tokens.map((t) => `  --tok-${t.name}: ${t.value};`).join("\n");
         return `.pp-dashboard {\n${lines}\n}`;
     }, [tokens]);
+
+    /* ── Chart options → per-chart CSS custom properties ─ */
+    // Only the fields the user actually set are emitted; everything else
+    // falls back to the neutral defaults in the chart CSS.
+
+    const chartStyleBlock = useMemo(() => {
+        const blocks: string[] = [];
+        for (const [id, ov] of Object.entries(chartOverrides)) {
+            const lines: string[] = [];
+            if (ov.accent?.value) lines.push(`  --ch-accent: ${ov.accent.value};`);
+            if (ov.base?.value) lines.push(`  --ch-base: ${ov.base.value};`, "  --ch-base-op: 1;");
+            if (ov.barRadius !== undefined) lines.push(`  --ch-bar-radius: ${ov.barRadius}px;`);
+            if (ov.barGap !== undefined) lines.push(`  --ch-bar-gap: ${ov.barGap}px;`);
+            if (ov.seg2?.value) lines.push(`  --ch-seg-2: ${ov.seg2.value};`, "  --ch-seg-2-op: 1;");
+            if (ov.seg3?.value) lines.push(`  --ch-seg-3: ${ov.seg3.value};`, "  --ch-seg-3-op: 1;");
+            if (ov.seg4?.value) lines.push(`  --ch-seg-4: ${ov.seg4.value};`, "  --ch-seg-4-op: 1;");
+            if (ov.ringWidth !== undefined) lines.push(`  --ch-ring: ${ov.ringWidth}px;`);
+            if (ov.strokeWidth !== undefined) lines.push(`  --ch-stroke: ${ov.strokeWidth};`);
+            if (ov.showDots !== undefined) lines.push(`  --ch-dots: ${ov.showDots ? "visible" : "hidden"};`);
+            if (ov.showArea !== undefined) lines.push(`  --ch-area: ${ov.showArea ? "visible" : "hidden"};`);
+            if (lines.length > 0) {
+                blocks.push(`.pp-dashboard [data-pp-chart-scope="${id}"] {\n${lines.join("\n")}\n}`);
+            }
+        }
+        return blocks.join("\n\n");
+    }, [chartOverrides]);
 
     /* ── Apply per-selector overrides as a <style> block ─ */
 
@@ -206,6 +254,10 @@ export function PraxisProject() {
     }, [changes]);
 
     /* ── Selection: click delegation on dashboard ──────── */
+    // Plain click snaps to the nearest labeled component (data-pp-role /
+    // data-pp-chart-id / data-pp-icon-id). Cmd/Ctrl+Click selects the exact
+    // leaf element (the generic escape hatch), Alt+Click walks to the parent,
+    // Shift+Click toggles multi-select.
 
     const handleCanvasClick = useCallback((e: React.MouseEvent) => {
         if (collapsed) return;
@@ -217,31 +269,46 @@ export function PraxisProject() {
         e.preventDefault();
         e.stopPropagation();
 
-        // Icon detection: walk up looking for data-pp-icon-id
-        // Skipped if Alt or Shift is held (those are element-level modifiers).
-        const iconHost = (target as Element).closest("[data-pp-icon-id]") as SVGElement | HTMLElement | null;
-        if (iconHost && !e.altKey && !e.shiftKey) {
-            const id = iconHost.getAttribute("data-pp-icon-id")!;
-            const defaults = parseIconDefaults(iconHost);
-            if (defaults) {
-                setSelectedList([]);
-                setSelectedIcon({ id, defaults });
-                return;
+        const deep = e.metaKey || e.ctrlKey;
+
+        // Icon / chart snap — only for a plain click (no modifiers).
+        if (!deep && !e.altKey && !e.shiftKey) {
+            const iconHost = target.closest("[data-pp-icon-id]");
+            if (iconHost) {
+                const id = iconHost.getAttribute("data-pp-icon-id")!;
+                const defaults = parseIconDefaults(iconHost);
+                if (defaults) {
+                    setSelectedList([]);
+                    setSelectedChart(null);
+                    setSelectedIcon({ id, defaults });
+                    return;
+                }
+            }
+            const chartHost = resolveChartHost(target, root);
+            if (chartHost) {
+                const info = readChartInfo(chartHost);
+                if (info) {
+                    setSelectedList([]);
+                    setSelectedIcon(null);
+                    setSelectedChart(info);
+                    return;
+                }
             }
         }
 
-        // Alt+Click: walk up. If the user already has a selection that contains
-        // this exact element, walk up from that selection (so repeated Alt+Clicks
-        // climb the tree). Otherwise walk up from the click target.
-        let pickEl = target as HTMLElement;
+        let pickEl: HTMLElement = deep ? (target as HTMLElement) : snapElement(target, root);
+
+        // Alt+Click: walk up. When the click lands inside the current primary
+        // selection, climb from that selection — repeated Alt+Clicks keep
+        // climbing the tree. Otherwise climb from the (snapped) click target.
         if (e.altKey) {
-            const targetInfo = describeElement(pickEl, root);
-            const inSelection = selectedList.some((s) => s.selector === targetInfo.selector);
-            const climbFrom: HTMLElement = inSelection
-                ? (findElementBySelector(root, targetInfo.selector) ?? pickEl)
-                : pickEl;
-            if (climbFrom.parentElement && climbFrom !== root) {
-                pickEl = climbFrom.parentElement as HTMLElement;
+            let base: HTMLElement = pickEl;
+            if (primarySelected) {
+                const selEl = findElementBySelector(root, primarySelected.selector);
+                if (selEl && (selEl === target || selEl.contains(target))) base = selEl;
+            }
+            if (base.parentElement && base !== root) {
+                pickEl = base.parentElement as HTMLElement;
             }
         }
         if (pickEl === root || !root.contains(pickEl)) return;
@@ -249,6 +316,7 @@ export function PraxisProject() {
         const info = describeElement(pickEl, root);
         selectorDisplayMap.current.set(info.selector, info.displaySelector);
         setSelectedIcon(null);
+        setSelectedChart(null);
 
         if (e.shiftKey) {
             // Toggle in the selection list.
@@ -262,7 +330,74 @@ export function PraxisProject() {
         } else {
             setSelectedList([info]);
         }
-    }, [collapsed, selectedList]);
+    }, [collapsed, primarySelected]);
+
+    /* ── Select all elements sharing a data-pp-role ─────── */
+
+    const handleSelectAllSimilar = useCallback((role: string) => {
+        const root = dashboardRef.current;
+        if (!root) return;
+        const els = Array.from(root.querySelectorAll(`[data-pp-role="${CSS.escape(role)}"]`));
+        if (els.length === 0) return;
+        const infos = els.map((el) => {
+            const info = describeElement(el as HTMLElement, root);
+            selectorDisplayMap.current.set(info.selector, info.displaySelector);
+            return info;
+        });
+        setSelectedIcon(null);
+        setSelectedChart(null);
+        setSelectedList(infos);
+    }, []);
+
+    /* ── Hover status (bottom status bar) ───────────────── */
+
+    const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+        if (collapsed) return;
+        const root = dashboardRef.current;
+        if (!root) return;
+        const target = e.target as Element | null;
+        if (!target || !root.contains(target)) {
+            setHoverStatus(null);
+            return;
+        }
+        const deep = e.metaKey || e.ctrlKey;
+        let status: string;
+        if (deep) {
+            status = describeElement(target as HTMLElement, root).displaySelector;
+        } else {
+            const iconHost = target.closest("[data-pp-icon-id]");
+            const chartHost = iconHost ? null : resolveChartHost(target, root);
+            if (iconHost) {
+                status = `Icon · ${iconHost.getAttribute("data-pp-icon-id")}`;
+            } else if (chartHost) {
+                status = `Chart · ${chartHost.getAttribute("data-pp-chart-label") ?? chartHost.getAttribute("data-pp-chart-id")}`;
+            } else {
+                const info = describeElement(snapElement(target, root), root);
+                status = info.role ? `${info.role} · <${info.tag}>` : info.displaySelector;
+            }
+        }
+        setHoverStatus(status);
+    }, [collapsed]);
+
+    // Deep-select mode (Cmd/Ctrl held) switches the hover outline to the
+    // exact leaf element so the cursor preview matches what a click selects.
+    useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === "Meta" || e.key === "Control") setDeepHover(true);
+        };
+        const up = (e: KeyboardEvent) => {
+            if (e.key === "Meta" || e.key === "Control") setDeepHover(false);
+        };
+        const reset = () => setDeepHover(false);
+        window.addEventListener("keydown", down);
+        window.addEventListener("keyup", up);
+        window.addEventListener("blur", reset);
+        return () => {
+            window.removeEventListener("keydown", down);
+            window.removeEventListener("keyup", up);
+            window.removeEventListener("blur", reset);
+        };
+    }, []);
 
     // Bump tree version on mount (Dashboard JSX is static, so once is enough).
     useEffect(() => {
@@ -274,6 +409,19 @@ export function PraxisProject() {
         const root = dashboardRef.current;
         if (!root) return null;
         return buildTree(root);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [treeVersion]);
+
+    // How many elements share each data-pp-role — drives "Select all similar".
+    const roleCounts = useMemo<Record<string, number>>(() => {
+        const root = dashboardRef.current;
+        if (!root) return {};
+        const counts: Record<string, number> = {};
+        root.querySelectorAll("[data-pp-role]").forEach((el) => {
+            const r = el.getAttribute("data-pp-role")!;
+            counts[r] = (counts[r] ?? 0) + 1;
+        });
+        return counts;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [treeVersion]);
 
@@ -307,6 +455,7 @@ export function PraxisProject() {
         const info = describeElement(el, root);
         selectorDisplayMap.current.set(info.selector, info.displaySelector);
         setSelectedIcon(null);
+        setSelectedChart(null);
         if (additive) {
             setSelectedList((prev) => {
                 const idx = prev.findIndex((s) => s.selector === info.selector);
@@ -346,12 +495,16 @@ export function PraxisProject() {
         } else if (selectedIcon) {
             const el = root.querySelector(`[data-pp-icon-id="${selectedIcon.id}"]`);
             if (el) el.setAttribute("data-pp-selected", "true");
+        } else if (selectedChart) {
+            const el = root.querySelector(`[data-pp-chart-id="${selectedChart.id}"]`);
+            if (el) el.setAttribute("data-pp-selected", "true");
         }
-    }, [selectedList, selectedIcon]);
+    }, [selectedList, selectedIcon, selectedChart]);
 
     const handleDeselect = useCallback(() => {
         setSelectedList([]);
         setSelectedIcon(null);
+        setSelectedChart(null);
     }, []);
 
     /* ── Icon override handlers ───────────────────────── */
@@ -373,6 +526,26 @@ export function PraxisProject() {
             return rest;
         });
     }, [selectedIcon]);
+
+    /* ── Chart override handlers ──────────────────────── */
+
+    const handleUpdateChart = useCallback((patch: Partial<ChartOverride>) => {
+        if (!selectedChart) return;
+        const id = selectedChart.id;
+        setChartOverrides((prev) => ({
+            ...prev,
+            [id]: { ...(prev[id] ?? {}), ...patch },
+        }));
+    }, [selectedChart]);
+
+    const handleResetChart = useCallback(() => {
+        if (!selectedChart) return;
+        const id = selectedChart.id;
+        setChartOverrides((prev) => {
+            const { [id]: _gone, ...rest } = prev;
+            return rest;
+        });
+    }, [selectedChart]);
 
     /* ── Property editing — writes propagate to every selected element ─── */
 
@@ -411,14 +584,45 @@ export function PraxisProject() {
 
     return (
         <div className="pp-root">
-            <style dangerouslySetInnerHTML={{ __html: `${tokenStyleBlock}\n\n${overrideStyleBlock}` }} />
+            <style dangerouslySetInnerHTML={{ __html: `${tokenStyleBlock}\n\n${chartStyleBlock}\n\n${overrideStyleBlock}` }} />
 
-            <div
-                ref={canvasRef}
-                className={`pp-canvas ${!collapsed ? "pp-canvas--inspecting" : ""}`}
-                onClick={handleCanvasClick}
-            >
-                <Dashboard ref={dashboardRef} iconOverrides={iconOverrides} />
+            <div className="pp-workbench">
+                <div className="pp-canvas-toolbar">
+                    <button
+                        type="button"
+                        className={`pp-toolbar-btn ${showGuides ? "pp-toolbar-btn--active" : ""}`}
+                        onClick={() => setShowGuides((g) => !g)}
+                        aria-pressed={showGuides}
+                        title="Show dashed outlines around every selectable component"
+                    >
+                        <Scan size={13} />
+                        Structure
+                    </button>
+                </div>
+
+                <div
+                    ref={canvasRef}
+                    className={[
+                        "pp-canvas",
+                        !collapsed ? "pp-canvas--inspecting" : "",
+                        showGuides ? "pp-canvas--guides" : "",
+                        deepHover ? "pp-canvas--deep" : "",
+                    ].join(" ")}
+                    onClick={handleCanvasClick}
+                    onMouseMove={handleCanvasMouseMove}
+                    onMouseLeave={() => setHoverStatus(null)}
+                >
+                    <Dashboard ref={dashboardRef} iconOverrides={iconOverrides} />
+                </div>
+
+                <div className="pp-statusbar">
+                    <span className="pp-statusbar-target">
+                        {!collapsed && hoverStatus ? hoverStatus : ""}
+                    </span>
+                    <span className="pp-statusbar-hint">
+                        Click: component · ⌘/Ctrl+Click: exact element · Alt: parent · Shift: multi
+                    </span>
+                </div>
             </div>
 
             <ProjectInspector
@@ -432,12 +636,18 @@ export function PraxisProject() {
                 iconOverride={selectedIcon ? iconOverrides[selectedIcon.id] : undefined}
                 onUpdateIcon={handleUpdateIcon}
                 onResetIcon={handleResetIcon}
+                selectedChart={selectedChart}
+                chartOverride={selectedChart ? chartOverrides[selectedChart.id] : undefined}
+                onUpdateChart={handleUpdateChart}
+                onResetChart={handleResetChart}
                 selectedElement={primarySelected}
                 selectedList={selectedList}
                 elementOverrides={elementOverrides}
                 onSetProperty={handleSetProperty}
                 onClearProperty={handleClearProperty}
                 onDeselect={handleDeselect}
+                onSelectAllSimilar={handleSelectAllSimilar}
+                roleCounts={roleCounts}
                 tree={tree}
                 breadcrumbs={breadcrumbs}
                 onSelectBySelector={handleSelectBySelector}
@@ -445,6 +655,33 @@ export function PraxisProject() {
             />
         </div>
     );
+}
+
+/* ── Snap-target resolution ─────────────────────────────── */
+
+/** Nearest labeled ancestor (data-pp-role) of the click target, or the exact
+ *  target when nothing above it is labeled — keeps the editor generic. */
+function snapElement(target: Element, root: HTMLElement): HTMLElement {
+    const roleEl = target.closest("[data-pp-role]");
+    if (roleEl && roleEl !== root && root.contains(roleEl)) return roleEl as HTMLElement;
+    return target as HTMLElement;
+}
+
+/** The chart host (data-pp-chart-id) the click belongs to. Labeled elements
+ *  *inside* a chart host (e.g. axis labels) stay individually selectable. */
+function resolveChartHost(target: Element, root: HTMLElement): Element | null {
+    const chartEl = target.closest("[data-pp-chart-id]");
+    if (!chartEl || !root.contains(chartEl)) return null;
+    const roleEl = target.closest("[data-pp-role]");
+    if (roleEl && roleEl !== chartEl && chartEl.contains(roleEl)) return null;
+    return chartEl;
+}
+
+function readChartInfo(el: Element): SelectedChartInfo | null {
+    const id = el.getAttribute("data-pp-chart-id");
+    const type = el.getAttribute("data-pp-chart-type");
+    if (!id || (type !== "bar" && type !== "donut" && type !== "sparkline")) return null;
+    return { id, type: type as ChartType, label: el.getAttribute("data-pp-chart-label") ?? id };
 }
 
 /* ── Element description / selectors ────────────────────── */
@@ -503,6 +740,7 @@ function buildTree(root: HTMLElement): TreeNode {
         const classes = Array.from(el.classList).filter((c) => !c.startsWith("pp-") && c !== "");
         const role = el.getAttribute("data-pp-role");
         const iconId = el.getAttribute("data-pp-icon-id");
+        const chartId = el.getAttribute("data-pp-chart-id");
 
         const childEls = Array.from(el.children).filter(
             (c): c is HTMLElement => c instanceof HTMLElement,
@@ -520,9 +758,9 @@ function buildTree(root: HTMLElement): TreeNode {
         const children: TreeNode[] = [];
         const tagCounts = new Map<string, number>();
         for (const child of childEls) {
-            // Skip SVG icon internals: the icon host (data-pp-icon-id) appears as a leaf;
-            // we don't recurse into its children.
-            if (el.hasAttribute("data-pp-icon-id")) break;
+            // Skip icon and chart internals: the host appears as a leaf; the
+            // dozens of bars/circles/paths inside would only be tree noise.
+            if (el.hasAttribute("data-pp-icon-id") || el.hasAttribute("data-pp-chart-id")) break;
 
             const childTag = child.tagName.toLowerCase();
             const idx = (tagCounts.get(childTag) ?? 0) + 1;
@@ -533,7 +771,7 @@ function buildTree(root: HTMLElement): TreeNode {
 
         // Text preview only when leaf (no element children)
         let text = "";
-        if (children.length === 0 && !iconId) {
+        if (children.length === 0 && !iconId && !chartId) {
             const raw = (el.textContent ?? "").trim().replace(/\s+/g, " ");
             text = raw.length > 40 ? raw.slice(0, 37) + "…" : raw;
         }
@@ -545,6 +783,7 @@ function buildTree(root: HTMLElement): TreeNode {
             classes,
             role,
             iconId,
+            chartId,
             text,
             depth,
             children,

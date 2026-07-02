@@ -45,19 +45,20 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                         {I("search", { name: "search", size: 16, strokeWidth: 2, variant: "stroke" })}
                         <input
                             className="d-search-input"
+                            data-pp-role="search-input"
                             type="text"
                             placeholder="Search dashboards, reports, metrics…"
                             readOnly
                         />
                         <span data-pp-role="kbd">⌘K</span>
                     </div>
-                    <button type="button" className="d-iconbtn" aria-label="Notifications">
+                    <button type="button" className="d-iconbtn" data-pp-role="icon-button" aria-label="Notifications">
                         {I("bell", { name: "bell", size: 16, strokeWidth: 2, variant: "stroke" })}
                     </button>
-                    <button type="button" className="d-iconbtn" aria-label="Help">
+                    <button type="button" className="d-iconbtn" data-pp-role="icon-button" aria-label="Help">
                         {I("help", { name: "circle-question", size: 16, strokeWidth: 2, variant: "stroke" })}
                     </button>
-                    <span className="d-avatar" aria-hidden />
+                    <span className="d-avatar" data-pp-role="avatar" aria-hidden />
                 </div>
             </header>
 
@@ -122,7 +123,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                             Updated 14 minutes ago · Tracking 12 campaigns across 4 channels
                         </span>
                     </div>
-                    <div style={{ display: "flex", gap: "var(--d-space-2)" }}>
+                    <div className="d-actions" data-pp-role="actions">
                         <button type="button" className="d-btn" data-pp-role="btn-secondary">
                             {I("btn-export", { name: "download", size: 14, strokeWidth: 2, variant: "stroke" })}
                             <span>Export</span>
@@ -143,7 +144,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                         { id: "kpi-session", label: "Avg. session", value: "3m 24s", delta: "+8s vs last month", icon: "clock" },
                     ].map((k) => (
                         <div className="d-kpi" data-pp-role="kpi" key={k.id}>
-                            <div className="d-kpi-head">
+                            <div className="d-kpi-head" data-pp-role="kpi-head">
                                 <span className="d-kpi-label" data-pp-role="kpi-label">{k.label}</span>
                                 {I(k.id, { name: k.icon, size: 18, strokeWidth: 2, variant: "stroke" })}
                             </div>
@@ -156,28 +157,28 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                 {/* Revenue + traffic */}
                 <section className="d-grid" data-pp-role="grid-main">
                     <article className="d-card" data-pp-role="card">
-                        <div className="d-card-head">
+                        <div className="d-card-head" data-pp-role="card-head">
                             <div>
                                 <span className="d-card-title" data-pp-role="card-title">Revenue trend</span>
                                 <span className="d-card-sub" data-pp-role="card-sub">Last 30 days</span>
                             </div>
                             <div className="d-tabs" data-pp-role="card-tabs">
-                                <button type="button" className="d-tab d-tab--active">Day</button>
-                                <button type="button" className="d-tab">Week</button>
-                                <button type="button" className="d-tab">Month</button>
+                                <button type="button" className="d-tab d-tab--active" data-pp-role="tab">Day</button>
+                                <button type="button" className="d-tab" data-pp-role="tab">Week</button>
+                                <button type="button" className="d-tab" data-pp-role="tab">Month</button>
                             </div>
                         </div>
                         <BarChart />
                     </article>
 
                     <article className="d-card" data-pp-role="card">
-                        <div className="d-card-head">
+                        <div className="d-card-head" data-pp-role="card-head">
                             <div>
                                 <span className="d-card-title" data-pp-role="card-title">Traffic sources</span>
                                 <span className="d-card-sub" data-pp-role="card-sub">Sessions this week</span>
                             </div>
                         </div>
-                        <div className="d-donut">
+                        <div className="d-donut" data-pp-chart-scope="chart-traffic">
                             <Donut />
                             <ul className="d-legend">
                                 {[
@@ -186,7 +187,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                                     { label: "Referral", value: "18%", cls: "d-swatch--b" },
                                     { label: "Social", value: "12%", cls: "d-swatch--c" },
                                 ].map((l) => (
-                                    <li className="d-legend-item" key={l.label}>
+                                    <li className="d-legend-item" data-pp-role="legend-item" key={l.label}>
                                         <span className="d-legend-left">
                                             <span className={`d-swatch ${l.cls}`} aria-hidden />
                                             <span data-pp-role="legend-label">{l.label}</span>
@@ -202,7 +203,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                 {/* Second row */}
                 <section className="d-grid-row" data-pp-role="grid-row">
                     <article className="d-card" data-pp-role="card">
-                        <div className="d-card-head">
+                        <div className="d-card-head" data-pp-role="card-head">
                             <div>
                                 <span className="d-card-title" data-pp-role="card-title">Sessions</span>
                                 <span className="d-card-sub" data-pp-role="card-sub">7 day trend</span>
@@ -213,7 +214,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                     </article>
 
                     <article className="d-card" data-pp-role="card">
-                        <div className="d-card-head">
+                        <div className="d-card-head" data-pp-role="card-head">
                             <div>
                                 <span className="d-card-title" data-pp-role="card-title">Goals progress</span>
                                 <span className="d-card-sub" data-pp-role="card-sub">Q2 targets</span>
@@ -232,8 +233,8 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                                         <span data-pp-role="progress-label">{p.label}</span>
                                         <span data-pp-role="progress-value">{p.pct}%</span>
                                     </div>
-                                    <div className="d-progress-track">
-                                        <div className="d-progress-fill" style={{ width: `${p.pct}%` }} />
+                                    <div className="d-progress-track" data-pp-role="progress-track">
+                                        <div className="d-progress-fill" data-pp-role="progress-fill" style={{ width: `${p.pct}%` }} />
                                     </div>
                                 </li>
                             ))}
@@ -241,7 +242,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                     </article>
 
                     <article className="d-card" data-pp-role="card">
-                        <div className="d-card-head">
+                        <div className="d-card-head" data-pp-role="card-head">
                             <div>
                                 <span className="d-card-title" data-pp-role="card-title">Recent activity</span>
                                 <span className="d-card-sub" data-pp-role="card-sub">Last 24h</span>
@@ -255,7 +256,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
                                 { who: "Sara L.", what: "invited 3 teammates", when: "1h ago" },
                                 { who: "Alex M.", what: "connected Stripe integration", when: "3h ago" },
                             ].map((a, i) => (
-                                <li className="d-activity-item" key={i}>
+                                <li className="d-activity-item" data-pp-role="activity-item" key={i}>
                                     <span className="d-activity-dot" aria-hidden />
                                     <div className="d-activity-body">
                                         <span data-pp-role="activity-text">
@@ -271,7 +272,7 @@ export const Dashboard = forwardRef<HTMLDivElement, DashboardProps>(function Das
 
                 {/* Table */}
                 <section className="d-card" data-pp-role="card">
-                    <div className="d-card-head">
+                    <div className="d-card-head" data-pp-role="card-head">
                         <div>
                             <span className="d-card-title" data-pp-role="card-title">Top campaigns</span>
                             <span className="d-card-sub" data-pp-role="card-sub">Sorted by conversions</span>
@@ -357,7 +358,12 @@ function BarChart() {
     const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const max = 100;
     return (
-        <div>
+        <div
+            data-pp-chart-id="chart-revenue"
+            data-pp-chart-type="bar"
+            data-pp-chart-label="Revenue trend"
+            data-pp-chart-scope="chart-revenue"
+        >
             <div className="d-chart">
                 {groups.map(([a, b], i) => (
                     <div className="d-bar-group" key={i}>
@@ -389,7 +395,16 @@ function Sparkline() {
     const linePath = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
     const areaPath = `${linePath} L${w},${h} L0,${h} Z`;
     return (
-        <svg className="d-sparkline" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" data-pp-role="sparkline">
+        <svg
+            className="d-sparkline"
+            viewBox={`0 0 ${w} ${h}`}
+            preserveAspectRatio="none"
+            data-pp-role="sparkline"
+            data-pp-chart-id="chart-sessions"
+            data-pp-chart-type="sparkline"
+            data-pp-chart-label="Sessions"
+            data-pp-chart-scope="chart-sessions"
+        >
             <path className="area" d={areaPath} />
             <path className="line" d={linePath} />
             {coords.map(([x, y], i) => (
@@ -419,7 +434,14 @@ function Donut() {
     };
     const opacities: Record<string, number> = { accent: 1, a: 0.7, b: 0.4, c: 0.2 };
     return (
-        <svg className="d-donut-svg" viewBox="0 0 120 120" data-pp-role="donut">
+        <svg
+            className="d-donut-svg"
+            viewBox="0 0 120 120"
+            data-pp-role="donut"
+            data-pp-chart-id="chart-traffic"
+            data-pp-chart-type="donut"
+            data-pp-chart-label="Traffic sources"
+        >
             {segs.map((s, i) => {
                 const len = (s.pct / 100) * C;
                 const circle = (

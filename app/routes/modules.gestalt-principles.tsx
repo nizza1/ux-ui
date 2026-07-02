@@ -6,13 +6,13 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { AnnotationGrid } from "~/components/ui/AnnotationGrid";
 import { ExplanationBox } from "~/components/ui/ExplanationBox";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 
 
@@ -51,6 +51,7 @@ export default function GestaltPrinciplesModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~15 Min." />
 
+        <BuildsOn modules={"05"} />
         <LearningGoals
           goals={[
             "Die sechs zentralen Gestaltprinzipien benennen und erklären können",

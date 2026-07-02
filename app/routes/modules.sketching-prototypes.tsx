@@ -6,7 +6,9 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
+import { CodeBlock } from "~/components/ui/CodeBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
 import { LiveEditor } from "~/components/live-editor/LiveEditor";
@@ -661,6 +663,7 @@ export default function SketchingPrototypesModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"05"} />
         <LearningGoals
           goals={[
             "Erklären, warum frühes Skizzieren effizienter ist als direkt Code zu schreiben",
@@ -779,6 +782,44 @@ export default function SketchingPrototypesModule() {
           Idee zu testen – und Papier ist der günstigste.
         </RuleBox>
 
+        {/* ── Practice ── */}
+        <ExerciseBlock
+          title="Übung: Vom Lo-Fi-Block zum erkennbaren Screen"
+          tasks={[
+            "Mache die App-Shell erkennbar: Header, Navigation, Content-Bereich klar trennen",
+            "Gib dem Screen-Label eine eindeutige Positionierung",
+            "Schaffe genug Kontrast und Abstand, damit die Struktur ohne Farbe lesbar bleibt",
+          ]}
+        >
+          Verbessere den folgenden Lo-Fi-Prototyp im Editor. Folge den
+          <code>{" /* TODO */ "}</code>-Hinweisen im Code und beobachte die
+          Vorschau live.
+        </ExerciseBlock>
+        <LiveEditor
+          html={EXERCISE_HTML}
+          controls={EXERCISE_CONTROLS}
+          defaultMode="code"
+          previewHeight={460}
+          title="Lo-Fi Prototyp verbessern"
+        />
+
+        <h3 className="text-[15px] font-bold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Lo-Fi App-Shell</h3>
+        <CodeBlock
+          language="HTML"
+          code={`<div class="app">
+  <header class="app-header">
+    <span class="app-title">App-Name</span>
+    <nav class="app-nav">Menü</nav>
+  </header>
+
+  <main class="app-content">
+    <span class="screen-label">Screen: Übersicht</span>
+    <!-- Inhalt grob als Blöcke skizzieren -->
+    <div class="block"></div>
+    <div class="block"></div>
+  </main>
+</div>`}
+        />
 
       </div>
 

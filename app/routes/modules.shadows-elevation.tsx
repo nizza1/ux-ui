@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -45,6 +46,7 @@ export default function ShadowsElevationModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
+          <BuildsOn modules={"09"} />
           <LearningGoals
             goals={[
               "Verstehen, warum Schatten mehr als Dekoration sind — sie kommunizieren Elevation und Hierarchie",
@@ -184,6 +186,16 @@ export default function ShadowsElevationModule() {
   <div style="width: 120px; height: 120px; background: white; border-radius: 8px; box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);"></div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Elevation mit zwei Schatten</h3>
+        <CodeBlock language="CSS" code={`:root {
+  /* Zwei Schatten: scharfe Nähe + weicher Umgebungsschatten */
+  --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.06), 0 1px 3px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 2px 4px hsl(0 0% 0% / 0.06), 0 4px 12px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0 4px 8px hsl(0 0% 0% / 0.06), 0 12px 28px hsl(0 0% 0% / 0.12);
+}
+.card { box-shadow: var(--shadow-sm); transition: box-shadow .2s; }
+.card:hover { box-shadow: var(--shadow-md); }`} />
         </section>
 
 

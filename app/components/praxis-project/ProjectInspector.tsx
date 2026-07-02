@@ -3,10 +3,12 @@ import {
     ChevronLeft, ChevronRight, Plus, Trash2, Palette, Ruler,
     Layers, Type, Sparkles, Settings2, MousePointerClick, Search as SearchIcon,
     RotateCcw, ChevronDown, ChevronRight as ChevronRightSm,
+    BarChart3, PieChart, Activity,
 } from "lucide-react";
 import type {
     DesignToken, SelectedElementInfo, StyleOverride, TokenCategory,
     SelectedIconInfo, IconOverride, IconVariant, TreeNode, BreadcrumbCrumb,
+    SelectedChartInfo, ChartOverride,
 } from "./types";
 import { EDITABLE_PROPERTIES } from "./types";
 import { searchIcons, findIcon } from "./icon-catalog";
@@ -26,12 +28,21 @@ interface ProjectInspectorProps {
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
     onDeselect: () => void;
+    onSelectAllSimilar: (role: string) => void;
+    /** data-pp-role → number of elements carrying it */
+    roleCounts: Record<string, number>;
 
     /** Icon-edit mode (mutually exclusive with element-edit) */
     selectedIcon: SelectedIconInfo | null;
     iconOverride: Partial<IconOverride> | undefined;
     onUpdateIcon: (patch: Partial<IconOverride>) => void;
     onResetIcon: () => void;
+
+    /** Chart-edit mode (mutually exclusive with element/icon-edit) */
+    selectedChart: SelectedChartInfo | null;
+    chartOverride: ChartOverride | undefined;
+    onUpdateChart: (patch: Partial<ChartOverride>) => void;
+    onResetChart: () => void;
 
     /** Layers panel: live DOM tree + breadcrumb + hover preview */
     tree: TreeNode | null;
@@ -61,11 +72,20 @@ export function ProjectInspector(props: ProjectInspectorProps) {
         collapsed, onToggleCollapsed,
         tokens, onAddToken, onUpdateToken, onRemoveToken,
         selectedElement, selectedList, elementOverrides, onSetProperty, onClearProperty, onDeselect,
+        onSelectAllSimilar, roleCounts,
         selectedIcon, iconOverride, onUpdateIcon, onResetIcon,
+        selectedChart, chartOverride, onUpdateChart, onResetChart,
         tree, breadcrumbs, onSelectBySelector, onHoverSelector,
     } = props;
 
     const [activeTab, setActiveTab] = useState<TabId>("design-system");
+
+    // Selecting anything on the canvas jumps to the editing tab, so a click
+    // always shows its editor without an extra tab switch.
+    const selectionKey = selectedElement?.selector ?? selectedIcon?.id ?? selectedChart?.id ?? null;
+    useEffect(() => {
+        if (selectionKey) setActiveTab("element");
+    }, [selectionKey]);
     const [openCats, setOpenCats] = useState<Record<TokenCategory, boolean>>({
         color: true,
         space: true,
@@ -76,9 +96,9 @@ export function ProjectInspector(props: ProjectInspectorProps) {
         "font-family": false,
     });
 
-    // When an icon is selected, the element tab becomes the icon editor.
+    // When an icon or chart is selected, the element tab becomes its editor.
     const effectiveTab: TabId = activeTab;
-    const anySelection = selectedList.length > 0 || Boolean(selectedIcon);
+    const anySelection = selectedList.length > 0 || Boolean(selectedIcon) || Boolean(selectedChart);
 
     return (
         <>
@@ -100,7 +120,7 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                                 onClick={() => setActiveTab("element")}
                             >
                                 <Settings2 size={13} />
-                                {selectedIcon ? "Icon" : "Element"}
+                                {selectedIcon ? "Icon" : selectedChart ? "Chart" : "Element"}
                                 {anySelection && (
                                     <span style={{
                                         width: 6, height: 6, borderRadius: "50%",
@@ -128,6 +148,15 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                                     onResetIcon={onResetIcon}
                                     onDeselect={onDeselect}
                                 />
+                            ) : selectedChart ? (
+                                <ChartEditorTab
+                                    selectedChart={selectedChart}
+                                    override={chartOverride}
+                                    tokens={tokens}
+                                    onUpdateChart={onUpdateChart}
+                                    onResetChart={onResetChart}
+                                    onDeselect={onDeselect}
+                                />
                             ) : (
                                 <ElementTab
                                     selectedElement={selectedElement}
@@ -137,6 +166,8 @@ export function ProjectInspector(props: ProjectInspectorProps) {
                                     onSetProperty={onSetProperty}
                                     onClearProperty={onClearProperty}
                                     onDeselect={onDeselect}
+                                    onSelectAllSimilar={onSelectAllSimilar}
+                                    roleCounts={roleCounts}
                                     tree={tree}
                                     breadcrumbs={breadcrumbs}
                                     onSelectBySelector={onSelectBySelector}
@@ -305,6 +336,7 @@ function toHexSafe(v: string): string {
 
 function ElementTab({
     selectedElement, selectedList, tokens, overrides, onSetProperty, onClearProperty, onDeselect,
+    onSelectAllSimilar, roleCounts,
     tree, breadcrumbs, onSelectBySelector, onHoverSelector,
 }: {
     selectedElement: SelectedElementInfo | null;
@@ -314,6 +346,8 @@ function ElementTab({
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
     onDeselect: () => void;
+    onSelectAllSimilar: (role: string) => void;
+    roleCounts: Record<string, number>;
     tree: TreeNode | null;
     breadcrumbs: BreadcrumbCrumb[];
     onSelectBySelector: (selector: string, additive?: boolean) => void;
@@ -337,8 +371,9 @@ function ElementTab({
                     </div>
                     <div className="pp-empty-title">No element selected</div>
                     <div className="pp-empty-text">
-                        Click an element in the dashboard or pick one from Layers above.
-                        Tip: Shift+Click to multi-select, Alt+Click selects the parent.
+                        Click a component in the dashboard or pick one from Layers above.
+                        ⌘/Ctrl+Click selects the exact element, Alt+Click the parent,
+                        Shift+Click multi-selects. Charts and icons open their own editor.
                     </div>
                 </div>
             ) : (
@@ -351,6 +386,8 @@ function ElementTab({
                     onSetProperty={onSetProperty}
                     onClearProperty={onClearProperty}
                     onDeselect={onDeselect}
+                    onSelectAllSimilar={onSelectAllSimilar}
+                    roleCounts={roleCounts}
                     onSelectBySelector={onSelectBySelector}
                 />
             )}
@@ -360,7 +397,7 @@ function ElementTab({
 
 function ElementBody({
     selectedElement, selectedList, breadcrumbs, tokens, overrides,
-    onSetProperty, onClearProperty, onDeselect, onSelectBySelector,
+    onSetProperty, onClearProperty, onDeselect, onSelectAllSimilar, roleCounts, onSelectBySelector,
 }: {
     selectedElement: SelectedElementInfo;
     selectedList: SelectedElementInfo[];
@@ -370,9 +407,12 @@ function ElementBody({
     onSetProperty: (property: string, value: string, tokenId?: string) => void;
     onClearProperty: (property: string) => void;
     onDeselect: () => void;
+    onSelectAllSimilar: (role: string) => void;
+    roleCounts: Record<string, number>;
     onSelectBySelector: (selector: string, additive?: boolean) => void;
 }) {
     const isMulti = selectedList.length > 1;
+    const similarCount = selectedElement.role ? (roleCounts[selectedElement.role] ?? 0) : 0;
     return (
         <>
             <div className="pp-element-head">
@@ -462,6 +502,18 @@ function ElementBody({
                             ×
                         </button>
                     </div>
+                )}
+
+                {!isMulti && selectedElement.role && similarCount > 1 && (
+                    <button
+                        type="button"
+                        className="pp-select-similar"
+                        onClick={() => onSelectAllSimilar(selectedElement.role!)}
+                        title={`Select every element with role "${selectedElement.role}" and edit them together`}
+                    >
+                        <Layers size={13} />
+                        Select all similar ({similarCount})
+                    </button>
                 )}
             </div>
 
@@ -639,6 +691,9 @@ function TreeRow({
                 <span className="pp-tree-tag">{node.tag}</span>
                 {node.iconId && (
                     <span className="pp-tree-meta pp-tree-meta--icon">icon</span>
+                )}
+                {node.chartId && (
+                    <span className="pp-tree-meta pp-tree-meta--chart">chart</span>
                 )}
                 {node.role && (
                     <span className="pp-tree-meta">[{node.role}]</span>
@@ -1043,5 +1098,347 @@ function IconEditorTab({
                 </div>
             </div>
         </>
+    );
+}
+
+/* ── Chart Editor Tab ───────────────────────────────────── */
+/* Optional per-chart shortcuts. Everything here writes `--ch-*` variables
+   scoped to the one chart — the chart, its card and its labels all remain
+   normal selectable elements for the generic property editor. */
+
+function ChartEditorTab({
+    selectedChart, override, tokens, onUpdateChart, onResetChart, onDeselect,
+}: {
+    selectedChart: SelectedChartInfo;
+    override: ChartOverride | undefined;
+    tokens: DesignToken[];
+    onUpdateChart: (patch: Partial<ChartOverride>) => void;
+    onResetChart: () => void;
+    onDeselect: () => void;
+}) {
+    const ov = override ?? {};
+    const type = selectedChart.type;
+    const TypeIcon = type === "bar" ? BarChart3 : type === "donut" ? PieChart : Activity;
+    const typeLabel = type === "bar" ? "Bar chart" : type === "donut" ? "Donut chart" : "Line chart";
+    const showDots = ov.showDots ?? true;
+    const showArea = ov.showArea ?? true;
+
+    return (
+        <>
+            <div className="pp-element-head">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+                        <div style={{
+                            width: 44, height: 44, flexShrink: 0,
+                            border: "1px solid var(--pp-border)",
+                            borderRadius: "var(--pp-radius-sm)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: "var(--pp-bg-surface)",
+                            color: "var(--pp-text-primary)",
+                        }}>
+                            <TypeIcon size={22} />
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                            <div className="pp-element-tag">{selectedChart.label}</div>
+                            <div className="pp-element-path" style={{ marginTop: 3 }}>{typeLabel}</div>
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 4 }}>
+                        <button type="button" className="pp-icon-btn" onClick={onResetChart} title="Reset all chart options">
+                            <RotateCcw size={12} />
+                        </button>
+                        <button type="button" className="pp-icon-btn" onClick={onDeselect} title="Deselect">
+                            ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Colors */}
+            <div className="pp-section">
+                <div className="pp-section-header" style={{ cursor: "default" }}>
+                    <span>Colors</span>
+                </div>
+                <div className="pp-section-body">
+                    <ChartColorRow
+                        label="Accent"
+                        value={ov.accent}
+                        tokens={tokens}
+                        onChange={(v) => onUpdateChart({ accent: v })}
+                    />
+                    {type === "bar" && (
+                        <ChartColorRow
+                            label="Base bars"
+                            value={ov.base}
+                            tokens={tokens}
+                            onChange={(v) => onUpdateChart({ base: v })}
+                        />
+                    )}
+                    {type === "donut" && (
+                        <>
+                            <ChartColorRow
+                                label="Segment 2"
+                                value={ov.seg2}
+                                tokens={tokens}
+                                onChange={(v) => onUpdateChart({ seg2: v })}
+                            />
+                            <ChartColorRow
+                                label="Segment 3"
+                                value={ov.seg3}
+                                tokens={tokens}
+                                onChange={(v) => onUpdateChart({ seg3: v })}
+                            />
+                            <ChartColorRow
+                                label="Segment 4"
+                                value={ov.seg4}
+                                tokens={tokens}
+                                onChange={(v) => onUpdateChart({ seg4: v })}
+                            />
+                            <div style={{ fontSize: 13, color: "var(--pp-text-tertiary)", lineHeight: 1.5, marginTop: 6 }}>
+                                Segment 1 uses the accent color. The legend swatches follow automatically.
+                            </div>
+                        </>
+                    )}
+                    {type === "sparkline" && (
+                        <div style={{ fontSize: 13, color: "var(--pp-text-tertiary)", lineHeight: 1.5, marginTop: 6 }}>
+                            The accent colors the line, dots and area fill.
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Per-type dimensions */}
+            {type === "bar" && (
+                <>
+                    <ChartRangeSection
+                        label="Bar radius"
+                        value={ov.barRadius}
+                        fallback={0}
+                        min={0}
+                        max={12}
+                        presets={[0, 2, 4, 6, 8]}
+                        onChange={(v) => onUpdateChart({ barRadius: v })}
+                        onClear={() => onUpdateChart({ barRadius: undefined })}
+                    />
+                    <ChartRangeSection
+                        label="Bar gap"
+                        value={ov.barGap}
+                        fallback={0}
+                        min={0}
+                        max={16}
+                        presets={[0, 2, 4, 8, 12]}
+                        onChange={(v) => onUpdateChart({ barGap: v })}
+                        onClear={() => onUpdateChart({ barGap: undefined })}
+                    />
+                </>
+            )}
+            {type === "donut" && (
+                <ChartRangeSection
+                    label="Ring width"
+                    value={ov.ringWidth}
+                    fallback={16}
+                    min={6}
+                    max={40}
+                    presets={[10, 16, 24, 32]}
+                    onChange={(v) => onUpdateChart({ ringWidth: v })}
+                    onClear={() => onUpdateChart({ ringWidth: undefined })}
+                />
+            )}
+            {type === "sparkline" && (
+                <>
+                    <ChartRangeSection
+                        label="Line width"
+                        value={ov.strokeWidth}
+                        fallback={2}
+                        min={0.5}
+                        max={6}
+                        step={0.25}
+                        unit=""
+                        presets={[1, 2, 3, 4]}
+                        onChange={(v) => onUpdateChart({ strokeWidth: v })}
+                        onClear={() => onUpdateChart({ strokeWidth: undefined })}
+                    />
+                    <div className="pp-section">
+                        <div className="pp-section-header" style={{ cursor: "default" }}>
+                            <span>Show</span>
+                        </div>
+                        <div className="pp-section-body">
+                            <div className="pp-variant-row">
+                                <button
+                                    type="button"
+                                    className={`pp-variant-btn ${showDots ? "pp-variant-btn--active" : ""}`}
+                                    onClick={() => onUpdateChart({ showDots: !showDots })}
+                                >
+                                    Dots
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`pp-variant-btn ${showArea ? "pp-variant-btn--active" : ""}`}
+                                    onClick={() => onUpdateChart({ showArea: !showArea })}
+                                >
+                                    Area
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            <div style={{ padding: "12px 14px", fontSize: 13, color: "var(--pp-text-tertiary)", lineHeight: 1.5 }}>
+                These options are optional shortcuts. The chart's card, labels and legend
+                stay normal elements — click them to style spacing, typography and colors.
+            </div>
+        </>
+    );
+}
+
+function ChartColorRow({
+    label, value, tokens, onChange,
+}: {
+    label: string;
+    value: StyleOverride | undefined;
+    tokens: DesignToken[];
+    onChange: (v: StyleOverride | undefined) => void;
+}) {
+    const colorTokens = tokens.filter((t) => t.category === "color");
+    const linkedToken = value?.tokenId ? tokens.find((t) => t.id === value.tokenId) : undefined;
+
+    const handleTextChange = (v: string) => {
+        onChange(v === "" ? undefined : { value: v });
+    };
+
+    return (
+        <div className="pp-prop-row">
+            <span className="pp-prop-label">{label}</span>
+            <div className="pp-prop-value">
+                {value?.tokenId ? (
+                    <>
+                        <span className="pp-var-badge" title={linkedToken?.value}>
+                            --{linkedToken?.name}
+                        </span>
+                        <button
+                            type="button"
+                            className="pp-icon-btn"
+                            onClick={() => onChange(undefined)}
+                            title="Unlink token"
+                        >
+                            ×
+                        </button>
+                    </>
+                ) : (
+                    <div className="pp-prop-with-var">
+                        {value?.value ? (
+                            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                <input
+                                    type="color"
+                                    className="pp-color-swatch"
+                                    value={toHexSafe(value.value)}
+                                    onChange={(e) => handleTextChange(e.target.value)}
+                                />
+                                <input
+                                    className="pp-token-input"
+                                    value={value.value}
+                                    placeholder="default"
+                                    onChange={(e) => handleTextChange(e.target.value)}
+                                    spellCheck={false}
+                                />
+                            </div>
+                        ) : (
+                            <input
+                                className="pp-token-input"
+                                value=""
+                                placeholder="default"
+                                onChange={(e) => handleTextChange(e.target.value)}
+                                spellCheck={false}
+                            />
+                        )}
+                        <select
+                            className="pp-var-select"
+                            value=""
+                            onChange={(e) => {
+                                const tok = tokens.find((t) => t.id === e.target.value);
+                                if (tok) onChange({ value: `var(--tok-${tok.name})`, tokenId: tok.id });
+                            }}
+                            title="Assign a token"
+                        >
+                            <option value="">var…</option>
+                            {colorTokens.length === 0 ? (
+                                <option disabled>No color tokens</option>
+                            ) : (
+                                colorTokens.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                        --{t.name} ({t.value})
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function ChartRangeSection({
+    label, value, fallback, min, max, step = 1, unit = "px", presets, onChange, onClear,
+}: {
+    label: string;
+    value: number | undefined;
+    fallback: number;
+    min: number;
+    max: number;
+    step?: number;
+    unit?: string;
+    presets?: number[];
+    onChange: (v: number) => void;
+    onClear: () => void;
+}) {
+    const current = value ?? fallback;
+    return (
+        <div className="pp-section">
+            <div className="pp-section-header" style={{ cursor: "default" }}>
+                <span>{label}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontFamily: "var(--pp-font-mono)", color: "var(--pp-text-tertiary)" }}>
+                        {value === undefined ? "default" : `${current}${unit}`}
+                    </span>
+                    {value !== undefined && (
+                        <button
+                            type="button"
+                            className="pp-icon-btn"
+                            onClick={onClear}
+                            title="Reset to default"
+                        >
+                            ×
+                        </button>
+                    )}
+                </span>
+            </div>
+            <div className="pp-section-body">
+                <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={current}
+                    onChange={(e) => onChange(parseFloat(e.target.value))}
+                    className="pp-range"
+                />
+                {presets && (
+                    <div className="pp-preset-row">
+                        {presets.map((p) => (
+                            <button
+                                key={p}
+                                type="button"
+                                className={`pp-preset-btn ${value === p ? "pp-preset-btn--active" : ""}`}
+                                onClick={() => onChange(p)}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }

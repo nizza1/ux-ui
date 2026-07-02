@@ -61,21 +61,115 @@
 .pp-canvas {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   background: var(--pp-bg-elevated);
   padding: 24px;
   overflow: auto;
   display: flex;
 }
 
-.pp-canvas--inspecting .pp-dashboard *:hover {
+.pp-canvas--inspecting .pp-dashboard * {
+  cursor: pointer;
+}
+
+/* Snap mode (default): highlight the innermost labeled component under the
+   cursor — the element a plain click would select. */
+.pp-canvas--inspecting:not(.pp-canvas--deep) .pp-dashboard
+  :is([data-pp-role], [data-pp-chart-id], [data-pp-icon-id]):hover:not(
+    :has(:is([data-pp-role], [data-pp-chart-id], [data-pp-icon-id]):hover)
+  ) {
   outline: 1px dashed var(--pp-accent);
   outline-offset: 1px;
-  cursor: pointer;
+}
+
+/* Deep mode (Cmd/Ctrl held): highlight the exact leaf element. */
+.pp-canvas--inspecting.pp-canvas--deep .pp-dashboard *:hover {
+  outline: 1px dashed var(--pp-accent);
+  outline-offset: 1px;
 }
 
 .pp-canvas--inspecting .pp-dashboard [data-pp-selected="true"] {
   outline: 2px solid var(--pp-accent) !important;
   outline-offset: 1px;
+}
+
+/* Structure guides: view-only outlines around all labeled components,
+   never part of the user's generated styles. */
+.pp-canvas--guides .pp-dashboard :is([data-pp-role], [data-pp-chart-id]) {
+  outline: 1px dashed color-mix(in srgb, var(--pp-accent) 45%, transparent);
+  outline-offset: -1px;
+}
+
+/* ── Workbench: toolbar / canvas / status bar column ── */
+
+.pp-workbench {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pp-canvas-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--pp-border);
+  background: var(--pp-bg-surface);
+}
+
+.pp-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-bg-surface);
+  color: var(--pp-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pp-toolbar-btn:hover {
+  background: var(--pp-bg-hover);
+}
+
+.pp-toolbar-btn--active {
+  color: var(--pp-accent);
+  border-color: var(--pp-accent-border);
+  background: var(--pp-accent-dim);
+}
+
+.pp-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-top: 1px solid var(--pp-border);
+  background: var(--pp-bg-surface);
+  font-size: 13px;
+  color: var(--pp-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pp-statusbar-target {
+  font-family: var(--pp-font-mono);
+  font-size: 13px;
+  color: var(--pp-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pp-statusbar-hint {
+  margin-left: auto;
+  color: var(--pp-text-tertiary);
+  flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════
@@ -361,6 +455,11 @@
   display: block;
 }
 
+.d-actions {
+  display: flex;
+  gap: var(--d-space-2);
+}
+
 /* Grid of widgets */
 .d-grid {
   display: grid;
@@ -416,11 +515,15 @@
   border-bottom-color: var(--d-color-accent);
 }
 
-/* Bar chart */
+/* Bar chart.
+   Charts consume optional per-chart options via `--ch-*` custom properties
+   (emitted on [data-pp-chart-scope] by the inspector's chart editor).
+   Every fallback equals the neutral default, so an untouched chart renders
+   exactly as before. */
 .d-chart {
   display: flex;
   align-items: flex-end;
-  gap: var(--d-space-2);
+  gap: var(--ch-bar-gap, var(--d-space-2));
   height: 180px;
   padding-top: var(--d-space-2);
 }
@@ -445,12 +548,13 @@
 
 .d-bar {
   width: 100%;
-  background: currentColor;
-  opacity: 0.7;
+  background: var(--ch-base, currentColor);
+  opacity: var(--ch-base-op, 0.7);
+  border-radius: var(--ch-bar-radius, 0);
 }
 
 .d-bar--alt {
-  background: var(--d-color-accent);
+  background: var(--ch-accent, var(--d-color-accent));
   opacity: 1;
 }
 
@@ -466,18 +570,20 @@
 }
 
 .d-sparkline path.area {
-  fill: var(--d-color-accent);
+  fill: var(--ch-accent, var(--d-color-accent));
   opacity: 0.15;
+  visibility: var(--ch-area, visible);
 }
 
 .d-sparkline path.line {
   fill: none;
-  stroke: var(--d-color-accent);
-  stroke-width: 2;
+  stroke: var(--ch-accent, var(--d-color-accent));
+  stroke-width: var(--ch-stroke, 2);
 }
 
 .d-sparkline circle {
-  fill: var(--d-color-accent);
+  fill: var(--ch-accent, var(--d-color-accent));
+  visibility: var(--ch-dots, visible);
 }
 
 /* Donut */
@@ -491,6 +597,32 @@
   width: 120px;
   height: 120px;
   flex-shrink: 0;
+}
+
+/* Donut segments — CSS wins over the SVG presentation attributes, which stay
+   in the markup as the neutral defaults. Segment 1 = accent. */
+.d-donut-svg circle {
+  stroke-width: var(--ch-ring, 16px);
+}
+
+.d-donut-svg circle:nth-of-type(1) {
+  stroke: var(--ch-accent, var(--d-color-accent));
+  stroke-opacity: 1;
+}
+
+.d-donut-svg circle:nth-of-type(2) {
+  stroke: var(--ch-seg-2, currentColor);
+  stroke-opacity: var(--ch-seg-2-op, 0.7);
+}
+
+.d-donut-svg circle:nth-of-type(3) {
+  stroke: var(--ch-seg-3, currentColor);
+  stroke-opacity: var(--ch-seg-3-op, 0.4);
+}
+
+.d-donut-svg circle:nth-of-type(4) {
+  stroke: var(--ch-seg-4, currentColor);
+  stroke-opacity: var(--ch-seg-4-op, 0.2);
 }
 
 .d-legend {
@@ -522,10 +654,11 @@
   flex-shrink: 0;
 }
 
-.d-swatch--accent { background: var(--d-color-accent); }
-.d-swatch--a { background: currentColor; opacity: 0.7; }
-.d-swatch--b { background: currentColor; opacity: 0.4; }
-.d-swatch--c { background: currentColor; opacity: 0.2; }
+/* Legend swatches mirror the donut segment colors (same --ch-* scope). */
+.d-swatch--accent { background: var(--ch-accent, var(--d-color-accent)); }
+.d-swatch--a { background: var(--ch-seg-2, currentColor); opacity: var(--ch-seg-2-op, 0.7); }
+.d-swatch--b { background: var(--ch-seg-3, currentColor); opacity: var(--ch-seg-3-op, 0.4); }
+.d-swatch--c { background: var(--ch-seg-4, currentColor); opacity: var(--ch-seg-4-op, 0.2); }
 
 /* Table */
 .d-table {
@@ -1221,6 +1354,33 @@
   background: color-mix(in srgb, var(--pp-accent) 10%, transparent);
   padding: 0 4px;
   border-radius: 3px;
+}
+
+.pp-tree-meta--chart {
+  color: color-mix(in srgb, var(--pp-accent) 60%, var(--pp-text-tertiary));
+  background: color-mix(in srgb, var(--pp-accent) 10%, transparent);
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+/* "Select all similar" button in the element header */
+.pp-select-similar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border: 1px solid var(--pp-accent-border);
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-accent-dim);
+  color: var(--pp-accent);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pp-select-similar:hover {
+  background: color-mix(in srgb, var(--pp-accent) 16%, transparent);
 }
 
 .pp-tree-text {

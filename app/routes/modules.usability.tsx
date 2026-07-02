@@ -6,9 +6,9 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "usability";
@@ -144,211 +144,6 @@ function UCDCycle() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Onboarding-Screen</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f0f4f8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 32px;
-    max-width: 420px;
-    width: 100%;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-  /* TODO: Mache die Schrittnummer visuell prominenter */
-  .step-indicator {
-    font-size: 12px;
-    color: #aaa;
-    margin-bottom: 16px;
-  }
-  h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 8px;
-    /* TODO: Erhöhe den Zeilenabstand für bessere Lesbarkeit */
-    line-height: 1.1;
-  }
-  p {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 24px;
-  }
-  .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-  /* TODO: Mache die Options-Buttons erkennbar klickbar */
-  .option-btn {
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    text-align: left;
-    font-size: 14px;
-    color: #333;
-    background: white;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .option-btn:hover { background: #f5f5f5; }
-  .option-btn.selected {
-    border-color: #0ea5a0;
-    background: rgba(14,165,160,0.05);
-    color: #0ea5a0;
-    font-weight: 600;
-  }
-  /* TODO: Mache den CTA-Button primär und sichtbar */
-  .cta-btn {
-    width: 100%;
-    padding: 10px;
-    background: #ddd;
-    color: #888;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  /* BONUS: Füge einen Fortschrittsbalken oben hinzu */
-</style>
-</head>
-<body>
-  <div class="card">
-    <div class="step-indicator">Schritt 1 von 3</div>
-    <h1>Was ist dein Hauptziel mit unserem Tool?</h1>
-    <p>Wir personalisieren deine Erfahrung basierend auf deinen Antworten.</p>
-    <div class="options">
-      <button class="option-btn selected" onclick="this.classList.toggle('selected')">🎨 Designs erstellen</button>
-      <button class="option-btn" onclick="this.classList.toggle('selected')">👥 Im Team zusammenarbeiten</button>
-      <button class="option-btn" onclick="this.classList.toggle('selected')">📊 Präsentationen bauen</button>
-      <button class="option-btn" onclick="this.classList.toggle('selected')">🚀 Prototypen entwickeln</button>
-    </div>
-    <button class="cta-btn">Weiter →</button>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "cta-bg",
-    property: "backgroundColor",
-    label: "CTA-Button Farbe",
-    type: "color",
-    target: ".cta-btn",
-    group: "colors",
-    defaultValue: "#dddddd",
-  },
-  {
-    id: "cta-color",
-    property: "color",
-    label: "CTA-Button Textfarbe",
-    type: "color",
-    target: ".cta-btn",
-    group: "colors",
-    defaultValue: "#888888",
-  },
-  {
-    id: "cta-padding",
-    property: "paddingTop",
-    label: "CTA Padding (oben/unten)",
-    type: "slider",
-    target: ".cta-btn",
-    group: "spacing",
-    defaultValue: 10,
-    min: 8,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "h1-line-height",
-    property: "lineHeight",
-    label: "Überschrift Zeilenhöhe",
-    type: "slider",
-    target: "h1",
-    group: "typography",
-    defaultValue: 1.1,
-    min: 1.0,
-    max: 1.5,
-    step: 0.05,
-    unit: "",
-  },
-  {
-    id: "step-font-size",
-    property: "fontSize",
-    label: "Schrittnummer Größe",
-    type: "slider",
-    target: ".step-indicator",
-    group: "typography",
-    defaultValue: 12,
-    min: 11,
-    max: 15,
-    step: 1,
-    unit: "px",
-  },
-  {
-    id: "step-color",
-    property: "color",
-    label: "Schrittnummer Farbe",
-    type: "color",
-    target: ".step-indicator",
-    group: "colors",
-    defaultValue: "#aaaaaa",
-  },
-  {
-    id: "option-border-radius",
-    property: "borderRadius",
-    label: "Options-Rundung",
-    type: "slider",
-    target: ".option-btn",
-    group: "borders",
-    defaultValue: 8,
-    min: 0,
-    max: 24,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "gap",
-    property: "gap",
-    label: "Abstand zwischen Optionen",
-    type: "slider",
-    target: ".options",
-    group: "spacing",
-    defaultValue: 8,
-    min: 4,
-    max: 16,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "card-radius",
-    property: "borderRadius",
-    label: "Karten-Rundung",
-    type: "slider",
-    target: ".card",
-    group: "borders",
-    defaultValue: 12,
-    min: 0,
-    max: 24,
-    step: 4,
-    unit: "px",
-  },
-];
-
 export default function UsabilityModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -371,6 +166,7 @@ export default function UsabilityModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"00"} />
         <LearningGoals
           goals={[
             "Usability mit Nielsens fünf Komponenten definieren und messen können",

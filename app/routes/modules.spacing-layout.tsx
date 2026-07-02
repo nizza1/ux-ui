@@ -9,6 +9,7 @@ import { AnnotationGrid } from "~/components/ui/AnnotationGrid";
 import { ExplanationBox } from "~/components/ui/ExplanationBox";
 import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 export async function loader() {
   const slug = "spacing-layout";
@@ -48,6 +49,7 @@ export default function SpacingLayoutModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"08"} />
         <LearningGoals
           goals={[
             "Das 8px-Grid-System verstehen und in CSS direkt anwenden können",

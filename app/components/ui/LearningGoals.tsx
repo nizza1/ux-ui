@@ -7,7 +7,7 @@ interface LearningGoalsProps {
 
 export function LearningGoals({ goals, className = "" }: LearningGoalsProps) {
   return (
-    <div className={`bg-(--bg-surface) border border-(--bg-elevated) rounded-2xl p-6 mb-8 ${className}`}>
+    <div className={`bg-(--bg-surface) border border-(--bg-elevated) rounded-2xl p-6 mb-8 shadow-(--shadow-sm) ${className}`}>
       <div className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent) mb-4 flex items-center gap-2">
         <Target size={14} />
         Lernziele

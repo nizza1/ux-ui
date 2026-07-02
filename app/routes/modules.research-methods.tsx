@@ -6,9 +6,9 @@ import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "research-methods";
@@ -75,206 +75,6 @@ function ResearchMatrix() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forschungs-Dashboard</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f5f7fa;
-    padding: 24px;
-    min-height: 100vh;
-  }
-  h1 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 4px;
-  }
-  .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  /* TODO: Mache die Karten visuell unterscheidbar je nach Methodentyp */
-  .method-card {
-    background: white;
-    border-radius: 8px;
-    padding: 16px;
-    border: 1px solid #e5e7eb;
-  }
-  .method-type {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #aaa;
-    margin-bottom: 6px;
-  }
-  .method-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 6px;
-  }
-  .method-desc {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 10px;
-  }
-  /* TODO: Gib dem Tag einen Farb-Akzent passend zum Typ */
-  .method-tag {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    background: #eee;
-    color: #777;
-  }
-  /* BONUS: Füge einen hover-Effekt auf die Karten hinzu */
-</style>
-</head>
-<body>
-  <h1>Nutzerforschung-Methoden</h1>
-  <p class="subtitle">Wähle die richtige Methode für deine Forschungsfrage</p>
-  <div class="grid">
-    <div class="method-card">
-      <div class="method-type">Qualitativ · Generativ</div>
-      <div class="method-name">Nutzerinterviews</div>
-      <div class="method-desc">Einzelgespräche, um Motivationen und mentale Modelle zu verstehen.</div>
-      <span class="method-tag">Warum & Wie</span>
-    </div>
-    <div class="method-card">
-      <div class="method-type">Qualitativ · Evaluativ</div>
-      <div class="method-name">Usability-Tests</div>
-      <div class="method-desc">Nutzer erledigen Aufgaben mit dem Produkt — du beobachtest.</div>
-      <span class="method-tag">Wo bricht ab</span>
-    </div>
-    <div class="method-card">
-      <div class="method-type">Quantitativ · Generativ</div>
-      <div class="method-name">Umfragen</div>
-      <div class="method-desc">Viele Nutzer schnell erreichen für messbare Antworten.</div>
-      <span class="method-tag">Wie viele</span>
-    </div>
-    <div class="method-card">
-      <div class="method-type">Quantitativ · Evaluativ</div>
-      <div class="method-name">Analytics & Heatmaps</div>
-      <div class="method-desc">Was Nutzer tatsächlich tun — nicht was sie sagen.</div>
-      <span class="method-tag">Was & Wo</span>
-    </div>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "card-border-color",
-    property: "borderColor",
-    label: "Karten-Rahmenfarbe",
-    type: "color",
-    target: ".method-card",
-    group: "colors",
-    defaultValue: "#e5e7eb",
-  },
-  {
-    id: "card-shadow",
-    property: "boxShadow",
-    label: "Karten-Schatten",
-    type: "select",
-    target: ".method-card",
-    group: "shadows",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Subtil", value: "0 1px 6px rgba(0,0,0,0.06)" },
-      { label: "Mittel", value: "0 2px 12px rgba(0,0,0,0.1)" },
-    ],
-  },
-  {
-    id: "card-radius",
-    property: "borderRadius",
-    label: "Karten-Rundung",
-    type: "slider",
-    target: ".method-card",
-    group: "borders",
-    defaultValue: 8,
-    min: 0,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "card-padding",
-    property: "padding",
-    label: "Karten-Padding",
-    type: "slider",
-    target: ".method-card",
-    group: "spacing",
-    defaultValue: 16,
-    min: 12,
-    max: 28,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "tag-bg",
-    property: "backgroundColor",
-    label: "Tag Hintergrundfarbe",
-    type: "color",
-    target: ".method-tag",
-    group: "colors",
-    defaultValue: "#eeeeee",
-  },
-  {
-    id: "tag-color",
-    property: "color",
-    label: "Tag Textfarbe",
-    type: "color",
-    target: ".method-tag",
-    group: "colors",
-    defaultValue: "#777777",
-  },
-  {
-    id: "tag-radius",
-    property: "borderRadius",
-    label: "Tag Rundung",
-    type: "slider",
-    target: ".method-tag",
-    group: "borders",
-    defaultValue: 20,
-    min: 2,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "gap",
-    property: "gap",
-    label: "Grid-Abstand",
-    type: "slider",
-    target: ".grid",
-    group: "spacing",
-    defaultValue: 12,
-    min: 4,
-    max: 24,
-    step: 4,
-    unit: "px",
-  },
-  {
-    id: "method-type-color",
-    property: "color",
-    label: "Typ-Label Farbe",
-    type: "color",
-    target: ".method-type",
-    group: "colors",
-    defaultValue: "#aaaaaa",
-  },
-];
-
 export default function ResearchMethodsModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -297,6 +97,7 @@ export default function ResearchMethodsModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"01"} />
         <LearningGoals
           goals={[
             "Den Unterschied zwischen qualitativer und quantitativer Forschung erklären",

@@ -9,7 +9,11 @@ interface PanelProps {
 function Panel({ label, variant, children }: PanelProps) {
   const isGood = variant === "good";
   return (
-    <div className="bg-(--bg-surface) border border-(--bg-elevated) rounded-xl overflow-hidden">
+    <div
+      className={`bg-(--bg-surface) border border-(--bg-elevated) rounded-xl overflow-hidden ${
+        isGood ? "shadow-(--shadow-md)" : "shadow-none"
+      }`}
+    >
       <div
         className="h-0.75 w-full"
         style={{

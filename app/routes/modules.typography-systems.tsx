@@ -6,6 +6,7 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { InsightRow } from "~/components/ui/InsightRow";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
@@ -322,6 +323,7 @@ export default function TypographySystemsModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"10"} />
         <LearningGoals
           goals={[
             "Eine Type Scale definieren und erklären, warum lineare Skalen nicht funktionieren",

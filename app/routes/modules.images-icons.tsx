@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -44,6 +45,7 @@ export default function ImagesIconsModule() {
 
         {/* Learning Goals */}
         <div className="px-4 pb-8 sm:px-6">
+          <BuildsOn modules={"09"} />
           <LearningGoals
             goals={[
               "Vektor (SVG) vs. Pixel (PNG/JPG/WebP) — wann du welches Format einsetzt",
@@ -234,6 +236,21 @@ export default function ImagesIconsModule() {
   </div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — lesbarer Text über Bildern</h3>
+        <CodeBlock language="CSS" code={`/* Overlay-Gradient sichert Lesbarkeit auf jedem Bild */
+.hero {
+  position: relative;
+  background: url('photo.jpg') center/cover;
+}
+.hero::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(transparent, hsl(0 0% 0% / 0.6));
+}
+.hero h2 { position: relative; z-index: 1; color: #fff; }
+
+/* Icons: einheitliche Stroke-Breite */
+.icon { width: 24px; height: 24px; stroke-width: 1.75; }`} />
         </section>
 
 

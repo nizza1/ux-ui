@@ -4,10 +4,12 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
 import { ComparisonPanel } from "~/components/ui/ComparisonPanel";
+import { CodeBlock } from "~/components/ui/CodeBlock";
 import { ModuleNav } from "~/routes/modules.$slug";
 import { LiveEditor } from "~/components/live-editor/LiveEditor";
 
@@ -43,6 +45,7 @@ export default function ColorSystemsModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
+          <BuildsOn modules={"09"} />
           <LearningGoals
             goals={[
               "Farbformate verstehen: HEX, RGB, HSL, HSB — wann nutzt du welches?",
@@ -247,12 +250,33 @@ export default function ColorSystemsModule() {
               <li><strong>Bonus:</strong> Passe die Sättigung an — hellere und dunklere Töne etwas stärker sättigen</li>
             </ul>
           </div>
+
+          <h3 className="font-semibold text-(--text-primary) mt-8 mb-3">Zum Mitnehmen — HSL-Farbsystem als CSS-Variablen</h3>
+          <p className="text-(--text-secondary) text-sm mb-3">Kopiere dieses Grundgerüst in dein eigenes Projekt und passe Hue & Sättigung an.</p>
+          <CodeBlock
+            language="CSS"
+            code={`:root {
+  /* Eine Farbfamilie über HSL — nur Lightness variiert */
+  --blue-100: hsl(213, 94%, 95%);
+  --blue-300: hsl(213, 94%, 78%);
+  --blue-500: hsl(213, 90%, 58%);
+  --blue-700: hsl(213, 80%, 42%);
+  --blue-900: hsl(213, 70%, 26%);
+
+  /* Grautöne mit leichtem (kühlem) Farbstich */
+  --gray-100: hsl(213, 12%, 96%);
+  --gray-500: hsl(213, 8%, 56%);
+  --gray-900: hsl(213, 14%, 16%);
+}
+
+.alert {
+  background: var(--blue-100);
+  border: 1px solid var(--blue-300);
+  color: var(--blue-900);
+}`}
+          />
         </section>
       </div>
-
-
-
-      {/* Navigation */}
 
       <ModuleNav prevModule={prevModule} nextModule={nextModule} />
 

@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -46,6 +47,7 @@ export default function ColorContrastModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
+          <BuildsOn modules={"12"} />
           <LearningGoals
             goals={[
               "Das Contrast Ratio verstehen und selbst berechnen können",
@@ -249,6 +251,14 @@ export default function ColorContrastModule() {
   </div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Kontrast prüfen & sicherstellen</h3>
+        <CodeBlock language="CSS" code={`/* WCAG AA: Text ≥ 4.5:1, große Schrift & UI ≥ 3:1 */
+.text-on-light { color: hsl(213, 30%, 20%); } /* dunkel auf hell */
+.text-on-dark  { color: hsl(213, 30%, 92%); } /* hell auf dunkel */
+
+/* Statt grau auf Farbe: gleicher Hue, höhere Lightness */
+.subtle-on-accent { color: hsl(213, 40%, 80%); }`} />
         </section>
       </div>
 

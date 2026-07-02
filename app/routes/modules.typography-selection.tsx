@@ -13,6 +13,7 @@ import { ModuleNav } from "~/routes/modules.$slug";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { InsightRow } from "~/components/ui/InsightRow";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
@@ -333,6 +334,7 @@ export default function TypographySelectionModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"09"} />
         <LearningGoals
           goals={[
             "Den Unterschied zwischen Serif, Sans-Serif und Monospace erklären und wissen, wann welche Kategorie passt",
@@ -673,6 +675,16 @@ export default function TypographySelectionModule() {
           html={EXERCISE_HTML}
           controls={EXERCISE_CONTROLS}
         />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — lesbare Schrift-Defaults</h3>
+        <CodeBlock language="CSS" code={`body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;       /* nie unter 16px für Fließtext */
+  line-height: 1.6;      /* 1.5–1.7 für gute Lesbarkeit */
+  color: var(--text-primary);
+}
+h1 { font-size: 2rem;  line-height: 1.2; font-weight: 700; }
+p  { max-width: 65ch; } /* 45–75 Zeichen pro Zeile */`} />
 
 
 

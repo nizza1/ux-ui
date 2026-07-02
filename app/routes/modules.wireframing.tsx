@@ -5,9 +5,9 @@ import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptList, ConceptItem } from "~/components/ui/ConceptList";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "wireframing";
@@ -28,74 +28,74 @@ function LoFiWireframe() {
         </p>
         <span className="font-mono text-[10px] text-(--text-ghost)">Keine Farbe, keine Styles</span>
       </div>
-      <div className="p-4 bg-white dark:bg-(--bg-surface)">
+      <div className="p-4 bg-(--bg-surface)">
         {/* Search bar */}
-        <div className="border-2 border-gray-300 rounded h-9 flex items-center px-3 mb-4">
-          <div className="h-2 bg-gray-200 rounded w-32" />
-          <div className="ml-auto h-6 w-14 bg-gray-300 rounded flex items-center justify-center">
-            <span className="text-[10px] text-gray-500 font-mono">Suchen</span>
+        <div className="border-2 border-(--bg-elevated) rounded h-9 flex items-center px-3 mb-4">
+          <div className="h-2 bg-(--bg-elevated) rounded w-32" />
+          <div className="ml-auto h-6 w-14 bg-(--bg-elevated) rounded flex items-center justify-center">
+            <span className="text-[10px] text-(--text-tertiary) font-mono">Suchen</span>
           </div>
         </div>
         <div className="flex gap-4">
           {/* Filter sidebar */}
           <div className="w-36 shrink-0">
-            <div className="border border-gray-300 rounded p-2 space-y-2">
-              <div className="h-2 bg-gray-200 rounded w-20" />
+            <div className="border border-(--bg-elevated) rounded p-2 space-y-2">
+              <div className="h-2 bg-(--bg-elevated) rounded w-20" />
               <div className="space-y-1.5">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 border border-gray-300 rounded-sm" />
-                    <div className="h-1.5 bg-gray-200 rounded" style={{ width: `${50 + i * 10}px` }} />
+                    <div className="w-3 h-3 border border-(--bg-elevated) rounded-sm" />
+                    <div className="h-1.5 bg-(--bg-elevated) rounded" style={{ width: `${50 + i * 10}px` }} />
                   </div>
                 ))}
               </div>
-              <div className="border-t border-gray-200 pt-2">
-                <div className="h-2 bg-gray-200 rounded w-16 mb-1.5" />
+              <div className="border-t border-(--bg-elevated) pt-2">
+                <div className="h-2 bg-(--bg-elevated) rounded w-16 mb-1.5" />
                 <div className="flex gap-1">
-                  <div className="flex-1 h-5 border border-gray-300 rounded" />
-                  <div className="w-2 h-5 bg-gray-200" />
-                  <div className="flex-1 h-5 border border-gray-300 rounded" />
+                  <div className="flex-1 h-5 border border-(--bg-elevated) rounded" />
+                  <div className="w-2 h-5 bg-(--bg-elevated)" />
+                  <div className="flex-1 h-5 border border-(--bg-elevated) rounded" />
                 </div>
               </div>
             </div>
             {/* Annotation */}
             <div className="mt-2 flex items-start gap-1">
-              <span className="text-[10px] text-blue-500 font-bold mt-0.5">①</span>
-              <p className="text-[10px] text-gray-500 leading-snug">Filter-Sidebar: kollabierbar auf Mobile</p>
+              <span className="text-[10px] text-(--accent) font-bold mt-0.5">①</span>
+              <p className="text-[10px] text-(--text-tertiary) leading-snug">Filter-Sidebar: kollabierbar auf Mobile</p>
             </div>
           </div>
           {/* Product grid */}
           <div className="flex-1">
             <div className="grid grid-cols-3 gap-2.5 mb-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="border border-gray-300 rounded p-2">
-                  <div className="bg-gray-100 rounded h-16 mb-2 flex items-center justify-center">
-                    <span className="text-[9px] text-gray-400 font-mono">Bild</span>
+                <div key={i} className="border border-(--bg-elevated) rounded p-2">
+                  <div className="bg-(--bg-elevated) rounded h-16 mb-2 flex items-center justify-center">
+                    <span className="text-[9px] text-(--text-ghost) font-mono">Bild</span>
                   </div>
-                  <div className="h-1.5 bg-gray-200 rounded mb-1 w-4/5" />
-                  <div className="h-1.5 bg-gray-200 rounded w-1/2" />
-                  <div className="mt-1.5 h-5 bg-gray-300 rounded flex items-center justify-center">
-                    <span className="text-[9px] text-gray-500 font-mono">In Warenkorb</span>
+                  <div className="h-1.5 bg-(--bg-elevated) rounded mb-1 w-4/5" />
+                  <div className="h-1.5 bg-(--bg-elevated) rounded w-1/2" />
+                  <div className="mt-1.5 h-5 bg-(--bg-elevated) rounded flex items-center justify-center">
+                    <span className="text-[9px] text-(--text-tertiary) font-mono">In Warenkorb</span>
                   </div>
                 </div>
               ))}
             </div>
             {/* Annotation */}
             <div className="flex items-start gap-1 mb-2">
-              <span className="text-[10px] text-blue-500 font-bold mt-0.5">②</span>
-              <p className="text-[10px] text-gray-500 leading-snug">Produktkarte: Bild, Titel, Preis, CTA — in dieser Reihenfolge</p>
+              <span className="text-[10px] text-(--accent) font-bold mt-0.5">②</span>
+              <p className="text-[10px] text-(--text-tertiary) leading-snug">Produktkarte: Bild, Titel, Preis, CTA — in dieser Reihenfolge</p>
             </div>
             {/* Pagination */}
             <div className="flex justify-center gap-1">
               {["←", "1", "2", "3", "→"].map((p) => (
-                <div key={p} className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center">
-                  <span className="text-[11px] text-gray-500">{p}</span>
+                <div key={p} className="w-7 h-7 border border-(--bg-elevated) rounded flex items-center justify-center">
+                  <span className="text-[11px] text-(--text-tertiary)">{p}</span>
                 </div>
               ))}
             </div>
             <div className="mt-1.5 flex items-start justify-center gap-1">
-              <span className="text-[10px] text-blue-500 font-bold">③</span>
-              <p className="text-[10px] text-gray-500">Paginierung: statt Infinite Scroll für E-Commerce</p>
+              <span className="text-[10px] text-(--accent) font-bold">③</span>
+              <p className="text-[10px] text-(--text-tertiary)">Paginierung: statt Infinite Scroll für E-Commerce</p>
             </div>
           </div>
         </div>
@@ -141,11 +141,11 @@ function MidFiWireframe() {
               <div className="border-t border-(--bg-hover) pt-2">
                 <p className="text-[12px] font-semibold text-(--text-primary) mb-1.5">Preis</p>
                 <div className="flex gap-1 items-center">
-                  <div className="flex-1 h-6 bg-white dark:bg-(--bg-surface) border border-(--bg-elevated) rounded text-center flex items-center justify-center">
+                  <div className="flex-1 h-6 bg-(--bg-base) border border-(--bg-elevated) rounded text-center flex items-center justify-center">
                     <span className="text-[11px] text-(--text-ghost)">€ 0</span>
                   </div>
                   <span className="text-[11px] text-(--text-ghost)">–</span>
-                  <div className="flex-1 h-6 bg-white dark:bg-(--bg-surface) border border-(--bg-elevated) rounded text-center flex items-center justify-center">
+                  <div className="flex-1 h-6 bg-(--bg-base) border border-(--bg-elevated) rounded text-center flex items-center justify-center">
                     <span className="text-[11px] text-(--text-ghost)">€ 500</span>
                   </div>
                 </div>
@@ -189,294 +189,6 @@ function MidFiWireframe() {
   );
 }
 
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-const EXERCISE_HTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wireframe Mid-Fi</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f5f7fa;
-    padding: 20px;
-    min-height: 100vh;
-  }
-  /* TODO: Mache den Wireframe-Rahmen klar als UI erkennbar */
-  .wireframe-shell {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    max-width: 640px;
-  }
-  .wf-header {
-    background: #eee;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .wf-logo { font-size: 13px; font-weight: 700; color: #444; }
-  .wf-nav { display: flex; gap: 8px; }
-  .wf-nav-item {
-    font-size: 12px;
-    color: #888;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: white;
-  }
-  .wf-body { padding: 16px; display: flex; gap: 12px; }
-  /* TODO: Mache die Filter-Sidebar visuell vom Content getrennt */
-  .wf-sidebar {
-    width: 140px;
-    flex-shrink: 0;
-    background: #f0f0f0;
-    border-radius: 6px;
-    padding: 12px;
-    space: 8px;
-  }
-  .wf-filter-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #555;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .wf-filter-item {
-    font-size: 12px;
-    color: #777;
-    padding: 3px 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .wf-checkbox {
-    width: 12px;
-    height: 12px;
-    border: 1px solid #bbb;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-  .wf-main { flex: 1; }
-  .wf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-  /* TODO: Erhöhe den Kontrast zwischen Kartenhintergrund und Page-Hintergrund */
-  .wf-card {
-    background: #f8f8f8;
-    border-radius: 6px;
-    padding: 8px;
-    border: 1px solid #e5e5e5;
-  }
-  .wf-img-placeholder {
-    background: #e0e0e0;
-    height: 60px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 6px;
-    font-size: 9px;
-    color: #999;
-    font-family: monospace;
-  }
-  .wf-text-line {
-    height: 8px;
-    background: #ddd;
-    border-radius: 2px;
-    margin-bottom: 4px;
-  }
-  /* TODO: Mache die Paginierung visuell erkennbar */
-  .wf-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-  }
-  .wf-page-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    background: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: #666;
-    cursor: pointer;
-    border: 1px solid #ddd;
-  }
-  .wf-page-btn.active {
-    /* TODO: Markiere die aktive Seite */
-    background: #ddd;
-  }
-  /* BONUS: Füge Anmerkungsmarker (① ② ③) zu wichtigen Elementen hinzu */
-</style>
-</head>
-<body>
-  <div class="wireframe-shell">
-    <div class="wf-header">
-      <span class="wf-logo">ShopName</span>
-      <div class="wf-nav">
-        <span class="wf-nav-item">Kategorien</span>
-        <span class="wf-nav-item">Angebote</span>
-        <span class="wf-nav-item">Konto</span>
-      </div>
-    </div>
-    <div class="wf-body">
-      <div class="wf-sidebar">
-        <div class="wf-filter-label">Kategorien</div>
-        <div class="wf-filter-item"><div class="wf-checkbox"></div>Alle (24)</div>
-        <div class="wf-filter-item"><div class="wf-checkbox"></div>Neu (8)</div>
-        <div class="wf-filter-item"><div class="wf-checkbox"></div>Angebote (5)</div>
-        <div style="margin-top:8px;">
-          <div class="wf-filter-label">Preis</div>
-          <div class="wf-filter-item">€ 0 — € 500</div>
-        </div>
-      </div>
-      <div class="wf-main">
-        <div class="wf-grid">
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:80%"></div>
-            <div class="wf-text-line" style="width:50%"></div>
-          </div>
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:70%"></div>
-            <div class="wf-text-line" style="width:40%"></div>
-          </div>
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:85%"></div>
-            <div class="wf-text-line" style="width:55%"></div>
-          </div>
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:75%"></div>
-            <div class="wf-text-line" style="width:45%"></div>
-          </div>
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:65%"></div>
-            <div class="wf-text-line" style="width:50%"></div>
-          </div>
-          <div class="wf-card">
-            <div class="wf-img-placeholder">Bild</div>
-            <div class="wf-text-line" style="width:80%"></div>
-            <div class="wf-text-line" style="width:35%"></div>
-          </div>
-        </div>
-        <div class="wf-pagination">
-          <div class="wf-page-btn">←</div>
-          <div class="wf-page-btn active">1</div>
-          <div class="wf-page-btn">2</div>
-          <div class="wf-page-btn">3</div>
-          <div class="wf-page-btn">→</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-
-const EXERCISE_CONTROLS: PropertyControl[] = [
-  {
-    id: "shell-shadow",
-    property: "boxShadow",
-    label: "Wireframe-Schatten",
-    type: "select",
-    target: ".wireframe-shell",
-    group: "shadows",
-    defaultValue: "none",
-    options: [
-      { label: "Kein", value: "none" },
-      { label: "Subtil", value: "0 2px 12px rgba(0,0,0,0.08)" },
-      { label: "Mittel", value: "0 4px 24px rgba(0,0,0,0.12)" },
-    ],
-  },
-  {
-    id: "card-bg",
-    property: "backgroundColor",
-    label: "Karten-Hintergrund",
-    type: "color",
-    target: ".wf-card",
-    group: "colors",
-    defaultValue: "#f8f8f8",
-  },
-  {
-    id: "card-border",
-    property: "borderColor",
-    label: "Karten-Rahmenfarbe",
-    type: "color",
-    target: ".wf-card",
-    group: "colors",
-    defaultValue: "#e5e5e5",
-  },
-  {
-    id: "sidebar-bg",
-    property: "backgroundColor",
-    label: "Sidebar-Hintergrund",
-    type: "color",
-    target: ".wf-sidebar",
-    group: "colors",
-    defaultValue: "#f0f0f0",
-  },
-  {
-    id: "active-page-bg",
-    property: "backgroundColor",
-    label: "Aktive Seite Hintergrund",
-    type: "color",
-    target: ".wf-page-btn.active",
-    group: "colors",
-    defaultValue: "#dddddd",
-  },
-  {
-    id: "active-page-color",
-    property: "color",
-    label: "Aktive Seite Textfarbe",
-    type: "color",
-    target: ".wf-page-btn.active",
-    group: "colors",
-    defaultValue: "#666666",
-  },
-  {
-    id: "header-bg",
-    property: "backgroundColor",
-    label: "Header-Hintergrund",
-    type: "color",
-    target: ".wf-header",
-    group: "colors",
-    defaultValue: "#eeeeee",
-  },
-  {
-    id: "card-gap",
-    property: "gap",
-    label: "Karten-Abstand",
-    type: "slider",
-    target: ".wf-grid",
-    group: "spacing",
-    defaultValue: 8,
-    min: 4,
-    max: 20,
-    step: 2,
-    unit: "px",
-  },
-  {
-    id: "card-radius",
-    property: "borderRadius",
-    label: "Karten-Rundung",
-    type: "slider",
-    target: ".wf-card",
-    group: "borders",
-    defaultValue: 6,
-    min: 0,
-    max: 16,
-    step: 2,
-    unit: "px",
-  },
-];
-
 export default function WireframingModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
 
@@ -498,6 +210,7 @@ export default function WireframingModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~20 Min." />
 
+        <BuildsOn modules={"06"} />
         <LearningGoals
           goals={[
             "Den Zweck eines Wireframes erklären – und wann er kein Mockup sein sollte",

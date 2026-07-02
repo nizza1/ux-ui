@@ -25,6 +25,9 @@ export default function PraxisProjectRoute() {
                     Spacing. Deine Aufgabe: definiere Variablen (Farben, Spacing-Skala, Radius, Typografie)
                     im <strong>Design&nbsp;System</strong>-Tab, klicke dann Elemente an und weise ihnen deine
                     Tokens zu — oder überschreibe Werte direkt. Der Inspector ist rechts, klappbar, volle Höhe.
+                    Ein Klick wählt immer die ganze Komponente (⌘/Strg+Klick für das exakte Element),
+                    „Select all similar" stylt alle gleichartigen Elemente auf einmal, Diagramme haben einen
+                    eigenen Editor (Akzentfarbe, Radius &amp; mehr) und „Structure" blendet Hilfslinien ein.
                 </p>
             </div>
             <PraxisProject />

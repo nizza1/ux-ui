@@ -8,7 +8,6 @@ import { RuleBox } from "~/components/ui/RuleBox";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { ImagePlaceholder } from "~/components/ui/ImagePlaceholder";
-import type { PropertyControl } from "~/components/live-editor/types";
 
 export async function loader() {
   const slug = "ux-ui-basics";
@@ -73,9 +72,6 @@ function UserJourneyFlow() {
     </div>
   );
 }
-
-// ── Practice HTML ─────────────────────────────────────────────────────────────
-
 
 export default function UxUiBasicsModule() {
   const { prevModule, nextModule } = useLoaderData<typeof loader>();
@@ -235,12 +231,12 @@ export default function UxUiBasicsModule() {
             label: "Schlechtes UI",
             children: (
               <div className="font-mono text-[12px] text-(--text-secondary) space-y-2 p-2">
-                <div className="border border-gray-300 p-1 text-gray-400 text-[11px]">email eingeben</div>
-                <div className="border border-gray-300 p-1 text-gray-400 text-[11px]">passwort</div>
-                <button className="w-full border border-gray-400 bg-gray-100 text-gray-600 text-[11px] p-1 cursor-pointer">
+                <div className="border border-(--bg-elevated) p-1 text-(--text-ghost) text-[11px]">email eingeben</div>
+                <div className="border border-(--bg-elevated) p-1 text-(--text-ghost) text-[11px]">passwort</div>
+                <button className="w-full border border-(--bg-elevated) bg-(--bg-elevated) text-(--text-tertiary) text-[11px] p-1 cursor-pointer">
                   senden
                 </button>
-                <div className="text-[10px] text-gray-400">passwort vergessen?</div>
+                <div className="text-[10px] text-(--text-ghost)">passwort vergessen?</div>
                 <p className="text-[10px] text-(--text-ghost) mt-2">Kein visuelles Gewicht · keine Hierarchie · kein Feedback · schwer zu bedienen</p>
               </div>
             ),

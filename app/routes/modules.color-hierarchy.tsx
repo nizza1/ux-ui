@@ -4,6 +4,7 @@ import { modules } from "~/data/modules";
 import { Badge } from "~/components/ui/Badge";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
 import { LearningGoals } from "~/components/ui/LearningGoals";
+import { BuildsOn } from "~/components/ui/BuildsOn";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
 import { ConceptItem } from "~/components/ui/ConceptList";
@@ -45,6 +46,7 @@ export default function ColorHierarchyModule() {
 
         {/* Learning Goals */}
         <div className="px-4 pb-8 sm:px-6">
+          <BuildsOn modules={["13", "09"]} />
           <LearningGoals
             goals={[
               "Verstehen, wie Farbe die Aufmerksamkeit des Nutzers lenkt — und wie du das gezielt einsetzt",
@@ -113,8 +115,8 @@ export default function ColorHierarchyModule() {
                   <div className="text-xs font-mono text-(--text-tertiary) mb-2">Klare Hierarchie durch Farbabstufung</div>
                   <div className="flex gap-2 items-center">
                     <button className="flex-1 bg-[#0ea5a0] text-white font-bold text-sm rounded px-3 py-2 shadow-md">Speichern</button>
-                    <button className="flex-1 bg-transparent text-gray-600 font-semibold text-sm rounded px-3 py-2 border border-gray-300">Vorschau</button>
-                    <button className="flex-1 bg-transparent text-gray-400 font-normal text-sm rounded px-3 py-2">Abbrechen</button>
+                    <button className="flex-1 bg-transparent text-(--text-secondary) font-semibold text-sm rounded px-3 py-2 border border-(--bg-elevated)">Vorschau</button>
+                    <button className="flex-1 bg-transparent text-(--text-tertiary) font-normal text-sm rounded px-3 py-2">Abbrechen</button>
                   </div>
                   <div className="text-[10px] text-(--text-tertiary) italic">Primary → Secondary → Tertiary</div>
                 </div>
@@ -151,8 +153,8 @@ export default function ColorHierarchyModule() {
             bad={{
               label: "Vorher",
               children: (
-                <div className="space-y-3 bg-white rounded p-3 border border-gray-200">
-                  <div className="text-sm font-bold">Projekteinstellungen</div>
+                <div className="space-y-3 bg-(--bg-surface) rounded p-3 border border-(--bg-elevated)">
+                  <div className="text-sm font-bold text-(--text-primary)">Projekteinstellungen</div>
                   <div className="flex gap-2">
                     <button className="flex-1 bg-[#0ea5a0] text-white font-semibold text-sm rounded px-3 py-2">Speichern</button>
                     <button className="flex-1 bg-[#dc2626] text-white font-semibold text-sm rounded px-3 py-2">Projekt löschen</button>
@@ -164,8 +166,8 @@ export default function ColorHierarchyModule() {
             good={{
               label: "Nachher",
               children: (
-                <div className="space-y-3 bg-white rounded p-3 border border-gray-200">
-                  <div className="text-sm font-bold">Projekteinstellungen</div>
+                <div className="space-y-3 bg-(--bg-surface) rounded p-3 border border-(--bg-elevated)">
+                  <div className="text-sm font-bold text-(--text-primary)">Projekteinstellungen</div>
                   <div className="flex justify-between items-center gap-2">
                     <button className="bg-[#0ea5a0] text-white font-semibold text-sm rounded px-3 py-2">Speichern</button>
                     <button className="text-[#dc2626] text-sm font-normal underline">Projekt löschen</button>
@@ -259,6 +261,15 @@ export default function ColorHierarchyModule() {
   </div>
 </div>`}
           />
+
+        <h3 className="font-semibold text-(--text-primary) mt-8 mb-2">Zum Mitnehmen — Aktions-Pyramide</h3>
+        <CodeBlock language="CSS" code={`/* Primary: gefüllt, gesättigt — max. 1 pro Ansicht */
+.btn-primary   { background: var(--accent); color: #fff; font-weight: 700; }
+/* Secondary: Outline / Ghost */
+.btn-secondary { background: transparent; border: 1px solid var(--border);
+                 color: var(--text-secondary); }
+/* Tertiary: reiner Text-Link */
+.btn-tertiary  { background: none; border: none; color: var(--text-tertiary); }`} />
         </section>
       </div>
 

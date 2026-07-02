@@ -20,7 +20,7 @@ export function Heading({
   className,
   style,
 }: HeadingProps) {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
   return (
     <Tag
       className={`m-0 p-0 ${levelClasses[level]} ${className ?? ""}`}

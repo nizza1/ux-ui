@@ -39,7 +39,7 @@ export default function GestaltPrinciplesModule() {
 
         {/* ── TITELSEITE ── */}
         <div className="mb-2">
-          <Badge variant="module" dot>Modul 08</Badge>
+          <Badge variant="module" dot>Modul 03</Badge>
         </div>
 
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">
@@ -51,7 +51,7 @@ export default function GestaltPrinciplesModule() {
 
         <ModuleMeta duration="45 Minuten" practiceTime="~15 Min." />
 
-        <BuildsOn modules={"05"} />
+        <BuildsOn modules={"structure-flows"} />
         <LearningGoals
           goals={[
             "Die sechs zentralen Gestaltprinzipien benennen und erklären können",

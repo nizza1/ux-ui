@@ -33,7 +33,7 @@ export default function ImagesIconsModule() {
       <div className="max-w-[1000px] mx-auto">
         {/* Title & Meta */}
         <div className="px-4 py-12 sm:px-6">
-          <Badge variant="module" dot>Modul 17</Badge>
+          <Badge variant="module" dot>Modul 12</Badge>
           <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
             Bilder & Icons
           </h1>
@@ -45,7 +45,7 @@ export default function ImagesIconsModule() {
 
         {/* Learning Goals */}
         <div className="px-4 pb-8 sm:px-6">
-          <BuildsOn modules={"09"} />
+          <BuildsOn modules={"visual-hierarchy"} />
           <LearningGoals
             goals={[
               "Vektor (SVG) vs. Pixel (PNG/JPG/WebP) — wann du welches Format einsetzt",

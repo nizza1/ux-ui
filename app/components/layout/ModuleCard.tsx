@@ -24,7 +24,7 @@ export function ModuleCard({
       {/* Module number */}
       <div className="font-mono text-[11px] font-semibold text-(--accent-text) bg-(--accent-dim) border border-(--accent-border) rounded-full py-0.5 px-2 inline-flex items-center gap-1.25 mb-4 tracking-[0.08em] uppercase">
         <span className="w-1.25 h-1.25 rounded-full bg-(--accent)" />
-        Module {number}
+        {number === "PX" ? "Praxis" : `Modul ${number}`}
       </div>
 
       {/* Title */}

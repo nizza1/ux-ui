@@ -34,7 +34,7 @@ export default function ColorHierarchyModule() {
       <div className="max-w-[1000px] mx-auto">
         {/* Title & Meta */}
         <div className=" px-4 py-12 sm:px-6">
-          <Badge variant="module" dot>Modul 14</Badge>
+          <Badge variant="module" dot>Modul 09</Badge>
           <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
             Farbhierarchie & Aufmerksamkeitssteuerung
           </h1>
@@ -46,7 +46,7 @@ export default function ColorHierarchyModule() {
 
         {/* Learning Goals */}
         <div className="px-4 pb-8 sm:px-6">
-          <BuildsOn modules={["13", "09"]} />
+          <BuildsOn modules={["color-contrast", "visual-hierarchy"]} />
           <LearningGoals
             goals={[
               "Verstehen, wie Farbe die Aufmerksamkeit des Nutzers lenkt — und wie du das gezielt einsetzt",
@@ -69,7 +69,7 @@ export default function ColorHierarchyModule() {
         <section className=" px-4 pb-12 sm:px-6">
           <h2 className="text-2xl font-bold text-(--text-primary) mb-4">Farbe als Hierarchie-Werkzeug</h2>
           <p className="text-(--text-secondary) mb-8">
-            In Modul 02 hast du gelernt, dass visuelle Hierarchie über Größe, Gewicht und Kontrast funktioniert. Farbe ist dabei das <strong>mächtigste — und gefährlichste</strong> Werkzeug. Ein einziger farbiger Akzent auf einer neutralen Fläche zieht sofort den Blick an. Aber wenn alles farbig ist, verliert Farbe diese Kraft.
+            In Modul 04 hast du gelernt, dass visuelle Hierarchie über Größe, Gewicht und Kontrast funktioniert. Farbe ist dabei das <strong>mächtigste — und gefährlichste</strong> Werkzeug. Ein einziger farbiger Akzent auf einer neutralen Fläche zieht sofort den Blick an. Aber wenn alles farbig ist, verliert Farbe diese Kraft.
           </p>
           <TheoryCard label="Drei Strategien für Farbhierarchie">
             <ConceptItem title="Grauton-zuerst denken">

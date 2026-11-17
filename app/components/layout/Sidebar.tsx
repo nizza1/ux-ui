@@ -1,34 +1,7 @@
 import { NavLink } from "@remix-run/react";
 import { House } from "lucide-react";
-import { modules } from "~/data/modules";
+import { moduleGroups, modules } from "~/data/modules";
 import { IconWrapper } from "../ui/icon";
-
-// Slugs that have full content routes
-const CONTENT_SLUGS = new Set([
-  // UX/UI Foundations (modules 00–08)
-  "ux-ui-basics",
-  "usability",
-  "user-needs",
-  "research-methods",
-  "personas",
-  "information-architecture",
-  "sketching-prototypes",
-  "wireframing",
-  "gestalt-principles",
-  // Visual/Technical Design (modules 09–)
-  "visual-hierarchy",
-  "typography-selection",
-  "typography-systems",
-  "color-systems",
-  "color-contrast",
-  "color-hierarchy",
-  "spacing-layout",
-  "shadows-elevation",
-  "images-icons",
-  "responsive-design",
-  "design-tokens",
-  "praxis-project",
-]);
 
 interface SidebarProps {
   collapsed: boolean;
@@ -38,6 +11,8 @@ const navItemBase =
   "flex items-center gap-2.5 px-3 py-2 rounded-lg no-underline text-[13px] font-medium transition-colors duration-150 cursor-pointer";
 const navItemDefault = "text-(--text-secondary) hover:bg-(--bg-hover) hover:text-(--text-primary)";
 const navItemActive = "bg-(--accent-dim) text-(--accent-text)";
+const groupLabel =
+  "font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--text-ghost) px-3 pt-4 pb-1.5";
 
 export function Sidebar({ collapsed }: SidebarProps) {
   return (
@@ -47,10 +22,6 @@ export function Sidebar({ collapsed }: SidebarProps) {
         : "opacity-100 translate-x-0"
         }`}
     >
-      <div className="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--text-ghost) px-3 pt-1.5 pb-2">
-        Modules
-      </div>
-
       <NavLink
         to="/"
         end
@@ -58,42 +29,36 @@ export function Sidebar({ collapsed }: SidebarProps) {
           `${navItemBase} ${isActive ? navItemActive : navItemDefault}`
         }
       >
-        {/* <span className="w-5 h-5 rounded-[5px] bg-(--bg-elevated) flex items-center justify-center font-mono text-[9px] font-bold text-(--text-tertiary) shrink-0">
-          {"\u2302"}
-        </span> */}
-
         <IconWrapper m className="text-[--accent-text]">
           <House />
         </IconWrapper>
-        <span>Overview</span>
+        <span>Übersicht</span>
       </NavLink>
 
-      <div className="h-px bg-(--bg-hover) my-1.5" />
-
-      {modules.map((module) => {
-        const hasContent = CONTENT_SLUGS.has(module.slug);
-        return (
-          <NavLink
-            key={module.id}
-            to={`/modules/${module.slug}`}
-            className={({ isActive }) =>
-              `${navItemBase} ${isActive ? navItemActive : navItemDefault}`
-            }
-          >
-            <span
-              className={`w-5 h-5 rounded-[5px] flex items-center justify-center font-mono text-[9px] font-bold shrink-0 border ${hasContent
-                ? "bg-(--accent-dim) border-(--accent-border) text-(--accent-text)"
-                : "bg-(--bg-elevated) border-(--bg-hover) text-(--text-tertiary)"
-                }`}
-            >
-              {module.number}
-            </span>
-            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {module.title}
-            </span>
-          </NavLink>
-        );
-      })}
+      {moduleGroups.map((group) => (
+        <div key={group.id} className="flex flex-col gap-0.5">
+          <div className={groupLabel}>{group.label}</div>
+          {modules
+            .filter((module) => module.group === group.id)
+            .map((module) => (
+              <NavLink
+                key={module.id}
+                to={`/modules/${module.slug}`}
+                title={module.titleDe}
+                className={({ isActive }) =>
+                  `${navItemBase} ${isActive ? navItemActive : navItemDefault}`
+                }
+              >
+                <span className="w-5 h-5 rounded-[5px] flex items-center justify-center font-mono text-[9px] font-bold shrink-0 border bg-(--accent-dim) border-(--accent-border) text-(--accent-text)">
+                  {module.number}
+                </span>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                  {module.titleDe}
+                </span>
+              </NavLink>
+            ))}
+        </div>
+      ))}
     </aside>
   );
 }

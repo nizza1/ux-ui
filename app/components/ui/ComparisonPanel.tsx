@@ -51,7 +51,7 @@ interface ComparisonPanelProps {
 
 export function ComparisonPanel({ bad, good, className = "" }: ComparisonPanelProps) {
   return (
-    <div className={`grid grid-cols-2 gap-4 mb-6 ${className}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 ${className}`}>
       <Panel variant="bad" label={bad.label}>{bad.children}</Panel>
       <Panel variant="good" label={good.label}>{good.children}</Panel>
     </div>

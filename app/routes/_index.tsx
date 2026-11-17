@@ -1,19 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Sparkles, BookOpen, Code2, Palette, Phone, TrendingUp, RefreshCw, Rocket } from "lucide-react";
+import { Sparkles, BookOpen, Code2, Bot, Phone, TrendingUp, RefreshCw, Rocket } from "lucide-react";
 import { ModuleCard } from "~/components/layout/ModuleCard";
-import { modules } from "~/data/modules";
-const CONTENT_SLUGS = new Set([
-  // UX/UI Foundations (modules 00–08)
-  "ux-ui-basics", "usability", "user-needs", "research-methods",
-  "personas", "information-architecture", "sketching-prototypes",
-  "wireframing", "gestalt-principles",
-  // Visual/Technical Design (modules 09–20)
-  "visual-hierarchy", "typography-selection", "typography-systems",
-  "color-systems", "color-contrast", "color-hierarchy",
-  "spacing-layout", "shadows-elevation",
-  "images-icons", "responsive-design", "design-tokens",
-  "praxis-project",
-]);
+import { moduleGroups, modules } from "~/data/modules";
 
 export const meta: MetaFunction = () => {
   return [
@@ -21,17 +9,12 @@ export const meta: MetaFunction = () => {
     {
       name: "description",
       content:
-        "Ein praxisnaher Workshop zu UX/UI-Design: visuelle Hierarchie, Typografie, Farbsysteme, Spacing und mehr — speziell für Entwickler.",
+        "Ein praxisnaher Workshop zu UX/UI-Design für Entwickler: Nutzer verstehen, Struktur planen, visuelle Hierarchie, Typografie, Farbe, Spacing, Design Tokens — und wie man KI-generierte Oberflächen brieft und prüft.",
     },
   ];
 };
 
 const highlights = [
-  {
-    icon: Palette,
-    label: "Design-Grundlagen",
-    description: "Farbe, Typografie, Abstände & Layout",
-  },
   {
     icon: Code2,
     label: "Für Entwickler gemacht",
@@ -39,14 +22,19 @@ const highlights = [
   },
   {
     icon: BookOpen,
-    label: `${modules.length} Module`,
-    description: "Von den Basics bis zu Design-Systemen",
+    label: `${modules.length} Module in vier Teilen`,
+    description: "Vom Nutzerbedürfnis bis zum Design-System",
+  },
+  {
+    icon: Bot,
+    label: "Mit KI im Blick",
+    description: "Oberflächen briefen, prüfen, nachschärfen",
   },
 ];
 
 export default function Index() {
   return (
-    <div className="py-12 px-8 max-w-275 mx-auto">
+    <div className="py-12 px-4 sm:px-8 max-w-275 mx-auto">
       {/* Hero section */}
       <div className="mb-16">
         {/* Workshop badge */}
@@ -65,9 +53,10 @@ export default function Index() {
         </h1>
 
         <p className="text-base text-(--text-secondary) leading-[1.65] mb-8 max-w-130">
-          Lerne, wie gutes UX/UI-Design funktioniert — von visueller Hierarchie
-          über Typografie und Farbsysteme bis hin zu Spacing und
-          Nutzerführung. Praxisnah erklärt, direkt im Code anwendbar.
+          Lerne, wie gutes UX/UI-Design funktioniert — vom Nutzerbedürfnis über
+          Struktur, Hierarchie, Typografie und Farbe bis zum Design-System.
+          Praxisnah erklärt, direkt im Code anwendbar. Und weil heute oft eine KI
+          den ersten Entwurf schreibt: mit dem Urteilsvermögen, ihn zu beurteilen.
         </p>
 
         {/* Highlights */}
@@ -111,10 +100,10 @@ export default function Index() {
         </p>
 
         {/* Business case cards */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {[
             { icon: Phone, title: "Weniger Support", desc: "Klare Oberflächen erzeugen weniger Support-Anfragen" },
-            { icon: TrendingUp, title: "Mehr Konversion", desc: "20–40 % Verbesserung durch bessere Layouts und Texte" },
+            { icon: TrendingUp, title: "Mehr Konversion", desc: "Klare Rangfolge und verständliche Texte führen mehr Menschen ans Ziel" },
             { icon: RefreshCw, title: "Weniger Abwanderung", desc: "Nutzer, die sich kompetent fühlen, bleiben länger" },
             { icon: Rocket, title: "Schnelleres Onboarding", desc: "Neue Nutzer verstehen das Interface ohne Training" },
           ].map((item) => (
@@ -139,14 +128,13 @@ export default function Index() {
 
       {/* Modules section */}
       <div>
-        {/* Section header */}
         <div className="flex items-center gap-4 mb-8">
           <div>
             <div className="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--accent-text) mb-1">
               Workshop-Inhalte
             </div>
             <h2 className="text-[19px] font-bold text-(--text-primary) m-0 tracking-tight">
-              Alle Module
+              Der Lernpfad
             </h2>
           </div>
           <div className="flex-1" />
@@ -155,19 +143,34 @@ export default function Index() {
           </span>
         </div>
 
-        {/* Module grid */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-          {modules.map((module) => (
-            <ModuleCard
-              key={module.id}
-              number={module.number}
-              title={module.title}
-              description={module.description}
-              href={`/modules/${module.slug}`}
-              hasContent={CONTENT_SLUGS.has(module.slug)}
-            />
-          ))}
-        </div>
+        {moduleGroups.map((group, index) => {
+          const groupModules = modules.filter((module) => module.group === group.id);
+          return (
+            <section key={group.id} className="mb-12 last:mb-0">
+              <div className="flex items-baseline gap-3 flex-wrap mb-1.5">
+                <span className="font-mono text-[10px] font-semibold tracking-[0.12em] uppercase text-(--text-ghost)">
+                  Teil {index + 1}
+                </span>
+                <h3 className="text-[16px] font-bold text-(--text-primary) m-0 tracking-tight">{group.label}</h3>
+              </div>
+              <p className="text-[14px] leading-[1.6] text-(--text-secondary) mt-0 mb-5 max-w-160">
+                {group.description}
+              </p>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+                {groupModules.map((module) => (
+                  <ModuleCard
+                    key={module.id}
+                    number={module.number}
+                    title={module.titleDe}
+                    description={module.description}
+                    href={`/modules/${module.slug}`}
+                    hasContent
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );
@@ -176,15 +179,15 @@ export default function Index() {
 // ── Cost of UX Error diagram ──────────────────────────────────────────────────
 function CostDiagram() {
   const phases = [
-    { label: "Wireframe-Phase", cost: 1, color: "var(--success-color)", desc: "Fehler sofort sichtbar, schnell korrigiert" },
-    { label: "Entwicklungsphase", cost: 10, color: "var(--warning-color)", desc: "Refactoring nötig, bereits gebaut" },
+    { label: "Im Konzept (Skizze, Wireframe)", cost: 1, color: "var(--success-color)", desc: "Fehler sofort sichtbar, schnell korrigiert" },
+    { label: "In der Entwicklung", cost: 10, color: "var(--warning-color)", desc: "Refactoring nötig, bereits gebaut" },
     { label: "Nach dem Launch", cost: 100, color: "var(--bad-color)", desc: "Nutzer betroffen, Support, Reputationsschaden" },
   ];
 
   return (
     <div className="bg-(--bg-surface) border border-(--bg-elevated) rounded-xl p-5 mb-6">
       <p className="font-mono text-[10px] font-semibold tracking-[2px] uppercase text-(--accent-text) mb-4 m-0">
-        Kosten eines UX-Fehlers: Je später, desto teurer
+        Faustregel: Ein UX-Fehler wird teurer, je später er auffällt
       </p>
       <div className="space-y-3">
         {phases.map((phase) => (
@@ -201,7 +204,7 @@ function CostDiagram() {
                 style={{ width: `${phase.cost}%`, background: phase.color, opacity: 0.8 }}
               />
             </div>
-            <p className="text-[12px] text-(--text-tertiary) mt-0.5 mb-0">{phase.desc}</p>
+            <p className="text-[13px] text-(--text-tertiary) mt-0.5 mb-0">{phase.desc}</p>
           </div>
         ))}
       </div>
@@ -212,17 +215,19 @@ function CostDiagram() {
 // ── Workshop scope overview ───────────────────────────────────────────────────
 function WorkshopScope() {
   const covered = [
-    "Visuelle Hierarchie", "Typografie-Systeme", "Farbe & Kontrast",
-    "Abstände & Layout", "UI-Komponenten", "Responsive Design",
-    "Design-Systeme & Tokens", "Gestalt-Prinzipien",
+    "Nutzerbedürfnisse & User Stories", "Struktur, Flows & Zustände",
+    "Gestaltprinzipien & visuelle Hierarchie", "Typografie-Systeme",
+    "Farbe & Kontrast", "Abstände, Layout & Tiefe", "Responsive Design",
+    "Design-Systeme & Tokens", "KI-Entwürfe briefen und prüfen",
   ];
   const notCovered = [
     "Markenidentität & Logo-Design", "Figma-Workflows",
-    "Vertiefende UX-Research-Methoden", "Animationen & Motion Design",
+    "UX-Research in der Tiefe (Studien, Statistik)", "Animationen & Motion Design",
+    "Einzelne KI-Werkzeuge im Detail",
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div className="bg-(--success-bg) border border-(--success-border) rounded-xl p-4">
         <p className="font-mono text-[10px] font-semibold text-(--success-color) uppercase tracking-wider mb-3 m-0">
           Was wir abdecken

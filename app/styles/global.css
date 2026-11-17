@@ -46,6 +46,11 @@
   --warning-bg: hsla(32, 95%, 44%, 0.07);
   --warning-border: hsla(32, 95%, 44%, 0.18);
 
+  /* Info — Blau: Verweise auf externe Systeme & Hinweise (kein Status, keine Regel) */
+  --info-color: hsl(221, 72%, 46%);
+  --info-bg: hsla(221, 72%, 46%, 0.06);
+  --info-border: hsla(221, 72%, 46%, 0.22);
+
   /* Typography */
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -100,6 +105,10 @@
   --warning-color: hsl(43, 96%, 56%);
   --warning-bg: hsla(43, 96%, 56%, 0.07);
   --warning-border: hsla(43, 96%, 56%, 0.18);
+
+  --info-color: hsl(217, 92%, 74%);
+  --info-bg: hsla(217, 92%, 74%, 0.07);
+  --info-border: hsla(217, 92%, 74%, 0.22);
 
   --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.3);
   --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);

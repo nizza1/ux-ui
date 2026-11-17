@@ -9,7 +9,7 @@ export function AppLayout() {
 
   const moduleMatch = matches.find((m) => m.id === "routes/modules.$slug");
   const moduleTitle = moduleMatch?.data
-    ? (moduleMatch.data as { module?: { title: string } })?.module?.title
+    ? (moduleMatch.data as { module?: { titleDe: string } })?.module?.titleDe
     : undefined;
 
   return (

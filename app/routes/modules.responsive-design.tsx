@@ -33,7 +33,7 @@ export default function ResponsiveDesignModule() {
       <div className="max-w-[1000px] mx-auto">
         {/* Title & Meta */}
         <div className=" px-4 py-12 sm:px-6">
-          <Badge variant="module" dot>Modul 18</Badge>
+          <Badge variant="module" dot>Modul 13</Badge>
           <h1 className="text-4xl font-bold text-(--text-primary) mt-6 mb-3">
             Responsive Design
           </h1>
@@ -45,7 +45,7 @@ export default function ResponsiveDesignModule() {
 
         {/* Learning Goals */}
         <div className=" px-4 pb-8 sm:px-6">
-          <BuildsOn modules={"05"} />
+          <BuildsOn modules={"spacing-layout"} />
           <LearningGoals
             goals={[
               "Mobile-First als Designstrategie verstehen und anwenden",

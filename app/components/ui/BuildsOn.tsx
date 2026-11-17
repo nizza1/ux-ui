@@ -1,22 +1,25 @@
 import { Link } from "@remix-run/react";
 import { ArrowLeft } from "lucide-react";
-import { getModuleByNumber } from "~/data/modules";
+import { getModuleByNumber, getModuleBySlug } from "~/data/modules";
 
 interface BuildsOnProps {
-  /** Module number(s) this module builds on, e.g. "08" or ["12", "13"] */
+  /**
+   * Module this module builds on — slug(s) or number(s), e.g. "visual-hierarchy" or ["07", "08"].
+   * Prefer slugs: they survive a reordering of the curriculum.
+   */
   modules: string | string[];
   className?: string;
 }
 
 /**
  * Progression breadcrumb shown near the top of a module.
- * Makes the learning path explicit: "Baut auf: Modul 08 — Gestaltprinzipien".
+ * Makes the learning path explicit: "Baut auf: Modul 03 — Gestaltprinzipien".
  * Looks up titles from the central registry so they stay in sync.
  */
 export function BuildsOn({ modules, className = "" }: BuildsOnProps) {
   const numbers = Array.isArray(modules) ? modules : [modules];
   const refs = numbers
-    .map((n) => getModuleByNumber(n))
+    .map((n) => getModuleBySlug(n) ?? getModuleByNumber(n))
     .filter((m): m is NonNullable<typeof m> => Boolean(m));
 
   if (refs.length === 0) return null;

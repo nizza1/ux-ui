@@ -1,5 +1,6 @@
+import type { MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { modules } from "~/data/modules";
+import { getModuleBySlug, modules } from "~/data/modules";
 import { ModuleNav } from "~/routes/modules.$slug";
 import { RuleBox } from "~/components/ui/RuleBox";
 import { TheoryCard } from "~/components/ui/TheoryCard";
@@ -11,6 +12,15 @@ import { ExerciseBlock } from "~/components/ui/ExerciseBlock";
 import { LearningGoals } from "~/components/ui/LearningGoals";
 import { BuildsOn } from "~/components/ui/BuildsOn";
 import { ModuleMeta } from "~/components/ui/ModuleMeta";
+
+export const meta: MetaFunction = () => {
+  const module = getModuleBySlug("spacing-layout")!;
+  return [
+    { title: `${module.titleDe} — UX/UI Workshop` },
+    { name: "description", content: module.description },
+  ];
+};
+
 export async function loader() {
   const slug = "spacing-layout";
   const currentIndex = modules.findIndex((m) => m.slug === slug);
@@ -39,7 +49,7 @@ export default function SpacingLayoutModule() {
       <div className="max-w-[1000px] mx-auto w-full px-8 py-12 flex-1">
 
         {/* ── Title section ── */}
-        <div className="inline-flex items-center gap-2 bg-(--accent-dim) border border-(--accent-border) rounded-full py-1 px-3.5 font-mono text-[11px] font-semibold text-(--accent) tracking-[1.5px] uppercase mb-6 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-(--accent) before:shadow-[0_0_6px_var(--accent)] before:shrink-0">Modul 15</div>
+        <div className="inline-flex items-center gap-2 bg-(--accent-dim) border border-(--accent-border) rounded-full py-1 px-3.5 font-mono text-[11px] font-semibold text-(--accent) tracking-[1.5px] uppercase mb-6 before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-(--accent) before:shadow-[0_0_6px_var(--accent)] before:shrink-0">Modul 10</div>
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">Spacing &amp; Layout</h1>
         <p className="text-[15px] font-medium leading-normal text-(--text-secondary) mb-8 mt-0 max-w-130">
           Das 8px-Grid-System: Wie konsistente Abstände professionell wirkendes
@@ -49,7 +59,7 @@ export default function SpacingLayoutModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
-        <BuildsOn modules={"08"} />
+        <BuildsOn modules={"gestalt-principles"} />
         <LearningGoals
           goals={[
             "Das 8px-Grid-System verstehen und in CSS direkt anwenden können",

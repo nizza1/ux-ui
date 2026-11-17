@@ -216,7 +216,7 @@ const COPY_CODE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typografie II — Aufgabe Modul 11</title>
+<title>Typografie II — Aufgabe Modul 06</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Type Scale (nur diese Größen verwenden!):
@@ -311,7 +311,7 @@ export default function TypographySystemsModule() {
 
         {/* ── TITELSEITE ── */}
         <div className="mb-2">
-          <Badge variant="module" dot>Modul 11</Badge>
+          <Badge variant="module" dot>Modul 06</Badge>
         </div>
 
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">
@@ -323,7 +323,7 @@ export default function TypographySystemsModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
-        <BuildsOn modules={"10"} />
+        <BuildsOn modules={"typography-selection"} />
         <LearningGoals
           goals={[
             "Eine Type Scale definieren und erklären, warum lineare Skalen nicht funktionieren",
@@ -695,7 +695,7 @@ export default function TypographySystemsModule() {
           Öffne diesen Code im Browser und wende die Type Scale, korrekte Zeilenhöhen und Zeilenlängen-Begrenzung an. Die TODO-Kommentare zeigen dir genau, wo Anpassungsbedarf besteht.
         </p>
 
-        <CodeBlock language="HTML + CSS — Aufgabe Modul 11" code={COPY_CODE} />
+        <CodeBlock language="HTML + CSS — Aufgabe Modul 06" code={COPY_CODE} />
 
       </div>
 

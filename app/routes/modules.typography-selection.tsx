@@ -213,7 +213,7 @@ const COPY_CODE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typografie I — Aufgabe Modul 10</title>
+<title>Typografie I — Aufgabe Modul 05</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* Verfügbare Farb-Variablen:
@@ -322,7 +322,7 @@ export default function TypographySelectionModule() {
 
         {/* ── TITELSEITE ── */}
         <div className="mb-2">
-          <Badge variant="module" dot>Modul 10</Badge>
+          <Badge variant="module" dot>Modul 05</Badge>
         </div>
 
         <h1 className="text-[clamp(28px,4vw,36px)] font-extrabold leading-[1.15] tracking-[-0.5px] text-(--text-primary) mb-2 mt-0">
@@ -334,7 +334,7 @@ export default function TypographySelectionModule() {
 
         <ModuleMeta duration="60 Minuten" practiceTime="~20 Min." />
 
-        <BuildsOn modules={"09"} />
+        <BuildsOn modules={"visual-hierarchy"} />
         <LearningGoals
           goals={[
             "Den Unterschied zwischen Serif, Sans-Serif und Monospace erklären und wissen, wann welche Kategorie passt",

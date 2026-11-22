@@ -80,9 +80,9 @@ export const modules: Module[] = [
     number: "03",
     slug: "gestalt-principles",
     title: "Gestalt Principles",
-    titleDe: "Gestaltprinzipien in der Praxis",
+    titleDe: "Gestaltprinzipien",
     description:
-      "Sechs psychologische Grundprinzipien gezielt einsetzen, um Interfaces intuitiver und verständlicher zu gestalten",
+      "Woher die Gestaltgesetze kommen, warum das Gehirn gruppiert — und wie du neun Prinzipien in CSS und Markup übersetzt",
     group: "gestalten",
   },
   {
